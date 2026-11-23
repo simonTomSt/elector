@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task.schema.json",
+  "title": "Zadanie symulatora szafy",
+  "type": "object",
+  "required": ["id", "type", "title", "statement", "scene", "requirements"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "extends": { "type": "string", "description": "id zadania bazowego – dziedziczy solution, scene i params" },
+    "type": { "enum": ["cabinet", "schematic", "mixed", "diagnostic"] },
+    "title": { "type": "string", "description": "Może zawierać zmienne {moc}, {In}, {Uster}" },
+    "level": { "enum": ["podstawowy", "średni", "zaawansowany"] },
+    "durationMin": { "type": "integer" },
+    "statement": { "type": "string" },
+    "params": {
+      "type": "object",
+      "description": "Losowane parametry: klucz = nazwa zmiennej",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["choices"],
+        "properties": {
+          "choices": { "type": "array" },
+          "derive": { "type": "object", "description": "Wartości zależne, np. In dla każdej mocy; nadpisania params aparatów", "additionalProperties": true }
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "required": ["start"],
+      "properties": {
+        "start": { "enum": ["empty", "railsDucts", "mounted", "wired"] },
+        "supply": { "type": "string", "description": "TerminalRef, do którego podłączona jest sieć, np. '-Q0'" },
+        "rails": { "type": "array", "items": { "type": "object", "properties": { "yMm": { "type": "number" }, "lengthMm": { "type": "number" } } } },
+        "ducts": { "type": "array", "items": { "type": "object", "properties": { "xMm": { "type": "number" }, "yMm": { "type": "number" }, "wMm": { "type": "number" }, "hMm": { "type": "number" } } } },
+        "preset": { "$ref": "#/$defs/project", "description": "Aparaty i przewody obecne od startu (np. drzwi, zasilanie, silnik)" },
+        "palette": { "type": "array", "items": { "type": "string" }, "description": "Dozwolone typeId w palecie" }
+      }
+    },
+    "givenSchematic": { "$ref": "#/$defs/schematic", "description": "Schemat dany w zadaniu (mixed) lub częściowy (schematic)" },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "check"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "group": { "type": "string" },
+          "check": { "enum": ["deviceExists", "connected", "inSeries", "parallel", "wireColors", "setting", "scenario", "schematicMatchesCabinet", "schematicConnected", "noErc"] },
+          "args": { "type": "object" }
+        }
+      }
+    },
+    "testScenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "steps"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "steps": { "type": "array", "items": { "$ref": "#/$defs/step" } }
+        }
+      }
+    },
+    "faults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "apply"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "apply": {
+            "type": "object",
+            "properties": {
+              "wire": { "type": "string" }, "wireFault": { "enum": ["open", "loose"] },
+              "device": { "type": "string" }, "deviceFault": { "enum": ["coilOpen", "tripped", "contactWelded", "contactOpen"] },
+              "random": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "pickFaults": { "type": "integer", "description": "Ile usterek losować z listy faults" },
+    "symptom": { "type": "string" },
+    "scoring": { "type": "object", "properties": { "lotoPenalty": { "type": "integer" }, "hintPenalty": { "type": "integer" } } },
+    "solution": { "$ref": "#/$defs/project" },
+    "solutionSchematic": { "$ref": "#/$defs/schematic" }
+  },
+  "$defs": {
+    "project": {
+      "type": "object",
+      "properties": {
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["tag", "typeId"],
+            "properties": {
+              "tag": { "type": "string" },
+              "typeId": { "type": "string" },
+              "rail": { "type": "integer" },
+              "xMm": { "type": "number" },
+              "params": { "type": "object" },
+              "group": { "type": "string", "description": "Dla złączek: listwa, np. '-X1'; tag złączki to '-X1:L1'" }
+            }
+          }
+        },
+        "wires": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "a", "b", "color", "cs"],
+            "properties": {
+              "id": { "type": "string" }, "a": { "type": "string" }, "b": { "type": "string" },
+              "color": { "enum": ["brown", "black", "grey", "blue", "greenYellow", "darkBlue", "red", "white"] },
+              "cs": { "enum": [0.75, 1, 1.5, 2.5, 4] },
+              "ferrule": { "type": "boolean" },
+              "fixed": { "type": "boolean", "description": "Okablowanie fabryczne (drzwi, zasilanie) – kursant nie edytuje" },
+              "route": { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 } }
+            }
+          }
+        }
+      }
+    },
+    "schematic": {
+      "type": "object",
+      "properties": {
+        "sheets": { "type": "array", "items": { "type": "object", "properties": { "n": { "type": "integer" }, "title": { "type": "string" } } } },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "tag", "element", "pins"],
+            "properties": {
+              "id": { "type": "string" },
+              "tag": { "type": "string" },
+              "element": { "enum": ["breaker3", "breaker1", "mainContacts3", "contactNO", "contactNC", "coil", "thermal3", "thermalNC", "thermalNO", "pbNO", "pbNC", "lamp", "motor3", "psu", "terminal", "potential"] },
+              "pins": { "type": "array", "items": { "type": "string" }, "description": "TerminalRef każdego pinu symbolu, np. ['-K1:13','-K1:14']" },
+              "sheet": { "type": "integer" }, "col": { "type": "integer" }, "row": { "type": "string" }
+            }
+          }
+        },
+        "connections": { "type": "array", "items": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 2 }, "description": "Pary TerminalRef lub nazw potencjałów ('pot:+24V')" }
+      }
+    },
+    "step": {
+      "type": "object",
+      "properties": {
+        "do": { "enum": ["set", "press", "release", "wait", "measure"] },
+        "tag": { "type": "string" },
+        "state": { "type": "object" },
+        "ms": { "type": "integer" },
+        "probes": { "type": "array", "items": { "type": "string" } },
+        "range": { "enum": ["vac", "vdc", "ohm", "cont", "aac"] },
+        "expect": { "type": "object", "description": "Klucze 'tag.pole' → oczekiwana wartość; liczby z tolerancją: {\"approx\": 230, \"tol\": 5}" }
+      }
+    }
+  }
+}

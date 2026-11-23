@@ -1,0 +1,43 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--theme-bg);
+}
+
+.shell__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space-3) * 1px);
+  padding: calc(var(--space-3) * 1px);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.shell__left {
+  flex: 1 1 calc(var(--size-leftPanel) * 1px);
+  min-width: 0;
+  background: var(--theme-panel);
+  border: 1px solid var(--theme-line);
+  border-radius: calc(var(--radius-lg) * 1px);
+  padding: calc(var(--space-4) * 1px);
+}
+
+.shell__stage {
+  flex: 999 1 560px;
+  min-width: 0;
+  background: var(--theme-stage);
+  border: 1px solid var(--theme-line);
+  border-radius: calc(var(--radius-lg) * 1px);
+  padding: calc(var(--space-4) * 1px);
+  min-height: 480px;
+}
+
+.shell__right {
+  flex: 1 1 calc(var(--size-rightPanel) * 1px);
+  min-width: 0;
+  background: var(--theme-panel);
+  border: 1px solid var(--theme-line);
+  border-radius: calc(var(--radius-lg) * 1px);
+  padding: calc(var(--space-4) * 1px);
+}

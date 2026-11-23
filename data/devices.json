@@ -1,0 +1,153 @@
+{
+  "$description": "Biblioteka aparatów generycznych. x zacisku w mm od lewej krawędzi aparatu. Zaciski złączek mają warianty .top/.bot. Patrz docs/SPEC-SIM.md §2 i §6.",
+  "types": [
+    {
+      "id": "supply-3npe-400v", "kind": "supply", "prefix": "SUP", "mount": "external", "widthMm": 0,
+      "label": "Sieć 3/N/PE ~ 400/230 V",
+      "terminals": [{ "id": "L1" }, { "id": "L2" }, { "id": "L3" }, { "id": "N" }, { "id": "PE" }],
+      "params": { "Ull": 400, "Uln": 230, "f": 50, "Zs": 0.19 }
+    },
+    {
+      "id": "main-switch-3p-25a", "kind": "mainSwitch", "prefix": "-Q", "mount": "door", "widthMm": 64,
+      "label": "Wyłącznik główny 3P 25 A (z możliwością blokady kłódką)",
+      "terminals": [{ "id": "1" }, { "id": "3" }, { "id": "5" }, { "id": "2" }, { "id": "4" }, { "id": "6" }],
+      "contacts": [
+        { "from": "1", "to": "2", "type": "NO", "actuator": "handle" },
+        { "from": "3", "to": "4", "type": "NO", "actuator": "handle" },
+        { "from": "5", "to": "6", "type": "NO", "actuator": "handle" }
+      ],
+      "params": { "In": 25, "lockable": "true" }
+    },
+    {
+      "id": "mcb-c16-3p", "kind": "mcb", "prefix": "-Q", "mount": "rail", "widthMm": 54,
+      "label": "Wyłącznik nadprądowy C16 3P 6 kA",
+      "terminals": [
+        { "id": "1", "side": "top", "x": 9 }, { "id": "3", "side": "top", "x": 27 }, { "id": "5", "side": "top", "x": 45 },
+        { "id": "2", "side": "bottom", "x": 9 }, { "id": "4", "side": "bottom", "x": 27 }, { "id": "6", "side": "bottom", "x": 45 }
+      ],
+      "contacts": [
+        { "from": "1", "to": "2", "type": "NO", "actuator": "handle" },
+        { "from": "3", "to": "4", "type": "NO", "actuator": "handle" },
+        { "from": "5", "to": "6", "type": "NO", "actuator": "handle" }
+      ],
+      "params": { "In": 16, "curve": "C", "Icu": 6000, "poles": 3 }
+    },
+    {
+      "id": "mcb-b6-1p", "kind": "mcb", "prefix": "-F", "mount": "rail", "widthMm": 18,
+      "label": "Wyłącznik nadprądowy B6 1P",
+      "terminals": [{ "id": "1", "side": "top", "x": 9 }, { "id": "2", "side": "bottom", "x": 9 }],
+      "contacts": [{ "from": "1", "to": "2", "type": "NO", "actuator": "handle" }],
+      "params": { "In": 6, "curve": "B", "poles": 1 }
+    },
+    {
+      "id": "motor-breaker-6-10a", "kind": "motorBreaker", "prefix": "-Q", "mount": "rail", "widthMm": 45,
+      "label": "Wyłącznik silnikowy 6–10 A",
+      "terminals": [
+        { "id": "1", "side": "top", "x": 7 }, { "id": "3", "side": "top", "x": 22 }, { "id": "5", "side": "top", "x": 37 },
+        { "id": "2", "side": "bottom", "x": 7 }, { "id": "4", "side": "bottom", "x": 22 }, { "id": "6", "side": "bottom", "x": 37 }
+      ],
+      "contacts": [
+        { "from": "1", "to": "2", "type": "NO", "actuator": "handle" },
+        { "from": "3", "to": "4", "type": "NO", "actuator": "handle" },
+        { "from": "5", "to": "6", "type": "NO", "actuator": "handle" }
+      ],
+      "params": { "setMin": 6, "setMax": 10, "set": 8.5, "curve": "C", "Imag": 130 }
+    },
+    {
+      "id": "psu-24vdc-2a5", "kind": "psu", "prefix": "-T", "mount": "rail", "widthMm": 36,
+      "label": "Zasilacz 230 V AC / 24 V DC 2,5 A",
+      "terminals": [
+        { "id": "L", "side": "bottom", "x": 6 }, { "id": "N", "side": "bottom", "x": 14 },
+        { "id": "+", "side": "bottom", "x": 23 }, { "id": "-", "side": "bottom", "x": 31 }
+      ],
+      "loads": [{ "a": "L", "b": "N", "kind": "psuIn" }],
+      "params": { "Uin": 230, "Uout": 24.1, "Imax": 2.5, "startDelayMs": 100, "eff": 0.85 }
+    },
+    {
+      "id": "contactor-3p-9a-24vdc", "kind": "contactor", "prefix": "-K", "mount": "rail", "widthMm": 45,
+      "label": "Stycznik 3P AC-3 9 A, cewka 24 V DC, 1NO+1NC",
+      "terminals": [
+        { "id": "1", "side": "top", "x": 5 }, { "id": "3", "side": "top", "x": 13 }, { "id": "5", "side": "top", "x": 21 },
+        { "id": "13", "side": "top", "x": 31 }, { "id": "A1", "side": "top", "x": 39 },
+        { "id": "2", "side": "bottom", "x": 5 }, { "id": "4", "side": "bottom", "x": 13 }, { "id": "6", "side": "bottom", "x": 21 },
+        { "id": "14", "side": "bottom", "x": 31 }, { "id": "A2", "side": "bottom", "x": 39 },
+        { "id": "21", "side": "front", "x": 31 }, { "id": "22", "side": "front", "x": 39 }
+      ],
+      "contacts": [
+        { "from": "1", "to": "2", "type": "NO", "actuator": "coil" },
+        { "from": "3", "to": "4", "type": "NO", "actuator": "coil" },
+        { "from": "5", "to": "6", "type": "NO", "actuator": "coil" },
+        { "from": "13", "to": "14", "type": "NO", "actuator": "coil" },
+        { "from": "21", "to": "22", "type": "NC", "actuator": "coil" }
+      ],
+      "loads": [{ "a": "A1", "b": "A2", "kind": "coilDC" }],
+      "params": { "Ucoil": 24, "Pcoil": 2.4, "Rcoil": 240, "Iac3": 9, "Pac3": 4000, "Iac1": 25, "closeMs": 15, "openMs": 10 }
+    },
+    {
+      "id": "overload-6-10a", "kind": "overload", "prefix": "-F", "mount": "rail", "widthMm": 45,
+      "label": "Przekaźnik termiczny 6–10 A klasa 10A",
+      "terminals": [
+        { "id": "1", "side": "top", "x": 5 }, { "id": "3", "side": "top", "x": 13 }, { "id": "5", "side": "top", "x": 21 }, { "id": "95", "side": "top", "x": 31 },
+        { "id": "2", "side": "bottom", "x": 5 }, { "id": "4", "side": "bottom", "x": 13 }, { "id": "6", "side": "bottom", "x": 21 }, { "id": "96", "side": "bottom", "x": 31 },
+        { "id": "97", "side": "front", "x": 36 }, { "id": "98", "side": "front", "x": 41 }
+      ],
+      "links": [["1", "2"], ["3", "4"], ["5", "6"]],
+      "contacts": [
+        { "from": "95", "to": "96", "type": "NC", "actuator": "thermal" },
+        { "from": "97", "to": "98", "type": "NO", "actuator": "thermal" }
+      ],
+      "params": { "setMin": 6, "setMax": 10, "set": 8.5, "class": "10A", "resetMode": "H" }
+    },
+    {
+      "id": "terminal-4", "kind": "terminal", "prefix": "-X", "mount": "rail", "widthMm": 5.2,
+      "label": "Złączka przelotowa 4 mm²",
+      "terminals": [{ "id": "top", "side": "top", "x": 2.6 }, { "id": "bot", "side": "bottom", "x": 2.6 }],
+      "links": [["top", "bot"]],
+      "params": { "variant": "standard" },
+      "variants": { "standard": { "color": "block" }, "N": { "color": "blockN" }, "PE": { "color": "greenYellow" } }
+    },
+    {
+      "id": "pe-bar-8", "kind": "peBar", "prefix": "-PE", "mount": "rail", "widthMm": 80,
+      "label": "Szyna PE, 8 zacisków",
+      "terminals": [{ "id": "1" }, { "id": "2" }, { "id": "3" }, { "id": "4" }, { "id": "5" }, { "id": "6" }, { "id": "7" }, { "id": "8" }],
+      "links": [["1", "2"], ["2", "3"], ["3", "4"], ["4", "5"], ["5", "6"], ["6", "7"], ["7", "8"]],
+      "params": {}
+    },
+    {
+      "id": "pushbutton-nc-red", "kind": "pushbutton", "prefix": "-S", "mount": "door", "widthMm": 22,
+      "label": "Przycisk STOP (NC), czerwony",
+      "terminals": [{ "id": "11" }, { "id": "12" }],
+      "contacts": [{ "from": "11", "to": "12", "type": "NC", "actuator": "button" }],
+      "params": { "color": "red", "legend": "0" }
+    },
+    {
+      "id": "pushbutton-no-green", "kind": "pushbutton", "prefix": "-S", "mount": "door", "widthMm": 22,
+      "label": "Przycisk START (NO), zielony",
+      "terminals": [{ "id": "13" }, { "id": "14" }],
+      "contacts": [{ "from": "13", "to": "14", "type": "NO", "actuator": "button" }],
+      "params": { "color": "green", "legend": "I" }
+    },
+    {
+      "id": "lamp-24vdc", "kind": "lamp", "prefix": "-H", "mount": "door", "widthMm": 22,
+      "label": "Lampka sygnalizacyjna 24 V DC",
+      "terminals": [{ "id": "X1" }, { "id": "X2" }],
+      "loads": [{ "a": "X1", "b": "X2", "kind": "lamp" }],
+      "params": { "Un": 24, "P": 1.2, "color": "green" }
+    },
+    {
+      "id": "motor-3ph-4kw", "kind": "motor", "prefix": "-M", "mount": "external", "widthMm": 0,
+      "label": "Silnik indukcyjny 3~ 4 kW 400 V",
+      "terminals": [{ "id": "U1" }, { "id": "V1" }, { "id": "W1" }, { "id": "PE" }],
+      "loads": [{ "a": "U1", "b": "V1", "kind": "motorWinding" }, { "a": "V1", "b": "W1", "kind": "motorWinding" }, { "a": "W1", "b": "U1", "kind": "motorWinding" }],
+      "params": { "Pn": 4000, "In": 8.2, "nN": 1440, "startRatio": 6, "startMs": 600, "load": 0.95, "Rwinding": 3.6 }
+    },
+    {
+      "id": "timer-ton-24v", "kind": "timer", "prefix": "-K", "mount": "rail", "widthMm": 18,
+      "label": "Przekaźnik czasowy TON 0,1–10 s, 24 V",
+      "terminals": [{ "id": "A1", "side": "top", "x": 5 }, { "id": "15", "side": "top", "x": 13 }, { "id": "A2", "side": "bottom", "x": 5 }, { "id": "18", "side": "bottom", "x": 13 }],
+      "contacts": [{ "from": "15", "to": "18", "type": "NO", "actuator": "coil" }],
+      "loads": [{ "a": "A1", "b": "A2", "kind": "coilDC" }],
+      "params": { "tSetMs": 3000, "Ucoil": 24, "Pcoil": 1.0 }
+    }
+  ]
+}

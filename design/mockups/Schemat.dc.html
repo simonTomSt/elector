@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Edytor schematu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #0E1217; color: #E7ECF1; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #141A20; border-bottom: 1px solid #252E37">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 300px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #33404C; display: flex; align-items: center; justify-content: center; color: #4EA8FF; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="1.5"></rect><path d="M7 3v5M7 12v9M7 8l-2.5 4M13 7h6M13 7v10h6M17 17v4"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #9BA8B5">Zadanie 2 z 8 · tylko schemat</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Schemat rozruchu bezpośredniego z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <div role="radiogroup" aria-label="Widok zadania" style="display: flex; padding: 3px; border-radius: 10px; background: #0E1217; border: 1px solid #33404C">
+      <button type="button" role="radio" aria-checked="false" disabled="{{true}}" title="Zadanie bez szafy" style="height: 38px; padding: 0 14px; border-radius: 7px; border: none; background: transparent; color: #6E7B88; font: inherit; font-size: 13px">Szafa</button>
+      <button type="button" role="radio" aria-checked="true" style="height: 38px; padding: 0 14px; border-radius: 7px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-size: 13px; font-weight: 600">Schemat</button>
+      <button type="button" role="radio" aria-checked="false" disabled="{{true}}" title="Zadanie bez szafy" style="height: 38px; padding: 0 14px; border-radius: 7px; border: none; background: transparent; color: #6E7B88; font: inherit; font-size: 13px">Szafa + schemat</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" role="switch" aria-checked="false" style="height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-weight: 500">Symulacja schematu · WYŁ</button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-weight: 600">Sprawdź schemat</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <!-- biblioteka symboli -->
+    <aside aria-label="Biblioteka symboli" style="flex: 1 1 260px; max-width: 100%; box-sizing: border-box; background: #141A20; border-right: 1px solid #252E37; display: flex; flex-direction: column">
+      <div style="padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Symbole IEC 60617</h2>
+        <label style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #9BA8B5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg>
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Szukaj symbolu</span>
+          <input type="search" placeholder="Szukaj symbolu…" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: #E7ECF1; font: inherit">
+        </label>
+      </div>
+      <div style="padding: 0 10px 12px; display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <span style="padding: 0 6px; font-size: 12px; font-weight: 600; color: #9BA8B5">{{g.name}}</span>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+              <sc-for list="{{g.items}}" as="it" hint-placeholder-count="3">
+                <button type="button" aria-label="Wstaw: {{it.name}}" aria-pressed="{{it.sel}}" onClick="{{it.pick}}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 76px; padding: 8px 4px; border-radius: 8px; cursor: grab; font: inherit; font-size: 11px; line-height: 1.2; text-align: center; color: #E7ECF1; background: {{it.bg}}; border: 1px solid {{it.border}}">
+                  <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="{{it.d}}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  {{it.name}}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+
+    <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px; padding: 8px 16px 0; background: #141A20; border-bottom: 1px solid #252E37">
+        <div role="tablist" aria-label="Arkusze" style="display: flex; gap: 2px">
+          <button type="button" role="tab" aria-selected="true" style="height: 44px; padding: 0 16px; border: none; background: transparent; font: inherit; font-weight: 500; color: #E7ECF1; border-bottom: 2px solid #4EA8FF"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">1</span> · Obwód główny i sterowanie</button>
+          <button type="button" aria-label="Dodaj arkusz" style="width: 44px; height: 44px; border: none; background: transparent; color: #9BA8B5; font-size: 20px">+</button>
+        </div>
+        <span style="padding-bottom: 12px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5">A3 · siatka 4 mm · ortogonalnie</span>
+      </div>
+      <div style="position: relative; flex: 1 1 auto; min-height: 700px; padding: 72px 28px 72px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: #0B0F13; overflow: hidden">
+        <!-- pasek narzędzi rysowania -->
+        <div role="toolbar" aria-label="Narzędzia schematu" style="position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px; border-radius: 12px; background: #141A20; border: 1px solid #33404C; box-shadow: 0 12px 32px rgba(0,0,0,0.5)">
+          <sc-for list="{{tools}}" as="tl" hint-placeholder-count="6">
+            <button type="button" aria-pressed="{{tl.sel}}" onClick="{{tl.pick}}" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 13px; background: {{tl.bg}}; color: {{tl.fg}}; border: 1px solid {{tl.border}}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{tl.d}}"></path></svg>
+              {{tl.name}}
+              <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 10px; padding: 1px 4px; border-radius: 3px; border: 1px solid #33404C; color: #9BA8B5">{{tl.key}}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="width: 100%; max-width: 1040px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); border-radius: 6px">
+          <dc-import name="SchematRys" mode="{{sheetMode}}" theme="dark" hint-size="100%,600px"></dc-import>
+        </div>
+        <div style="position: absolute; left: 16px; bottom: 16px; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 10px; background: #141A20; border: 1px solid #33404C">
+          <button type="button" aria-label="Oddal" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: #E7ECF1; font-size: 20px">−</button>
+          <span style="min-width: 52px; text-align: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px">100%</span>
+          <button type="button" aria-label="Przybliż" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: #E7ECF1; font-size: 20px">+</button>
+        </div>
+        <div style="position: absolute; right: 16px; bottom: 16px; display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 12px; border-radius: 8px; background: #141A20; border: 1px solid #33404C; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5">
+          <span>Symbole 24</span><span>Połączenia 47</span><span>Odsyłacze 6</span><span style="color: #FF8A84">ERC: 1 błąd</span>
+        </div>
+      </div>
+    </main>
+
+    <aside aria-label="Zadanie i walidacja schematu" style="flex: 1 1 340px; max-width: 100%; box-sizing: border-box; background: #141A20; border-left: 1px solid #252E37; display: flex; flex-direction: column">
+      <section style="padding: 16px; border-bottom: 1px solid #252E37; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Treść zadania</h2>
+        <p style="margin: 0">Narysuj schemat ideowy rozruchu bezpośredniego silnika 3~ 4 kW. Obwód główny jest gotowy – dorysuj sterowanie 24 V DC z przyciskami <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-S1</span> STOP, <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-S2</span> START, samopodtrzymaniem i lampką <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-H1</span>.</p>
+        <span style="font-size: 12px; color: #9BA8B5">Bez montażu w szafie · ok. 20 min</span>
+      </section>
+      <section style="padding: 16px; border-bottom: 1px solid #252E37; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between"><h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Wymagania</h2><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5">5 / 6</span></div>
+        <sc-for list="{{reqs}}" as="r" hint-placeholder-count="6">
+          <label style="display: flex; align-items: flex-start; gap: 10px; min-height: 34px; font-size: 14px"><input type="checkbox" checked="{{r.done}}" style="width: 18px; height: 18px; margin: 1px 0 0; accent-color: #3FCF8E; flex: 0 0 auto"><span style="color: {{r.fg}}">{{r.text}}</span></label>
+        </sc-for>
+      </section>
+      <section style="padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Kontrola schematu (ERC)</h2>
+        <div style="display: flex; gap: 10px; padding: 10px; border-radius: 8px; background: rgba(240,86,79,0.10)">
+          <span style="width: 22px; height: 22px; border-radius: 11px; background: #F0564F; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">1</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 500; color: #FF8A84">Otwarte połączenie -S2:14</span><span style="font-size: 12px; color: #9BA8B5">Wyjście przycisku START nie prowadzi do cewki -K1:A1.</span></div>
+        </div>
+        <div style="display: flex; gap: 10px; padding: 10px; border-radius: 8px; background: #1A2129">
+          <span style="width: 22px; height: 22px; border-radius: 11px; background: #33404C; color: #E7ECF1; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">i</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 500">Odsyłacze -K1 uzupełnione automatycznie</span><span style="font-size: 12px; color: #9BA8B5">Lustro styków pod cewką: 1–2, 3–4, 5–6 → 2.C; 13–14 → 6.C.</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tool: 'wire', sym: 'no' }; }
+  renderVals() {
+    const st = this.state;
+    const SYM = {
+      no: ['Styk NO', 'M20 4V14 M20 36V26 L12 15'],
+      nc: ['Styk NC', 'M20 4V14 H28 M20 36V26 L29 13'],
+      pbno: ['Przycisk NO', 'M22 4V14 M22 36V26 L14 15 M18 21H8 M8 17V25 M8 17H5 M8 25H5'],
+      pbnc: ['Przycisk NC', 'M22 4V14 H30 M22 36V26 L31 13 M26 20H10 M10 16V24 M10 16H7 M10 24H7'],
+      coil: ['Cewka', 'M20 4V12 M20 28V36 M12 12H28V28H12Z'],
+      timer: ['Cewka czasowa', 'M20 4V12 M20 28V36 M12 12H28V28H12Z M12 12L28 28'],
+      cb: ['Wyłącznik 3P', 'M10 4V10 M10 34V36 M10 34L5 14 M20 4V10 M20 34V36 M20 34L15 14 M30 4V10 M30 34V36 M30 34L25 14 M8 8L12 12 M12 8L8 12 M18 8L22 12 M22 8L18 12 M28 8L32 12 M32 8L28 12'],
+      th: ['Termik', 'M20 4V10 M20 30V36 M13 10H27V30H13Z M20 10V15H16V25H20V30'],
+      fuse: ['Bezpiecznik', 'M20 4V36 M15 10H25V30H15Z'],
+      motor: ['Silnik 3~', 'M20 4V6 M20 6a14 14 0 1 0 0.01 0 M14 25V15L20 21L26 15V25'],
+      lamp: ['Lampka', 'M20 4V10 M20 30V36 M20 10a10 10 0 1 0 0.01 0 M13 13L27 27M27 13L13 27'],
+      psu: ['Zasilacz', 'M8 8H32V32H8Z M8 32L32 8 M11 15q2.5-3 5 0t5 0 M21 27H29'],
+      term: ['Złączka', 'M20 4V16 M20 24V36 M16 20a4 4 0 1 0 8 0a4 4 0 1 0 -8 0'],
+      pot: ['Potencjał', 'M8 8H32 M20 8V36 M16 30L20 36L24 30'],
+      ref: ['Odsyłacz', 'M6 20H24 M24 14L32 20L24 26Z']
+    };
+    const G = [['Łączniki', ['no','nc','pbno','pbnc']], ['Cewki i przekaźniki', ['coil','timer','th']], ['Zabezpieczenia', ['cb','fuse']], ['Odbiorniki i zasilanie', ['motor','lamp','psu']], ['Połączenia', ['term','pot','ref']]];
+    const groups = G.map(([name, ids]) => ({ name, items: ids.map((id) => { const sel = st.sym === id; return { name: SYM[id][0], d: SYM[id][1], sel: sel ? 'true' : 'false',
+      bg: sel ? 'rgba(78,168,255,0.14)' : '#1A2129', border: sel ? '#4EA8FF' : 'transparent', pick: () => this.setState({ sym: id }) }; }) }));
+    const T = [
+      ['select', 'Zaznacz', 'V', 'M5 3l14 8-6 2-2 6z'],
+      ['wire', 'Połączenie', 'W', 'M4 6h6v12h10 M4 6a1 1 0 1 0 0.01 0'],
+      ['node', 'Węzeł', 'J', 'M12 4v16 M4 12h8 M12 12a2.5 2.5 0 1 0 0.01 0'],
+      ['pot', 'Potencjał', 'P', 'M4 6h16 M12 6v14'],
+      ['text', 'Tekst', 'T', 'M5 6h14 M12 6v13']
+    ];
+    const tools = T.map(([id, name, key, d]) => { const sel = st.tool === id; return { name, key, d, sel: sel ? 'true' : 'false',
+      bg: sel ? 'rgba(78,168,255,0.14)' : 'transparent', fg: sel ? '#4EA8FF' : '#E7ECF1', border: sel ? '#4EA8FF' : 'transparent', pick: () => this.setState({ tool: id }) }; });
+    const reqs = [
+      ['Obwód główny: -Q1, -K1, -F2, -M1', true], ['Zasilanie sterowania przez -F1 i -T1', true], ['-S1 (NC) w szeregu przed -S2', true],
+      ['Samopodtrzymanie -K1:13–14 równolegle do -S2', true], ['-F2:95–96 w obwodzie cewki', true], ['Ciągłość -S2:14 → -K1:A1', false]
+    ].map(([text, done]) => ({ text, done, fg: done ? '#9BA8B5' : '#E7ECF1' }));
+    return { groups, tools, reqs, sheetMode: st.tool === 'wire' ? 'draw' : 'edit' };
+  }
+}
+</script>
+</body>
+</html>

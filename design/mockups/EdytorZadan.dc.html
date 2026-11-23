@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Edytor zadań</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+a{color:#1D6FD8}a:hover{color:#1557AD}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #EEF1F4; color: #121820; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.45">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #FFFFFF; border-bottom: 1px solid #DCE2E8">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #C5CED7; display: flex; align-items: center; justify-content: center; color: #1D6FD8; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path><path d="M13.5 6.5l4 4"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #53606C">Edytor zadań · szkic zapisany 11:52</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600">Rozruch bezpośredni silnika z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" style="height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #C5CED7; background: #FFFFFF; color: #121820; font: inherit; font-weight: 500">Podgląd jako kursant</button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #1D6FD8; color: #FFFFFF; font: inherit; font-weight: 600">Opublikuj</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <nav aria-label="Sekcje zadania" style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; padding: 20px 12px; background: #FFFFFF; border-right: 1px solid #DCE2E8">
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+        <sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+          <li><a href="#{{n.id}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 10px; border-radius: 8px; text-decoration: none; font-weight: 500; color: {{n.fg}}; background: {{n.bg}}">
+            <span style="width: 24px; height: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; background: {{n.dotBg}}; color: {{n.dotFg}}">{{n.mark}}</span>{{n.label}}</a></li>
+        </sc-for>
+      </ol>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; padding: 24px; box-sizing: border-box; display: flex; justify-content: center">
+      <div style="width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 16px">
+
+        <section id="tresc" style="background: #FFFFFF; border: 1px solid #DCE2E8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-size: 17px; font-weight: 600">1. Treść zadania</h2>
+          <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 500">Tytuł</span>
+            <input type="text" value="Rozruch bezpośredni silnika 3~ {moc} z samopodtrzymaniem" style="height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid #C5CED7; font: inherit; color: #121820">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 500">Polecenie dla kursanta</span>
+            <textarea rows="3" style="padding: 10px 12px; border-radius: 8px; border: 1px solid #C5CED7; font: inherit; color: #121820; resize: vertical">Zbuduj układ rozruchu bezpośredniego silnika {moc} (400 V, Iₙ ≈ {In}) z samopodtrzymaniem i zabezpieczeniem termicznym. Sterowanie 24 V DC.</textarea>
+            <span style="font-size: 12px; color: #53606C">Wstaw zmienną: <button type="button" style="height: 28px; padding: 0 8px; margin: 0 2px; border-radius: 6px; border: 1px solid #C5CED7; background: #F3F5F8; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #121820">{moc}</button><button type="button" style="height: 28px; padding: 0 8px; margin: 0 2px; border-radius: 6px; border: 1px solid #C5CED7; background: #F3F5F8; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #121820">{In}</button><button type="button" style="height: 28px; padding: 0 8px; margin: 0 2px; border-radius: 6px; border: 1px solid #C5CED7; background: #F3F5F8; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #121820">{Uster}</button></span>
+          </label>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap">
+            <label style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 500">Poziom</span>
+              <select style="height: 44px; padding: 0 10px; border-radius: 8px; border: 1px solid #C5CED7; font: inherit; color: #121820; background: #FFFFFF"><option>Podstawowy</option><option>Średni</option><option>Zaawansowany</option></select>
+            </label>
+            <label style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 500">Szacowany czas</span>
+              <select style="height: 44px; padding: 0 10px; border-radius: 8px; border: 1px solid #C5CED7; font: inherit; color: #121820; background: #FFFFFF"><option>ok. 35 min</option><option>ok. 20 min</option><option>ok. 60 min</option></select>
+            </label>
+          </div>
+        </section>
+
+        <section id="scena" style="background: #FFFFFF; border: 1px solid #DCE2E8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-size: 17px; font-weight: 600">2. Scena startowa</h2>
+          <div role="radiogroup" aria-label="Scena startowa" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+            <sc-for list="{{scenes}}" as="sc" hint-placeholder-count="3">
+              <button type="button" role="radio" aria-checked="{{sc.sel}}" onClick="{{sc.pick}}" style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; text-align: left; font: inherit; color: #121820; cursor: pointer; background: {{sc.bg}}; border: 2px solid {{sc.border}}">
+                <svg viewBox="0 0 200 110" width="100%" style="display: block; border-radius: 6px" aria-hidden="true">
+                  <rect x="0" y="0" width="200" height="110" fill="#C4CCD3"></rect>
+                  <sc-if value="{{sc.ducts}}" hint-placeholder-val="{{true}}"><path d="M6 6h188v10H6zM6 54h188v10H6zM6 94h188v10H6zM6 6h12v98H6zM182 6h12v98h-12z" fill="#EEF1F3" stroke="#97A2AC" stroke-width="0.8"></path><rect x="20" y="28" width="160" height="14" fill="#A0A9B2"></rect><rect x="20" y="74" width="160" height="14" fill="#A0A9B2"></rect></sc-if>
+                  <sc-if value="{{sc.devs}}" hint-placeholder-val="{{false}}"><rect x="26" y="20" width="22" height="30" rx="2" fill="#FBFCFD" stroke="#7F8992"></rect><rect x="52" y="20" width="8" height="30" rx="2" fill="#FBFCFD" stroke="#7F8992"></rect><rect x="64" y="20" width="16" height="30" rx="2" fill="#FBFCFD" stroke="#7F8992"></rect><rect x="86" y="20" width="20" height="30" rx="2" fill="#FBFCFD" stroke="#7F8992"></rect><rect x="26" y="68" width="36" height="24" rx="1" fill="#B7BEC5" stroke="#7F8992"></rect><rect x="86" y="68" width="20" height="24" rx="2" fill="#FBFCFD" stroke="#7F8992"></rect><rect x="114" y="68" width="28" height="24" rx="1" fill="#B7BEC5" stroke="#7F8992"></rect></sc-if>
+                  <sc-if value="{{sc.empty}}" hint-placeholder-val="{{false}}"><text x="100" y="60" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="10" fill="#46525E">pusta płyta</text></sc-if>
+                </svg>
+                <span style="font-weight: 600">{{sc.title}}</span>
+                <span style="font-size: 12px; color: #53606C">{{sc.sub}}</span>
+              </button>
+            </sc-for>
+          </div>
+        </section>
+
+        <section id="parametry" style="background: #FFFFFF; border: 1px solid #DCE2E8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <h2 style="margin: 0; font-size: 17px; font-weight: 600">3. Losowane parametry</h2>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px"><span style="font-weight: 500">Moc silnika <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{moc}</span></span><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; color: #53606C">{{powerRange}}</span></div>
+            <div role="group" aria-label="Dozwolone moce silnika" style="display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{powers}}" as="p" hint-placeholder-count="6">
+                <button type="button" aria-pressed="{{p.sel}}" onClick="{{p.pick}}" style="height: 44px; min-width: 76px; padding: 0 12px; border-radius: 22px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; font-weight: 500; cursor: pointer; background: {{p.bg}}; color: {{p.fg}}; border: 1px solid {{p.border}}">{{p.label}}</button>
+              </sc-for>
+            </div>
+            <p style="margin: 0; padding: 10px 12px; border-radius: 8px; background: #F3F5F8; font-size: 13px; color: #36414C">Dla każdego kursanta losowana jest jedna wartość. <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{In}</span>, nastawa <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-F2</span> i dobór <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-Q1</span>/<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-K1</span> liczone są automatycznie: <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{{inRange}}</span>.</p>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px">
+            <span style="font-weight: 500">Napięcie sterowania <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{Uster}</span></span>
+            <div role="radiogroup" aria-label="Napięcie sterowania" style="display: flex; border: 1px solid #C5CED7; border-radius: 8px; overflow: hidden">
+              <button type="button" role="radio" aria-checked="true" style="height: 42px; padding: 0 14px; border: none; background: rgba(29,111,216,0.10); color: #1D6FD8; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600">24 V DC</button>
+              <button type="button" role="radio" aria-checked="false" style="height: 42px; padding: 0 14px; border: none; background: #FFFFFF; color: #53606C; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">230 V AC</button>
+              <button type="button" role="radio" aria-checked="false" style="height: 42px; padding: 0 14px; border: none; background: #FFFFFF; color: #53606C; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">losowo</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="scenariusze" style="background: #FFFFFF; border: 1px solid #DCE2E8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+            <h2 style="margin: 0; font-size: 17px; font-weight: 600">4. Scenariusze testowe</h2>
+            <button type="button" onClick="{{toggleRec}}" aria-pressed="{{recAttr}}" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: 22px; font: inherit; font-weight: 600; cursor: pointer; background: {{rec.bg}}; color: {{rec.fg}}; border: 1px solid {{rec.border}}">
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="#E5484D"><sc-if value="{{recording}}" hint-placeholder-val="{{false}}"><animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"></animate></sc-if></circle></svg>
+              {{rec.label}}
+            </button>
+          </div>
+          <sc-if value="{{recording}}" hint-placeholder-val="{{false}}">
+            <p style="margin: 0; padding: 10px 12px; border-radius: 8px; background: rgba(229,72,77,0.08); color: #B4232A; font-size: 13px">Nagrywanie trwa – wykonaj kroki w podglądzie symulatora (naciśnij przyciski, załącz aparaty). Każda akcja i stan zapisze się jako krok.</p>
+          </sc-if>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+            <sc-for list="{{scen}}" as="s" hint-placeholder-count="3">
+              <li style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid #DCE2E8; flex-wrap: wrap">
+                <span style="font-weight: 600; min-width: 150px">{{s.name}}</span>
+                <span style="flex: 1 1 300px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px">
+                  <sc-for list="{{s.steps}}" as="k" hint-placeholder-count="3">
+                    <span style="display: flex; align-items: center; gap: 6px"><span style="padding: 4px 8px; border-radius: 6px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; background: {{k.bg}}; color: {{k.fg}}">{{k.txt}}</span><sc-if value="{{k.arrow}}" hint-placeholder-val="{{true}}"><span aria-hidden="true" style="color: #53606C">→</span></sc-if></span>
+                  </sc-for>
+                </span>
+                <span style="font-size: 12px; font-weight: 600; color: #167A50">✓ przechodzi</span>
+              </li>
+            </sc-for>
+          </ul>
+        </section>
+
+        <section id="usterki" style="background: #FFFFFF; border: 1px solid #DCE2E8; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <h2 style="margin: 0; font-size: 17px; font-weight: 600">5. Usterki (wariant diagnostyczny)</h2>
+          <p style="margin: 0; font-size: 13px; color: #53606C">Zaznacz usterki, które można wstawić do gotowej szafy. Kursant szuka ich miernikiem.</p>
+          <div role="group" aria-label="Usterki" style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{faults}}" as="f" hint-placeholder-count="6">
+              <button type="button" aria-pressed="{{f.sel}}" onClick="{{f.pick}}" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border-radius: 22px; font: inherit; font-size: 13px; cursor: pointer; background: {{f.bg}}; color: {{f.fg}}; border: 1px solid {{f.border}}">
+                <span style="width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: {{f.boxBg}}; color: #FFFFFF; border: 1px solid {{f.boxBorder}}">{{f.mark}}</span>{{f.label}}
+              </button>
+            </sc-for>
+            <button type="button" style="height: 44px; padding: 0 14px; border-radius: 22px; font: inherit; font-size: 13px; border: 1px dashed #97A2AC; background: transparent; color: #36414C">+ Dodaj z listy</button>
+          </div>
+          <label style="display: flex; align-items: center; gap: 10px; min-height: 44px"><input type="checkbox" checked="{{true}}" style="width: 20px; height: 20px; accent-color: #1D6FD8"><span>Losuj jedną usterkę z zaznaczonych dla każdego kursanta</span></label>
+        </section>
+      </div>
+    </main>
+
+    <aside aria-label="Podgląd karty zadania" style="flex: 1 1 320px; max-width: 100%; box-sizing: border-box; padding: 24px 20px; background: #FFFFFF; border-left: 1px solid #DCE2E8; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #53606C">Podgląd dla kursanta</h2>
+      <div style="border-radius: 12px; background: #141A20; color: #E7ECF1; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-size: 12px; color: #9BA8B5">Zadanie · wylosowano</span>
+        <strong style="font-size: 15px">Rozruch bezpośredni silnika 3~ <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: #F5B53F">5,5 kW</span> z samopodtrzymaniem</strong>
+        <p style="margin: 0; font-size: 13px; color: #C9D0D6">… silnika 5,5 kW (400 V, Iₙ ≈ <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: #F5B53F">11,1 A</span>) z samopodtrzymaniem…</p>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap"><span style="padding: 2px 8px; border-radius: 4px; background: #1A2129; font-size: 12px; color: #9BA8B5">Podstawowy</span><span style="padding: 2px 8px; border-radius: 4px; background: #1A2129; font-size: 12px; color: #9BA8B5">ok. 35 min</span><span style="padding: 2px 8px; border-radius: 4px; background: #1A2129; font-size: 12px; color: #9BA8B5">2 scenariusze</span></div>
+      </div>
+      <button type="button" style="height: 44px; border-radius: 8px; border: 1px solid #C5CED7; background: #FFFFFF; color: #121820; font: inherit; font-weight: 500">Losuj ponownie</button>
+      <div style="padding: 12px; border-radius: 10px; background: #F3F5F8; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+        <strong>Gotowość do publikacji</strong>
+        <span style="color: #167A50">✓ Treść i tytuł</span>
+        <span style="color: #167A50">✓ Scena startowa</span>
+        <span style="color: #167A50">✓ 2 scenariusze przechodzą na rozwiązaniu wzorcowym</span>
+        <span style="color: #8A5300">! Brak rozwiązania dla 7,5 kW – -K1 9 A za mały</span>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { scene: 'mont', powers: { '2,2': true, '3': true, '4': true, '5,5': true, '7,5': true }, faults: { coil: true, fuse: true, loose: true, therm: false, phase: false, n: false }, rec: false };
+  }
+  renderVals() {
+    const st = this.state;
+    const nav = [['tresc','Treść zadania',true],['scena','Scena startowa',true],['parametry','Parametry',true],['scenariusze','Scenariusze testowe',false],['usterki','Usterki',false],['publikacja','Publikacja',false]].map(([id, label, done], i) => ({
+      id, label, mark: done ? '✓' : String(i + 1), fg: i === 3 ? '#1D6FD8' : '#121820', bg: i === 3 ? 'rgba(29,111,216,0.10)' : 'transparent',
+      dotBg: done ? '#22A06B' : (i === 3 ? '#1D6FD8' : '#E3E8ED'), dotFg: done || i === 3 ? '#FFFFFF' : '#36414C' }));
+    const scenes = [
+      { id: 'empty', title: 'Pusta płyta', sub: 'Kursant montuje szyny i korytka', ducts: false, devs: false, empty: true },
+      { id: 'mont', title: 'Szyny i korytka', sub: 'Montaż aparatów i okablowanie', ducts: true, devs: false, empty: false },
+      { id: 'wired', title: 'Gotowy montaż', sub: 'Tylko okablowanie / diagnostyka', ducts: true, devs: true, empty: false }
+    ].map((s) => Object.assign(s, { sel: st.scene === s.id ? 'true' : 'false', bg: st.scene === s.id ? 'rgba(29,111,216,0.06)' : '#FFFFFF', border: st.scene === s.id ? '#1D6FD8' : '#DCE2E8', pick: () => this.setState({ scene: s.id }) }));
+    const IN = { '2,2': 4.9, '3': 6.5, '4': 8.2, '5,5': 11.1, '7,5': 15.2 };
+    const keys = ['2,2','3','4','5,5','7,5'];
+    const powers = keys.map((k) => { const sel = !!st.powers[k]; return { label: k + ' kW', sel: sel ? 'true' : 'false', bg: sel ? 'rgba(29,111,216,0.10)' : '#FFFFFF', fg: sel ? '#1D6FD8' : '#53606C', border: sel ? '#1D6FD8' : '#C5CED7',
+      pick: () => this.setState({ powers: Object.assign({}, st.powers, { [k]: !sel }) }) }; });
+    const on = keys.filter((k) => st.powers[k]);
+    const fmt = (n) => n.toFixed(1).replace('.', ',');
+    const powerRange = on.length ? on[0] + '–' + on[on.length - 1] + ' kW · ' + on.length + ' wartości' : 'wybierz co najmniej jedną';
+    const inRange = on.length ? 'Iₙ ' + fmt(IN[on[0]]) + '–' + fmt(IN[on[on.length - 1]]) + ' A' : '—';
+    const step = (txt, kind, arrow) => ({ txt, arrow, bg: kind === 'act' ? 'rgba(29,111,216,0.10)' : (kind === 'ok' ? 'rgba(34,160,107,0.12)' : '#F3F5F8'), fg: kind === 'act' ? '#1D6FD8' : (kind === 'ok' ? '#167A50' : '#36414C') });
+    const scen = [
+      { name: 'Rozruch', steps: [step('START', 'act', true), step('-K1 załączony', 's', true), step('-M1 pracuje', 'ok', false)] },
+      { name: 'Zatrzymanie', steps: [step('STOP', 'act', true), step('-K1 rozwarty', 's', true), step('-M1 stoi', 'ok', false)] },
+      { name: 'Przeciążenie', steps: [step('obciążenie 130%', 'act', true), step('-F2 wyzwolony', 's', true), step('-H2 świeci', 'ok', false)] }
+    ];
+    const F = [['coil','Przerwa cewki -K1'],['fuse','Przepalony bezpiecznik -F1'],['loose','Luźny zacisk (losowy)'],['therm','Wyzwolony termik -F2'],['phase','Zamienione fazy L2/L3'],['n','Brak przewodu N do -T1']];
+    const faults = F.map(([id, label]) => { const sel = !!st.faults[id]; return { label, sel: sel ? 'true' : 'false', mark: sel ? '✓' : '',
+      bg: sel ? 'rgba(29,111,216,0.08)' : '#FFFFFF', fg: '#121820', border: sel ? '#1D6FD8' : '#C5CED7', boxBg: sel ? '#1D6FD8' : '#FFFFFF', boxBorder: sel ? '#1D6FD8' : '#97A2AC',
+      pick: () => this.setState({ faults: Object.assign({}, st.faults, { [id]: !sel }) }) }; });
+    return {
+      nav, scenes, powers, powerRange, inRange, scen, faults,
+      recording: st.rec, recAttr: st.rec ? 'true' : 'false',
+      rec: st.rec ? { label: 'Zatrzymaj · 00:07', bg: 'rgba(229,72,77,0.10)', fg: '#B4232A', border: '#E5484D' } : { label: 'Nagraj scenariusz', bg: '#FFFFFF', fg: '#121820', border: '#C5CED7' },
+      toggleRec: () => this.setState({ rec: !st.rec })
+    };
+  }
+}
+</script>
+</body>
+</html>

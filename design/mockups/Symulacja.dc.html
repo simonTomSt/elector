@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Tryb symulacji</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #0E1217; color: #E7ECF1; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #141A20; border-bottom: 1px solid #252E37">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #33404C; display: flex; align-items: center; justify-content: center; color: #4EA8FF; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="1.5"></rect><path d="M7 7h10M7 12h10M7 17h4"></path><circle cx="16" cy="17" r="1"></circle></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #9BA8B5">Zadanie 3 z 8 · Test</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Rozruch bezpośredni silnika 3~ 4 kW z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <span style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 16px; font-weight: 600; font-size: 13px; background: {{badge.bg}}; color: {{badge.fg}}">
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="{{badge.fg}}"><animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"></animate></circle></svg>
+      {{badge.txt}}
+    </span>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" role="switch" aria-checked="true" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #F5B53F; background: rgba(245,181,63,0.10); color: #E7ECF1; font: inherit; font-weight: 500">
+        Symulacja
+        <span style="width: 40px; height: 22px; border-radius: 11px; background: #F5B53F; position: relative; display: inline-block"><span style="position: absolute; top: 3px; left: 21px; width: 16px; height: 16px; border-radius: 8px; background: #1A1204"></span></span>
+        <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #F5B53F">WŁ</span>
+      </button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-weight: 600">Sprawdź rozwiązanie</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <main style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 8px 16px 0; background: #141A20; border-bottom: 1px solid #252E37">
+        <div role="tablist" aria-label="Widok szafy" style="display: flex; flex-wrap: wrap; gap: 2px">
+          <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4">
+            <button type="button" role="tab" aria-selected="{{tb.sel}}" style="height: 44px; padding: 0 16px; border: none; background: transparent; font: inherit; font-weight: 500; cursor: pointer; color: {{tb.fg}}; border-bottom: 2px solid {{tb.bar}}">{{tb.label}}</button>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; padding-bottom: 8px; flex-wrap: wrap">
+          <button type="button" aria-label="{{playAria}}" onClick="{{togglePlay}}" style="width: 44px; height: 40px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; display: flex; align-items: center; justify-content: center; cursor: pointer">
+            <sc-if value="{{playing}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg></sc-if>
+            <sc-if value="{{paused}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z"></path></svg></sc-if>
+          </button>
+          <button type="button" aria-label="Krok 1 ms" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-size: 13px">Krok</button>
+          <div role="radiogroup" aria-label="Tempo symulacji" style="display: flex; border: 1px solid #33404C; border-radius: 8px; overflow: hidden">
+            <button type="button" role="radio" aria-checked="false" style="height: 38px; padding: 0 10px; border: none; background: transparent; color: #9BA8B5; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px">0,01×</button>
+            <button type="button" role="radio" aria-checked="false" style="height: 38px; padding: 0 10px; border: none; background: transparent; color: #9BA8B5; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px">0,1×</button>
+            <button type="button" role="radio" aria-checked="true" style="height: 38px; padding: 0 10px; border: none; background: rgba(78,168,255,0.16); color: #4EA8FF; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600">1×</button>
+          </div>
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; padding: 0 8px; color: #9BA8B5">t = <span style="color: #E7ECF1">{{clock}}</span></span>
+        </div>
+      </div>
+
+      <div style="position: relative; flex: 1 1 auto; min-height: 700px; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box; background: #0B0F13; overflow: hidden">
+        <sc-if value="{{showPlate}}" hint-placeholder-val="{{true}}">
+          <div style="width: 100%; max-width: 1000px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); border-radius: 6px">
+            <dc-import name="Plyta" mode="{{plateMode}}" theme="dark" hint-size="100%,560px"></dc-import>
+          </div>
+        </sc-if>
+
+        <!-- DRZWI -->
+        <sc-if value="{{showDoor}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: center">
+            <div role="group" aria-label="Drzwi szafy =A1" style="position: relative; width: 440px; height: 620px; border-radius: 10px; background: #CBD0D4; border: 2px solid #8C949B; box-shadow: inset 0 0 0 10px #D6DADE, 0 16px 40px rgba(0,0,0,0.5); box-sizing: border-box; padding: 40px 48px; display: flex; flex-direction: column; align-items: center; gap: 28px; color: #11161B">
+              <span style="position: absolute; left: -9px; top: 80px; width: 10px; height: 56px; border-radius: 3px; background: #6E777F"></span>
+              <span style="position: absolute; left: -9px; bottom: 80px; width: 10px; height: 56px; border-radius: 3px; background: #6E777F"></span>
+              <span style="position: absolute; right: 18px; top: 270px; width: 18px; height: 80px; border-radius: 9px; background: #3A4149"></span>
+              <!-- -Q0 -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                <div style="width: 124px; height: 124px; border-radius: 8px; background: #F2C230; border: 1px solid #A8841A; position: relative; display: flex; align-items: center; justify-content: center">
+                  <span style="position: absolute; top: 8px; left: 12px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 600">0</span>
+                  <span style="position: absolute; top: 8px; right: 12px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 600">I</span>
+                  <span style="width: 84px; height: 84px; border-radius: 42px; background: #C8241C; box-shadow: 0 3px 0 #8E1812; display: flex; align-items: center; justify-content: center; transform: rotate(45deg)">
+                    <span style="width: 22px; height: 78px; border-radius: 8px; background: #D9342B; box-shadow: 0 0 0 1px #8E1812"></span>
+                  </span>
+                </div>
+                <span style="padding: 3px 10px; background: #FFFFFF; border: 1px solid #8C949B; border-radius: 2px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600">-Q0 · WYŁĄCZNIK GŁÓWNY</span>
+              </div>
+              <!-- lampki -->
+              <div style="display: flex; gap: 48px">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                  <span role="img" aria-label="{{h1.aria}}" style="width: 56px; height: 56px; border-radius: 28px; border: 6px solid #9AA2A9; box-sizing: border-box; background: {{h1.bg}}; box-shadow: {{h1.glow}}"></span>
+                  <span style="padding: 3px 8px; background: #FFFFFF; border: 1px solid #8C949B; border-radius: 2px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600">-H1 PRACA</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                  <span role="img" aria-label="Lampka -H2 zgaszona" style="width: 56px; height: 56px; border-radius: 28px; border: 6px solid #9AA2A9; box-sizing: border-box; background: #7A5B22"></span>
+                  <span style="padding: 3px 8px; background: #FFFFFF; border: 1px solid #8C949B; border-radius: 2px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600">-H2 TERMIK</span>
+                </div>
+              </div>
+              <!-- przyciski -->
+              <div style="display: flex; gap: 48px">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                  <button type="button" onClick="{{start}}" aria-label="-S2 START" style="width: 76px; height: 76px; border-radius: 38px; border: 8px solid #9AA2A9; background: #2E9E4F; box-shadow: 0 4px 0 #1C6B33; cursor: pointer; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 18px; font-weight: 600">I</button>
+                  <span style="padding: 3px 8px; background: #FFFFFF; border: 1px solid #8C949B; border-radius: 2px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600">-S2 START</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                  <button type="button" onClick="{{stop}}" aria-label="-S1 STOP" style="width: 76px; height: 76px; border-radius: 38px; border: 8px solid #9AA2A9; background: #D92D20; box-shadow: 0 4px 0 #8E1812; cursor: pointer; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 18px; font-weight: 600">0</button>
+                  <span style="padding: 3px 8px; background: #FFFFFF; border: 1px solid #8C949B; border-radius: 2px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600">-S1 STOP</span>
+                </div>
+              </div>
+              <span style="margin-top: auto; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #46525E">=A1 · drzwi · widok od frontu</span>
+            </div>
+            <div style="max-width: 280px; display: flex; flex-direction: column; gap: 12px">
+              <h2 style="margin: 0; font-size: 18px; font-weight: 600">Obsługa z drzwi</h2>
+              <p style="margin: 0; color: #9BA8B5">Przyciski i lampki działają jak w rzeczywistej szafie. Stan aparatów na płycie zmienia się na żywo – obserwuj panel po prawej.</p>
+              <div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 8px; background: #141A20; border: 1px solid #252E37; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px">
+                <span>-S2 → -K1:A1 <span style="color: {{k1c}}">{{k1t}}</span></span>
+                <span>-K1:13–14 <span style="color: {{k1c}}">{{selfHold}}</span></span>
+                <span>-M1 <span style="color: {{k1c}}">{{m1t}}</span></span>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- toast zwarcia -->
+        <sc-if value="{{showToast}}" hint-placeholder-val="{{false}}">
+          <div role="alert" style="position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(680px, calc(100% - 32px)); box-sizing: border-box; display: flex; gap: 14px; align-items: flex-start; padding: 14px 14px 14px 16px; border-radius: 12px; background: #2A1517; border: 1px solid #F0564F; box-shadow: 0 16px 40px rgba(0,0,0,0.55)">
+            <span style="width: 40px; height: 40px; border-radius: 20px; background: #F0564F; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"></path></svg>
+            </span>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <strong style="font-size: 15px; color: #FFFFFF">Zwarcie L1–N przez -K1, zadziałał -Q1 (C16) po 4 ms</strong>
+              <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #FFB4AE">I<sub>k</sub> ≈ 1,2 kA · energia I²t 2,9 kA²s · symulacja zatrzymana</span>
+              <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap">
+                <button type="button" style="height: 40px; padding: 0 14px; border-radius: 8px; border: none; background: #F0564F; color: #FFFFFF; font: inherit; font-weight: 600">Pokaż miejsce zwarcia</button>
+                <button type="button" style="height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #6B3A3A; background: transparent; color: #FFD9D6; font: inherit">Wróć do okablowania</button>
+                <button type="button" style="height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #6B3A3A; background: transparent; color: #FFD9D6; font: inherit">Zresetuj -Q1</button>
+              </div>
+            </div>
+            <button type="button" aria-label="Zamknij komunikat" style="width: 40px; height: 40px; border-radius: 8px; border: none; background: transparent; color: #FFD9D6; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+          </div>
+        </sc-if>
+      </div>
+    </main>
+
+    <aside aria-label="Stan symulacji" style="flex: 1 1 340px; max-width: 100%; box-sizing: border-box; background: #141A20; border-left: 1px solid #252E37; display: flex; flex-direction: column">
+      <section style="padding: 16px; border-bottom: 1px solid #252E37; display: flex; flex-direction: column; gap: 6px">
+        <h2 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Stany aparatów</h2>
+        <sc-for list="{{states}}" as="a" hint-placeholder-count="7">
+          <div style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 10px; border-radius: 8px; background: #1A2129">
+            <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; min-width: 36px">{{a.tag}}</span>
+            <span style="flex: 1; min-width: 0; font-size: 13px; color: #9BA8B5">{{a.what}}</span>
+            <span style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 13px; font-size: 12px; font-weight: 600; background: {{a.bg}}; color: {{a.fg}}"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{a.dot}}"></span>{{a.state}}</span>
+          </div>
+        </sc-for>
+      </section>
+      <section style="padding: 16px; border-bottom: 1px solid #252E37">
+        <h2 style="margin: 0 0 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Legenda</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; font-size: 13px">
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 20px; height: 4px; border-radius: 2px; background: #7B8794"></span>brak napięcia</span>
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 20px; height: 4px; border-radius: 2px; background: #F5B53F; box-shadow: 0 0 6px #F5B53F"></span>pod napięciem</span>
+          <span style="display: flex; align-items: center; gap: 8px"><svg width="20" height="6" aria-hidden="true"><path d="M0 3H20" stroke="#3CC7F0" stroke-width="3" stroke-dasharray="2 4"></path></svg>prąd płynie</span>
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 20px; height: 4px; border-radius: 2px; background: #F0564F"></span>błąd / zwarcie</span>
+          <span style="display: flex; align-items: center; gap: 8px"><span style="width: 20px; height: 8px; border-radius: 2px; background: repeating-linear-gradient(45deg,#A98BFA 0 3px,#7A5CD6 3px 6px)"></span>wyzwolony</span>
+        </div>
+      </section>
+      <section style="padding: 16px; display: flex; flex-direction: column; gap: 6px">
+        <h2 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Dziennik zdarzeń</h2>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px">
+          <sc-for list="{{log}}" as="e" hint-placeholder-count="5">
+            <li style="display: flex; gap: 10px; font-size: 13px">
+              <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5; min-width: 72px">{{e.t}}</span>
+              <span style="color: {{e.fg}}">{{e.msg}}</span>
+            </li>
+          </sc-for>
+        </ol>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"view":{"editor":"enum","options":["plyta","zwarcie","drzwi"],"default":"plyta"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { running: true, playing: true }; }
+  renderVals() {
+    const view = this.props.view ?? 'plyta';
+    const short = view === 'zwarcie';
+    const door = view === 'drzwi';
+    const run = short ? false : (door ? this.state.running : true);
+    const S = {
+      on: { bg: 'rgba(245,181,63,0.14)', fg: '#F5B53F', dot: '#F5B53F' },
+      flow: { bg: 'rgba(60,199,240,0.14)', fg: '#3CC7F0', dot: '#3CC7F0' },
+      off: { bg: 'rgba(123,135,148,0.18)', fg: '#B4BEC8', dot: '#7B8794' },
+      err: { bg: 'rgba(240,86,79,0.16)', fg: '#FF8A84', dot: '#F0564F' },
+      trip: { bg: 'rgba(169,139,250,0.18)', fg: '#BBA2FF', dot: '#A98BFA' },
+      ok: { bg: 'rgba(63,207,142,0.14)', fg: '#5BDDA1', dot: '#3FCF8E' }
+    };
+    const A = (tag, what, state, k) => Object.assign({ tag, what, state }, S[k]);
+    let states;
+    if (short) {
+      states = [
+        A('-Q1', 'C16 · obwód główny', 'Wyzwolony', 'trip'),
+        A('-K1', 'L1–N na zacisku 1/L1', 'Zwarcie', 'err'),
+        A('-F1', 'B6 · sterowanie', 'Załączony', 'on'),
+        A('-T1', '24,1 V DC', 'Pod napięciem', 'on'),
+        A('-F2', 'bez prądu', 'Brak napięcia', 'off'),
+        A('-M1', '0 obr/min', 'Zatrzymany', 'off')
+      ];
+    } else {
+      states = [
+        A('-Q1', 'C16 · 400 V', 'Załączony', 'on'),
+        A('-F1', 'B6 · sterowanie', 'Załączony', 'on'),
+        A('-T1', '24,1 V DC · 0,11 A', 'Pod napięciem', 'on'),
+        run ? A('-K1', 'cewka 23,8 V DC', 'Załączony', 'flow') : A('-K1', 'cewka 0 V', 'Rozwarty', 'off'),
+        run ? A('-F2', '7,8 A / nastawa 8,5 A', 'OK', 'ok') : A('-F2', '0 A / nastawa 8,5 A', 'OK', 'ok'),
+        run ? A('-M1', '1440 obr/min · 7,8 A', 'Pracuje', 'flow') : A('-M1', '0 obr/min', 'Zatrzymany', 'off')
+      ];
+    }
+    const L = (t, msg, fg) => ({ t, msg, fg: fg || '#E7ECF1' });
+    const log = short ? [
+      L('00:00,000', 'Symulacja start · -Q0 załączony'),
+      L('00:02,105', '-S2 START → -K1 załączony'),
+      L('00:02,109', 'ZWARCIE L1–N przez -K1:1/L1', '#FF8A84'),
+      L('00:02,113', '-Q1 (C16) wyzwolił po 4 ms', '#BBA2FF'),
+      L('00:02,113', 'Symulacja zatrzymana automatycznie', '#9BA8B5')
+    ] : [
+      L('00:00,000', 'Symulacja start · -Q0 załączony'),
+      L('00:03,410', '-S2 START → -K1 załączony'),
+      L('00:03,452', '-M1 rozruch · 47 A (5,7 × Iₙ)', '#F5B53F'),
+      L('00:04,180', '-M1 praca ustalona · 7,8 A'),
+      L('00:04,181', 'Samopodtrzymanie -K1:13–14 aktywne', '#3CC7F0')
+    ];
+    const tabSel = door ? 1 : 0;
+    const tabs = ['Płyta montażowa','Drzwi','Listwy i przyłącza','Podgląd 3D'].map((label, i) => ({
+      label, sel: i === tabSel ? 'true' : 'false', fg: i === tabSel ? '#E7ECF1' : '#9BA8B5', bar: i === tabSel ? '#4EA8FF' : 'transparent' }));
+    const playing = !short && this.state.playing;
+    return {
+      tabs, states, log, showPlate: !door, showDoor: door, showToast: short,
+      plateMode: short ? 'short' : 'on',
+      badge: short ? { bg: 'rgba(240,86,79,0.16)', fg: '#FF8A84', txt: 'ZATRZYMANO · ZWARCIE' } : { bg: 'rgba(245,181,63,0.14)', fg: '#F5B53F', txt: 'POD NAPIĘCIEM · 400 V' },
+      clock: short ? '00:02,113' : '00:42,318',
+      playing, paused: !playing, playAria: playing ? 'Wstrzymaj symulację' : 'Wznów symulację',
+      togglePlay: () => this.setState({ playing: !this.state.playing }),
+      start: () => this.setState({ running: true }), stop: () => this.setState({ running: false }),
+      h1: run ? { bg: '#5BEA8C', glow: '0 0 24px 6px rgba(91,234,140,0.65)', aria: 'Lampka -H1 świeci' } : { bg: '#2F5A3B', glow: 'none', aria: 'Lampka -H1 zgaszona' },
+      k1c: run ? '#3CC7F0' : '#9BA8B5', k1t: run ? 'cewka zasilona' : 'cewka bez napięcia',
+      selfHold: run ? 'zamknięty – podtrzymanie' : 'otwarty', m1t: run ? 'pracuje · 1440 obr/min' : 'zatrzymany'
+    };
+  }
+}
+</script>
+</body>
+</html>

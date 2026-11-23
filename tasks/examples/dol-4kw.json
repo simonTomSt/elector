@@ -1,0 +1,162 @@
+{
+  "id": "dol-4kw",
+  "type": "cabinet",
+  "title": "Rozruch bezpośredni silnika 3~ {moc} z samopodtrzymaniem",
+  "level": "podstawowy",
+  "durationMin": 35,
+  "statement": "Zbuduj układ rozruchu bezpośredniego silnika 3~ {moc} (400 V, Iₙ ≈ {In}) z samopodtrzymaniem i zabezpieczeniem termicznym. Sterowanie 24 V DC z zasilacza -T1, przyciski -S1 STOP i -S2 START na drzwiach.",
+  "params": {
+    "moc": {
+      "choices": ["4 kW"],
+      "derive": { "4 kW": { "In": "8,2 A", "-M1.params": { "Pn": 4000, "In": 8.2 } } }
+    }
+  },
+  "scene": {
+    "start": "railsDucts",
+    "supply": "-Q0",
+    "rails": [{ "yMm": 77.5, "lengthMm": 429 }, { "yMm": 240, "lengthMm": 429 }],
+    "ducts": [
+      { "xMm": 9, "yMm": 10, "wMm": 482, "hMm": 21 }, { "xMm": 9, "yMm": 175, "wMm": 482, "hMm": 21 },
+      { "xMm": 9, "yMm": 284, "wMm": 482, "hMm": 22 }, { "xMm": 9, "yMm": 10, "wMm": 27, "hMm": 296 },
+      { "xMm": 469, "yMm": 10, "wMm": 22, "hMm": 296 }
+    ],
+    "palette": ["mcb-c16-3p", "mcb-b6-1p", "motor-breaker-6-10a", "contactor-3p-9a-24vdc", "overload-6-10a", "timer-ton-24v", "psu-24vdc-2a5", "terminal-4", "pe-bar-8"],
+    "preset": {
+      "devices": [
+        { "tag": "SUP", "typeId": "supply-3npe-400v" },
+        { "tag": "-Q0", "typeId": "main-switch-3p-25a" },
+        { "tag": "-S1", "typeId": "pushbutton-nc-red" },
+        { "tag": "-S2", "typeId": "pushbutton-no-green" },
+        { "tag": "-H1", "typeId": "lamp-24vdc" },
+        { "tag": "-M1", "typeId": "motor-3ph-4kw" },
+        { "tag": "-X1:L1", "typeId": "terminal-4", "group": "-X1", "rail": 2, "xMm": 45 },
+        { "tag": "-X1:L2", "typeId": "terminal-4", "group": "-X1", "rail": 2, "xMm": 53 },
+        { "tag": "-X1:L3", "typeId": "terminal-4", "group": "-X1", "rail": 2, "xMm": 61 },
+        { "tag": "-X1:N", "typeId": "terminal-4", "group": "-X1", "rail": 2, "xMm": 69, "params": { "variant": "N" } },
+        { "tag": "-X1:PE", "typeId": "terminal-4", "group": "-X1", "rail": 2, "xMm": 77, "params": { "variant": "PE" } },
+        { "tag": "-X2:U1", "typeId": "terminal-4", "group": "-X2", "rail": 2, "xMm": 93 },
+        { "tag": "-X2:V1", "typeId": "terminal-4", "group": "-X2", "rail": 2, "xMm": 101 },
+        { "tag": "-X2:W1", "typeId": "terminal-4", "group": "-X2", "rail": 2, "xMm": 109 },
+        { "tag": "-X2:PE", "typeId": "terminal-4", "group": "-X2", "rail": 2, "xMm": 117, "params": { "variant": "PE" } },
+        { "tag": "-X3:1", "typeId": "terminal-4", "group": "-X3", "rail": 2, "xMm": 235 },
+        { "tag": "-X3:2", "typeId": "terminal-4", "group": "-X3", "rail": 2, "xMm": 243 },
+        { "tag": "-X3:3", "typeId": "terminal-4", "group": "-X3", "rail": 2, "xMm": 251 },
+        { "tag": "-X3:4", "typeId": "terminal-4", "group": "-X3", "rail": 2, "xMm": 259 },
+        { "tag": "-X3:5", "typeId": "terminal-4", "group": "-X3", "rail": 2, "xMm": 267 },
+        { "tag": "-X3:6", "typeId": "terminal-4", "group": "-X3", "rail": 2, "xMm": 275 }
+      ],
+      "wires": [
+        { "id": "S01", "a": "SUP:L1", "b": "-Q0:1", "color": "brown", "cs": 2.5, "fixed": true },
+        { "id": "S02", "a": "SUP:L2", "b": "-Q0:3", "color": "black", "cs": 2.5, "fixed": true },
+        { "id": "S03", "a": "SUP:L3", "b": "-Q0:5", "color": "grey", "cs": 2.5, "fixed": true },
+        { "id": "S04", "a": "-Q0:2", "b": "-X1:L1.bot", "color": "brown", "cs": 2.5, "fixed": true },
+        { "id": "S05", "a": "-Q0:4", "b": "-X1:L2.bot", "color": "black", "cs": 2.5, "fixed": true },
+        { "id": "S06", "a": "-Q0:6", "b": "-X1:L3.bot", "color": "grey", "cs": 2.5, "fixed": true },
+        { "id": "S07", "a": "SUP:N", "b": "-X1:N.bot", "color": "blue", "cs": 2.5, "fixed": true },
+        { "id": "S08", "a": "SUP:PE", "b": "-X1:PE.bot", "color": "greenYellow", "cs": 2.5, "fixed": true },
+        { "id": "M01", "a": "-X2:U1.bot", "b": "-M1:U1", "color": "brown", "cs": 1.5, "fixed": true },
+        { "id": "M02", "a": "-X2:V1.bot", "b": "-M1:V1", "color": "black", "cs": 1.5, "fixed": true },
+        { "id": "M03", "a": "-X2:W1.bot", "b": "-M1:W1", "color": "grey", "cs": 1.5, "fixed": true },
+        { "id": "M04", "a": "-X2:PE.bot", "b": "-M1:PE", "color": "greenYellow", "cs": 1.5, "fixed": true },
+        { "id": "D01", "a": "-X3:1.bot", "b": "-S1:11", "color": "darkBlue", "cs": 0.75, "fixed": true },
+        { "id": "D02", "a": "-S1:12", "b": "-X3:2.bot", "color": "darkBlue", "cs": 0.75, "fixed": true },
+        { "id": "D03", "a": "-X3:3.bot", "b": "-S2:13", "color": "darkBlue", "cs": 0.75, "fixed": true },
+        { "id": "D04", "a": "-S2:14", "b": "-X3:4.bot", "color": "darkBlue", "cs": 0.75, "fixed": true },
+        { "id": "D05", "a": "-X3:5.bot", "b": "-H1:X1", "color": "darkBlue", "cs": 0.75, "fixed": true },
+        { "id": "D06", "a": "-H1:X2", "b": "-X3:6.bot", "color": "darkBlue", "cs": 0.75, "fixed": true }
+      ]
+    }
+  },
+  "requirements": [
+    { "id": "r1", "text": "Zabezpieczenie zwarciowe obwodu głównego (-Q1)", "check": "deviceExists", "args": { "tag": "-Q1", "typeKind": "mcb" } },
+    { "id": "r2", "text": "Stycznik -K1 z cewką 24 V DC", "check": "deviceExists", "args": { "tag": "-K1", "typeKind": "contactor" } },
+    { "id": "r3", "text": "Przekaźnik termiczny -F2 nastawiony na Iₙ silnika", "check": "setting", "args": { "tag": "-F2", "param": "set", "min": 8.2, "max": 8.7 } },
+    { "id": "r4", "text": "Obwód sterowania zabezpieczony (-F1) i zasilany z -T1", "check": "inSeries", "args": { "path": ["-Q1:1", "-F1:1", "-F1:2", "-T1:L"] } },
+    { "id": "r5", "text": "Samopodtrzymanie przez styk -K1:13–14", "check": "parallel", "args": { "a": "-S2:13", "b": "-S2:14", "with": "-K1:13-14" } },
+    { "id": "r6", "text": "Styk -F2:95–96 w obwodzie cewki", "check": "inSeries", "args": { "path": ["-K1:A2", "-F2:95", "-F2:96", "-T1:-"] } },
+    { "id": "r7", "text": "Kolory przewodów zgodne z PN-EN 60204-1", "check": "wireColors" },
+    { "id": "r8", "text": "Rozruch i zatrzymanie działają", "check": "scenario", "args": { "id": "start-stop" } }
+  ],
+  "testScenarios": [
+    {
+      "id": "start-stop", "name": "Rozruch i zatrzymanie",
+      "steps": [
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 200 },
+        { "expect": { "-T1.out": true, "-K1.closed": false, "-M1.running": false } },
+        { "do": "press", "tag": "-S2", "ms": 200 },
+        { "do": "wait", "ms": 1000 },
+        { "expect": { "-K1.closed": true, "-M1.running": true, "-H1.lit": true, "-M1.I": { "approx": 7.8, "tol": 0.3 } } },
+        { "do": "measure", "range": "vac", "probes": ["-X1:L1.top", "-X1:N.top"], "expect": { "value": { "approx": 230, "tol": 2 } } },
+        { "do": "press", "tag": "-S1", "ms": 200 },
+        { "do": "wait", "ms": 100 },
+        { "expect": { "-K1.closed": false, "-M1.running": false, "-H1.lit": false } }
+      ]
+    },
+    {
+      "id": "overload", "name": "Przeciążenie silnika",
+      "steps": [
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 200 },
+        { "do": "press", "tag": "-S2", "ms": 200 },
+        { "do": "wait", "ms": 1000 },
+        { "do": "set", "tag": "-M1", "state": { "load": 1.3 } },
+        { "do": "wait", "ms": 120000 },
+        { "expect": { "-F2.tripped": true, "-K1.closed": false, "-M1.running": false } }
+      ]
+    },
+    {
+      "id": "short-l1-n", "name": "Zwarcie L1–N za -Q1 (test silnika)",
+      "steps": [
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "@addWire", "state": { "id": "FAULT", "a": "-K1:1", "b": "-X1:N.top", "color": "blue", "cs": 1.5 } },
+        { "do": "wait", "ms": 10 },
+        { "expect": { "-Q1.tripped": true, "event": "Zwarcie L1–N przez -K1, zadziałał -Q1 (C16) po 4 ms" } }
+      ]
+    }
+  ],
+  "solution": {
+    "devices": [
+      { "tag": "-Q1", "typeId": "mcb-c16-3p", "rail": 1, "xMm": 45 },
+      { "tag": "-F1", "typeId": "mcb-b6-1p", "rail": 1, "xMm": 105 },
+      { "tag": "-T1", "typeId": "psu-24vdc-2a5", "rail": 1, "xMm": 129 },
+      { "tag": "-K1", "typeId": "contactor-3p-9a-24vdc", "rail": 1, "xMm": 181 },
+      { "tag": "-F2", "typeId": "overload-6-10a", "rail": 2, "xMm": 181, "params": { "set": 8.5 } },
+      { "tag": "-PE", "typeId": "pe-bar-8", "rail": 2, "xMm": 315 }
+    ],
+    "wires": [
+      { "id": "W1", "a": "-X1:L1.top", "b": "-Q1:1", "color": "brown", "cs": 1.5, "ferrule": true, "route": [[49, 212.5], [49, 179.5], [14, 179.5], [14, 14], [53, 14], [53, 47]] },
+      { "id": "W2", "a": "-X1:L2.top", "b": "-Q1:3", "color": "black", "cs": 1.5, "ferrule": true, "route": [[57, 212.5], [57, 181], [16, 181], [16, 16], [72, 16], [72, 47]] },
+      { "id": "W3", "a": "-X1:L3.top", "b": "-Q1:5", "color": "grey", "cs": 1.5, "ferrule": true, "route": [[65, 212.5], [65, 182.5], [18, 182.5], [18, 18], [90, 18], [90, 47]] },
+      { "id": "J1", "a": "-Q1:1", "b": "-F1:1", "color": "brown", "cs": 1.5, "ferrule": true, "route": [[55, 47], [55, 35], [114, 35], [114, 47]] },
+      { "id": "W4", "a": "-Q1:2", "b": "-K1:1", "color": "brown", "cs": 1.5, "ferrule": true, "route": [[54, 117], [54, 184], [20, 184], [20, 20], [186, 20], [186, 47]] },
+      { "id": "W5", "a": "-Q1:4", "b": "-K1:3", "color": "black", "cs": 1.5, "ferrule": true, "route": [[72, 117], [72, 185.5], [22, 185.5], [22, 22], [194, 22], [194, 47]] },
+      { "id": "W6", "a": "-Q1:6", "b": "-K1:5", "color": "grey", "cs": 1.5, "ferrule": true, "route": [[90, 117], [90, 187], [24, 187], [24, 24], [202, 24], [202, 47]] },
+      { "id": "W7", "a": "-K1:2", "b": "-F2:1", "color": "brown", "cs": 1.5, "ferrule": true, "route": [[186, 117], [186, 212.5]] },
+      { "id": "W8", "a": "-K1:4", "b": "-F2:3", "color": "black", "cs": 1.5, "ferrule": true, "route": [[194, 117], [194, 212.5]] },
+      { "id": "W9", "a": "-K1:6", "b": "-F2:5", "color": "grey", "cs": 1.5, "ferrule": true, "route": [[202, 117], [202, 212.5]] },
+      { "id": "W10", "a": "-F2:2", "b": "-X2:U1.top", "color": "brown", "cs": 1.5, "ferrule": true, "route": [[186, 266], [186, 289], [26, 289], [26, 188.5], [97, 188.5], [97, 212.5]] },
+      { "id": "W11", "a": "-F2:4", "b": "-X2:V1.top", "color": "black", "cs": 1.5, "ferrule": true, "route": [[194, 266], [194, 291], [28, 291], [28, 190], [105, 190], [105, 212.5]] },
+      { "id": "W12", "a": "-F2:6", "b": "-X2:W1.top", "color": "grey", "cs": 1.5, "ferrule": true, "route": [[202, 266], [202, 293], [30, 293], [30, 191.5], [113, 191.5], [113, 212.5]] },
+      { "id": "W13", "a": "-X1:N.top", "b": "-T1:N", "color": "blue", "cs": 1.5, "ferrule": true, "route": [[73, 212.5], [73, 179.5], [143, 179.5], [143, 117]] },
+      { "id": "W14", "a": "-F1:2", "b": "-T1:L", "color": "brown", "cs": 1.5, "ferrule": true, "route": [[114, 117], [114, 181], [135, 181], [135, 117]] },
+      { "id": "PE1", "a": "-X1:PE.top", "b": "-PE:1", "color": "greenYellow", "cs": 2.5, "ferrule": true, "route": [[81, 266], [81, 297], [325, 297], [325, 247]] },
+      { "id": "PE2", "a": "-X2:PE.top", "b": "-PE:2", "color": "greenYellow", "cs": 1.5, "ferrule": true, "route": [[121, 266], [121, 299], [335, 299], [335, 247]] },
+      { "id": "C1", "a": "-T1:+", "b": "-X3:1.top", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[152, 117], [152, 182.5], [239, 182.5], [239, 212.5]] },
+      { "id": "C2", "a": "-X3:2.top", "b": "-X3:3.top", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[247, 212.5], [247, 208], [255, 208], [255, 212.5]] },
+      { "id": "C3", "a": "-K1:13", "b": "-X3:2.top", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[212, 47], [212, 26], [475, 26], [475, 187], [249, 187], [249, 212.5]] },
+      { "id": "C4", "a": "-X3:4.top", "b": "-K1:A1", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[265, 212.5], [265, 188.5], [478, 188.5], [478, 27.5], [220, 27.5], [220, 47]] },
+      { "id": "C5", "a": "-K1:14", "b": "-X3:4.top", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[212, 117], [212, 184], [261, 184], [261, 212.5]] },
+      { "id": "C6", "a": "-K1:A2", "b": "-F2:95", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[220, 117], [220, 200], [212, 200], [212, 212.5]] },
+      { "id": "C7", "a": "-F2:96", "b": "-T1:-", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[212, 266], [212, 301], [481, 301], [481, 190], [160, 190], [160, 117]] },
+      { "id": "C8", "a": "-K1:A1", "b": "-X3:5.top", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[220, 47], [220, 29], [482, 29], [482, 193], [271, 193], [271, 212.5]] },
+      { "id": "C9", "a": "-X3:6.top", "b": "-T1:-", "color": "darkBlue", "cs": 0.75, "ferrule": true, "route": [[275, 212.5], [275, 195], [160, 195], [160, 117]] }
+    ]
+  },
+  "notes": "Trasy przewodów w mm (0,0 = lewy górny róg płyty). Pochodzą z design/mockups/Plyta.dc.html → renderVals.W (px ÷ 2). C8/C9 (do lampki -H1) nie są w makiecie – dodano osobno, zgodnie z duchem makiety."
+}

@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Schemat ideowy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: {{s.text}}">
+<svg viewBox="0 0 1000 640" width="100%" style="display: block; border-radius: 6px" role="img" aria-label="{{aria}}">
+  <defs>
+    <pattern id="sr-grid" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="0.7" fill="{{s.grid}}"></circle></pattern>
+    <filter id="sr-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.5"></feGaussianBlur></filter>
+  </defs>
+  <rect x="0" y="0" width="1000" height="640" fill="{{s.paper}}"></rect>
+  <rect x="26" y="26" width="964" height="604" fill="url(#sr-grid)"></rect>
+
+  <!-- ramka arkusza -->
+  <rect x="10" y="10" width="980" height="620" fill="none" stroke="{{s.frame}}" stroke-width="1.2"></rect>
+  <rect x="10" y="10" width="980" height="16" fill="none" stroke="{{s.frame}}"></rect>
+  <rect x="10" y="10" width="16" height="620" fill="none" stroke="{{s.frame}}"></rect>
+  <sc-for list="{{cols}}" as="c" hint-placeholder-count="8">
+    <path d="{{c.tick}}" stroke="{{s.frame}}"></path>
+    <text x="{{c.x}}" y="22" text-anchor="middle" font-size="9" fill="{{s.muted}}">{{c.n}}</text>
+  </sc-for>
+  <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+    <path d="{{r.tick}}" stroke="{{s.frame}}"></path>
+    <text x="18" y="{{r.y}}" text-anchor="middle" font-size="9" fill="{{s.muted}}">{{r.l}}</text>
+  </sc-for>
+
+  <!-- tabliczka -->
+  <rect x="620" y="580" width="370" height="50" fill="{{s.paper}}" stroke="{{s.frame}}"></rect>
+  <path d="M620 597 H990 M800 597 V630" stroke="{{s.frame}}"></path>
+  <text x="628" y="592" font-size="10" font-weight="600" fill="{{s.text}}">=A1 · Rozruch bezpośredni silnika 3~ 4 kW</text>
+  <text x="628" y="611" font-size="9" fill="{{s.muted}}">Obwód główny i sterowania</text>
+  <text x="628" y="624" font-size="9" fill="{{s.muted}}">IEC 60617 · PN-EN 81346</text>
+  <text x="808" y="611" font-size="9" fill="{{s.muted}}">Arkusz 1 / 1</text>
+  <text x="808" y="624" font-size="9" fill="{{s.muted}}">{{sheetState}}</text>
+
+  <text x="40" y="598" font-size="9" font-weight="600" fill="{{s.muted}}">OBWÓD GŁÓWNY 3/N/PE ~ 400 V</text>
+  <text x="490" y="598" font-size="9" font-weight="600" fill="{{s.muted}}">STEROWANIE 24 V DC</text>
+  <path d="M470 40 V570" stroke="{{s.frame}}" stroke-dasharray="2 4"></path>
+
+  <!-- poświata i przewody -->
+  <sc-for list="{{segs}}" as="g" hint-placeholder-count="40">
+    <sc-if value="{{g.glow}}" hint-placeholder-val="{{false}}"><path d="{{g.d}}" fill="none" stroke="#F5B53F" stroke-width="7" opacity="0.5" filter="url(#sr-glow)"></path></sc-if>
+    <path d="{{g.d}}" fill="none" stroke="{{g.c}}" stroke-width="{{g.w}}" stroke-dasharray="{{g.dash}}" stroke-linecap="round"></path>
+    <sc-if value="{{g.flow}}" hint-placeholder-val="{{false}}"><path d="{{g.d}}" fill="none" stroke="#3CC7F0" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round"><animate attributeName="stroke-dashoffset" from="22" to="0" dur="0.9s" repeatCount="indefinite"></animate></path></sc-if>
+  </sc-for>
+
+  <!-- zaciski -X1 i szyny -->
+  <text x="44" y="46" font-size="9" font-weight="600" fill="{{s.text}}">-X1</text>
+  <sc-for list="{{bus}}" as="b" hint-placeholder-count="5">
+    <circle cx="60" cy="{{b.y}}" r="3" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></circle>
+    <text x="52" y="{{b.ty}}" text-anchor="end" font-size="9" fill="{{s.text}}">{{b.l}}</text>
+  </sc-for>
+
+  <!-- bieguny -Q1, -K1, -F2 -->
+  <sc-for list="{{poles}}" as="p" hint-placeholder-count="3">
+    <path d="{{p.qx}}" stroke="{{s.ink}}" stroke-width="1.6"></path>
+    <path d="{{p.qb}}" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+    <path d="{{p.ka}}" fill="none" stroke="{{s.ink}}" stroke-width="1.4"></path>
+    <path d="{{p.kb}}" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+    <text x="{{p.tx}}" y="249" font-size="8" fill="{{s.muted}}">{{p.t1}}</text>
+    <text x="{{p.tx}}" y="298" font-size="8" fill="{{s.muted}}">{{p.t2}}</text>
+    <rect x="{{p.fx}}" y="330" width="14" height="40" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.4"></rect>
+    <path d="{{p.fs}}" fill="none" stroke="{{s.ink}}" stroke-width="1.4"></path>
+    <circle cx="{{p.x}}" cy="410" r="3" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></circle>
+    <text x="{{p.tx}}" y="406" font-size="8" fill="{{s.muted}}">{{p.xl}}</text>
+  </sc-for>
+  <path d="M104 166 H180" stroke="{{s.ink}}" stroke-dasharray="4 3"></path>
+  <rect x="88" y="158" width="16" height="16" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></rect>
+  <text x="96" y="170" text-anchor="middle" font-size="8" fill="{{s.text}}">I&gt;</text>
+  <path d="M104 272 H180" stroke="{{s.ink}}" stroke-dasharray="4 3"></path>
+  <text x="206" y="162" font-size="11" font-weight="600" fill="{{s.text}}">-Q1</text>
+  <text x="206" y="175" font-size="9" fill="{{s.muted}}">C16 · 2.B</text>
+  <text x="206" y="268" font-size="11" font-weight="600" fill="{{s.text}}">-K1</text>
+  <text x="206" y="281" font-size="9" fill="{{s.muted}}">AC-3 9 A · 5.D</text>
+  <text x="206" y="348" font-size="11" font-weight="600" fill="{{s.text}}">-F2</text>
+  <text x="206" y="361" font-size="9" fill="{{s.muted}}">{{f2set}}</text>
+  <text x="196" y="406" font-size="9" font-weight="600" fill="{{s.text}}">-X2</text>
+  <!-- silnik -->
+  <circle cx="150" cy="480" r="36" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.8"></circle>
+  <text x="150" y="480" text-anchor="middle" font-size="16" font-weight="600" fill="{{s.text}}">M</text>
+  <text x="150" y="497" text-anchor="middle" font-size="11" fill="{{s.text}}">3~</text>
+  <text x="196" y="520" font-size="11" font-weight="600" fill="{{s.text}}">-M1</text>
+  <text x="196" y="533" font-size="9" fill="{{s.muted}}">4 kW · 8,2 A</text>
+  <text x="244" y="300" font-size="8" fill="{{s.muted}}">PE</text>
+  <!-- -F1 i -T1 -->
+  <path d="M296 136 L304 144 M304 136 L296 144" stroke="{{s.ink}}" stroke-width="1.6"></path>
+  <path d="{{f1b}}" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+  <text x="314" y="162" font-size="11" font-weight="600" fill="{{s.text}}">-F1</text>
+  <text x="314" y="175" font-size="9" fill="{{s.muted}}">B6</text>
+  <rect x="284" y="230" width="62" height="60" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.6"></rect>
+  <path d="M284 290 L346 230" stroke="{{s.ink}}"></path>
+  <text x="294" y="250" font-size="10" fill="{{s.text}}">~</text>
+  <text x="330" y="284" font-size="10" fill="{{s.text}}">=</text>
+  <text x="356" y="252" font-size="11" font-weight="600" fill="{{s.text}}">-T1</text>
+  <text x="356" y="265" font-size="9" fill="{{s.muted}}">230 V~ / 24 V=</text>
+  <path d="M296 326 L300 334 L304 326 M326 326 L330 334 L334 326" fill="none" stroke="{{s.ink}}" stroke-width="1.4"></path>
+  <text x="300" y="348" text-anchor="middle" font-size="9" fill="{{s.text}}">+24V</text>
+  <text x="330" y="360" text-anchor="middle" font-size="9" fill="{{s.text}}">0V</text>
+  <text x="300" y="372" text-anchor="middle" font-size="8" fill="{{s.muted}}">/5.A</text>
+
+  <!-- STEROWANIE -->
+  <text x="492" y="76" font-size="10" font-weight="600" fill="{{s.text}}">+24V</text>
+  <text x="492" y="88" font-size="8" fill="{{s.muted}}">/3.C</text>
+  <text x="492" y="556" font-size="10" font-weight="600" fill="{{s.text}}">0V</text>
+  <!-- -S1 STOP (NC) -->
+  <circle cx="580" cy="110" r="3" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></circle>
+  <text x="588" y="113" font-size="8" fill="{{s.muted}}">-X3:1</text>
+  <path d="M580 134 H596 M580 170 L597 135" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+  <path d="M588 152 H556 M556 145 V159 M556 145 H552 M556 159 H552" fill="none" stroke="{{s.ink}}" stroke-dasharray="3 2"></path>
+  <text x="606" y="150" font-size="11" font-weight="600" fill="{{s.text}}">-S1</text>
+  <text x="606" y="163" font-size="9" fill="{{s.muted}}">STOP</text>
+  <circle cx="580" cy="195" r="3" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></circle>
+  <text x="588" y="198" font-size="8" fill="{{s.muted}}">-X3:2</text>
+  <!-- -S2 START (NO) -->
+  <circle cx="580" cy="234" r="3" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></circle>
+  <text x="588" y="237" font-size="8" fill="{{s.muted}}">-X3:3</text>
+  <path d="M580 280 L566 244" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+  <path d="M573 262 H548 M548 255 V269 M548 255 H544 M548 269 H544" fill="none" stroke="{{s.ink}}" stroke-dasharray="3 2"></path>
+  <text x="600" y="258" font-size="11" font-weight="600" fill="{{s.text}}">-S2</text>
+  <text x="600" y="271" font-size="9" fill="{{s.muted}}">START</text>
+  <circle cx="580" cy="296" r="3" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.2"></circle>
+  <text x="588" y="299" font-size="8" fill="{{s.muted}}">-X3:4</text>
+  <!-- -K1 13-14 -->
+  <path d="{{k1aux}}" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+  <text x="706" y="246" font-size="8" fill="{{s.muted}}">13</text>
+  <text x="706" y="284" font-size="8" fill="{{s.muted}}">14</text>
+  <text x="716" y="266" font-size="11" font-weight="600" fill="{{s.text}}">-K1</text>
+  <!-- cewka -K1 -->
+  <rect x="566" y="350" width="28" height="36" fill="{{coil.fill}}" stroke="{{s.ink}}" stroke-width="1.8"></rect>
+  <text x="598" y="348" font-size="8" fill="{{s.muted}}">A1</text>
+  <text x="598" y="396" font-size="8" fill="{{s.muted}}">A2</text>
+  <text x="556" y="366" text-anchor="end" font-size="11" font-weight="600" fill="{{s.text}}">-K1</text>
+  <text x="556" y="379" text-anchor="end" font-size="9" fill="{{s.muted}}">=24 V</text>
+  <text x="612" y="362" font-size="8" fill="{{s.muted}}">1–2   │ 2.C</text>
+  <text x="612" y="372" font-size="8" fill="{{s.muted}}">3–4   │ 2.C</text>
+  <text x="612" y="382" font-size="8" fill="{{s.muted}}">5–6   │ 2.C</text>
+  <text x="612" y="392" font-size="8" fill="{{s.muted}}">13–14 │ 6.C</text>
+  <!-- -F2 95-96 (NC) -->
+  <path d="M580 424 H596 M580 460 L597 425" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+  <path d="M588 442 H556" stroke="{{s.ink}}" stroke-dasharray="3 2"></path>
+  <path d="M548 434 H556 V450 H548 Z M552 434 V438 H550 V446 H552 V450" fill="none" stroke="{{s.ink}}" stroke-width="1.2"></path>
+  <text x="572" y="422" text-anchor="end" font-size="8" fill="{{s.muted}}">95</text>
+  <text x="572" y="468" text-anchor="end" font-size="8" fill="{{s.muted}}">96</text>
+  <text x="606" y="446" font-size="11" font-weight="600" fill="{{s.text}}">-F2</text>
+  <!-- -H1 PRACA -->
+  <circle cx="800" cy="390" r="14" fill="{{h1.fill}}" stroke="{{s.ink}}" stroke-width="1.8"></circle>
+  <path d="M790 380 L810 400 M810 380 L790 400" stroke="{{s.ink}}" stroke-width="1.4"></path>
+  <text x="822" y="386" font-size="11" font-weight="600" fill="{{s.text}}">-H1</text>
+  <text x="822" y="399" font-size="9" fill="{{s.muted}}">PRACA</text>
+  <!-- -F2 97-98 + -H2 -->
+  <path d="M930 260 L916 224" stroke="{{s.ink}}" stroke-width="1.8" stroke-linecap="round"></path>
+  <path d="M923 242 H896" stroke="{{s.ink}}" stroke-dasharray="3 2"></path>
+  <path d="M888 234 H896 V250 H888 Z M892 234 V238 H890 V246 H892 V250" fill="none" stroke="{{s.ink}}" stroke-width="1.2"></path>
+  <text x="936" y="226" font-size="8" fill="{{s.muted}}">97</text>
+  <text x="936" y="266" font-size="8" fill="{{s.muted}}">98</text>
+  <text x="884" y="246" text-anchor="end" font-size="11" font-weight="600" fill="{{s.text}}">-F2</text>
+  <circle cx="930" cy="400" r="14" fill="{{s.paper}}" stroke="{{s.ink}}" stroke-width="1.8"></circle>
+  <path d="M920 390 L940 410 M940 390 L920 410" stroke="{{s.ink}}" stroke-width="1.4"></path>
+  <text x="910" y="396" text-anchor="end" font-size="11" font-weight="600" fill="{{s.text}}">-H2</text>
+  <text x="910" y="409" text-anchor="end" font-size="9" fill="{{s.muted}}">TERMIK</text>
+
+  <!-- węzły -->
+  <sc-for list="{{dots}}" as="o" hint-placeholder-count="14">
+    <circle cx="{{o.x}}" cy="{{o.y}}" r="3.2" fill="{{s.ink}}"></circle>
+  </sc-for>
+
+  <!-- tryb edycji: brak połączenia -->
+  <sc-if value="{{isEdit}}" hint-placeholder-val="{{false}}">
+    <g>
+      <path d="M580 300 V330" stroke="#F0564F" stroke-width="2" stroke-dasharray="4 4"></path>
+      <circle cx="560" cy="315" r="10" fill="#F0564F"></circle>
+      <text x="560" y="319" text-anchor="middle" font-size="11" font-weight="600" fill="#FFFFFF">1</text>
+    </g>
+  </sc-if>
+  <!-- tryb rysowania -->
+  <sc-if value="{{isDraw}}" hint-placeholder-val="{{false}}">
+    <g>
+      <path d="M580 300 V323" stroke="{{s.accent}}" stroke-width="2.4" stroke-linecap="round"></path>
+      <circle cx="580" cy="330" r="9" fill="none" stroke="{{s.accent}}" stroke-width="2">
+        <animate attributeName="r" values="6;12;6" dur="1.3s" repeatCount="indefinite"></animate>
+        <animate attributeName="opacity" values="1;0.3;1" dur="1.3s" repeatCount="indefinite"></animate>
+      </circle>
+      <path d="M586 326 l0 16 l4.5 -4.5 l3.5 8 l2.5 -1 l-3.5 -8 l6 0 z" fill="#FFFFFF" stroke="#0B0F13" stroke-width="1.1" stroke-linejoin="round"></path>
+      <rect x="610" y="300" width="168" height="34" rx="5" fill="{{s.tipBg}}" stroke="{{s.accent}}"></rect>
+      <text x="618" y="314" font-size="9.5" font-weight="600" fill="{{s.accent}}">Przyciągnij do węzła</text>
+      <text x="618" y="327" font-size="9" fill="{{s.text}}">-S2:14 → -K1:A1</text>
+    </g>
+  </sc-if>
+  <!-- zaznaczenie -K1 (wszystkie wystąpienia) -->
+  <sc-if value="{{selK1}}" hint-placeholder-val="{{false}}">
+    <g fill="{{s.accentSoft}}" stroke="{{s.accent}}" stroke-width="1.6" stroke-dasharray="5 3">
+      <rect x="98" y="240" width="96" height="62" rx="4"></rect>
+      <rect x="676" y="236" width="70" height="52" rx="4"></rect>
+      <rect x="520" y="342" width="84" height="54" rx="4"></rect>
+    </g>
+  </sc-if>
+</svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["edit","draw","done","on"],"default":"done"},"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"select":{"editor":"enum","options":["none","K1"],"default":"none"},"$preview":{"width":1000,"height":640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mode = this.props.mode ?? 'done';
+    const theme = this.props.theme ?? 'dark';
+    const select = this.props.select ?? 'none';
+    const TH = {
+      dark: { paper: '#12171C', frame: '#3A4550', grid: '#222B34', ink: '#D5DCE3', text: '#D5DCE3', muted: '#93A0AD', accent: '#4EA8FF', accentSoft: 'rgba(78,168,255,0.12)', tipBg: '#1A2129', pe: '#4FBF72' },
+      light: { paper: '#FFFFFF', frame: '#9AA4AE', grid: '#E6EAEE', ink: '#1A2129', text: '#1A2129', muted: '#55616D', accent: '#1D6FD8', accentSoft: 'rgba(29,111,216,0.08)', tipBg: '#FFFFFF', pe: '#1F7A3B' }
+    };
+    const s = TH[theme] || TH.dark;
+    const on = mode === 'on';
+    // d, potencjał pod napięciem, prąd płynie, rodzaj
+    const S = [
+      ['M60 60 H400', 1, 1, 'pw'], ['M60 72 H400', 1, 1, 'pw'], ['M60 84 H400', 1, 1, 'pw'], ['M60 96 H400', 0, 1, 'pw'], ['M60 108 H400', 0, 0, 'pe'],
+      ['M120 60 V136', 1, 1, 'pw'], ['M150 72 V136', 1, 1, 'pw'], ['M180 84 V136', 1, 1, 'pw'],
+      ['M120 186 V250', 1, 1, 'pw'], ['M150 186 V250', 1, 1, 'pw'], ['M180 186 V250', 1, 1, 'pw'],
+      ['M120 290 V330', 1, 1, 'pw'], ['M150 290 V330', 1, 1, 'pw'], ['M180 290 V330', 1, 1, 'pw'],
+      ['M120 370 V407', 1, 1, 'pw'], ['M150 370 V407', 1, 1, 'pw'], ['M180 370 V407', 1, 1, 'pw'],
+      ['M120 413 V460', 1, 1, 'pw'], ['M150 413 V444', 1, 1, 'pw'], ['M180 413 V460', 1, 1, 'pw'],
+      ['M240 108 V480 H186', 0, 0, 'pe'],
+      ['M300 60 V136', 1, 1, 'pw'], ['M300 186 V230', 1, 1, 'pw'], ['M330 96 V230', 0, 1, 'pw'],
+      ['M300 290 V326', 1, 1, 'ct'], ['M330 290 V326', 0, 1, 'ct'],
+      ['M500 80 H930', 1, 1, 'ct'],
+      ['M580 80 V107', 1, 1, 'ct'], ['M580 113 V134', 1, 1, 'ct'], ['M580 170 V192', 1, 1, 'ct'], ['M580 198 V215', 1, 1, 'ct'],
+      ['M580 215 H700', 1, 1, 'ct'], ['M580 215 V231', 1, 0, 'ct'], ['M580 237 V244', 1, 0, 'ct'], ['M580 280 V293', 1, 0, 'ct'],
+      ['M700 215 V244', 1, 1, 'ct'], ['M700 280 V330', 1, 1, 'ct'], ['M700 330 H580', 1, 1, 'ct'],
+      ['M580 330 V350', 1, 1, 'ct'], ['M580 386 V424', 0, 1, 'ct'], ['M580 460 V560', 0, 1, 'ct'],
+      ['M700 330 H800 V376', 1, 1, 'ct'], ['M800 404 V560', 0, 1, 'ct'],
+      ['M930 80 V224', 1, 0, 'ct'], ['M930 260 V386', 0, 0, 'ct'], ['M930 414 V560', 0, 0, 'ct'],
+      ['M500 560 H930', 0, 1, 'ct']
+    ];
+    const segs = S.map(([d, live, fl, kind]) => ({
+      d, glow: on && !!live, flow: on && !!fl,
+      c: kind === 'pe' ? s.pe : s.ink, w: kind === 'pw' ? 1.9 : 1.6, dash: kind === 'pe' ? '10 3 2 3' : 'none'
+    }));
+    if (mode === 'done' || on) segs.push({ d: 'M580 299 V330', glow: on, flow: false, c: s.ink, w: 1.6, dash: 'none' });
+
+    const k1c = on;
+    const poles = [[120, '1', '2', 'U1'], [150, '3', '4', 'V1'], [180, '5', '6', 'W1']].map(([x, t1, t2, xl]) => ({
+      x, t1, t2, xl, tx: x + 4,
+      qx: 'M' + (x - 4) + ' 136 L' + (x + 4) + ' 144 M' + (x + 4) + ' 136 L' + (x - 4) + ' 144',
+      qb: on ? 'M' + x + ' 186 L' + x + ' 140' : 'M' + x + ' 186 L' + (x - 13) + ' 146',
+      ka: 'M' + (x - 4) + ' 250 a4 4 0 0 0 8 0',
+      kb: k1c ? 'M' + x + ' 290 L' + x + ' 252' : 'M' + x + ' 290 L' + (x - 13) + ' 254',
+      fx: x - 7, fs: 'M' + x + ' 330 V340 H' + (x - 4) + ' V360 H' + x + ' V370'
+    }));
+    const cols = [];
+    for (let i = 0; i < 8; i++) { const x0 = 26 + i * 120.5; cols.push({ n: String(i + 1), x: (x0 + 60).toFixed(1), tick: 'M' + x0.toFixed(1) + ' 10 V26' }); }
+    const rows = ['A','B','C','D','E'].map((l, i) => { const y0 = 26 + i * 120.8; return { l, y: (y0 + 64).toFixed(1), tick: 'M10 ' + y0.toFixed(1) + ' H26' }; });
+    const bus = [[60,'L1'],[72,'L2'],[84,'L3'],[96,'N'],[108,'PE']].map(([y, l]) => ({ y, ty: y + 3, l }));
+    const dots = [[120,60],[150,72],[180,84],[300,60],[330,96],[240,108],[580,80],[930,80],[580,215],[700,330],[580,560],[800,560],[930,560]]
+      .map(([x, y]) => ({ x, y }));
+    if (mode !== 'edit' && mode !== 'draw') dots.push({ x: 580, y: 330 });
+    const label = { edit: 'Błędy: 1', draw: 'Rysowanie połączenia', done: 'Sprawdzony ✓', on: 'Symulacja: pod napięciem' }[mode] || '';
+    return {
+      s, segs, poles, cols, rows, bus, dots,
+      f1b: on ? 'M300 186 L300 140' : 'M300 186 L287 146',
+      k1aux: k1c ? 'M700 280 L700 244' : 'M700 280 L686 244',
+      coil: { fill: on ? 'rgba(60,199,240,0.35)' : s.paper },
+      h1: { fill: on ? 'rgba(91,234,140,0.55)' : s.paper },
+      f2set: '8,5 A · 2.D',
+      isEdit: mode === 'edit', isDraw: mode === 'draw', selK1: select === 'K1',
+      sheetState: label,
+      aria: 'Schemat ideowy: obwód główny -Q1, -K1, -F2, -M1 oraz obwód sterowania 24 V z -S1, -S2, samopodtrzymaniem -K1:13–14, cewką -K1, -F2:95–96 i lampkami -H1, -H2. ' + label
+    };
+  }
+}
+</script>
+</body>
+</html>

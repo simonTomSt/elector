@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Widok mieszany – szafa i schemat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #0E1217; color: #E7ECF1; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #141A20; border-bottom: 1px solid #252E37">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 300px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #33404C; display: flex; align-items: center; justify-content: center; color: #4EA8FF; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="8" height="18" rx="1"></rect><rect x="13.5" y="3" width="8" height="18" rx="1"></rect><path d="M5 7h3M5 11h3M16 8v3h3M16 15h3"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #9BA8B5">Zadanie 4 z 8 · szafa + schemat</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Zmontuj szafę według schematu – rozruch bezpośredni 4 kW</h1>
+      </div>
+    </div>
+    <div role="radiogroup" aria-label="Widok zadania" style="display: flex; padding: 3px; border-radius: 10px; background: #0E1217; border: 1px solid #33404C">
+      <button type="button" role="radio" aria-checked="false" style="height: 38px; padding: 0 14px; border-radius: 7px; border: none; background: transparent; color: #E7ECF1; font: inherit; font-size: 13px">Szafa</button>
+      <button type="button" role="radio" aria-checked="false" style="height: 38px; padding: 0 14px; border-radius: 7px; border: none; background: transparent; color: #E7ECF1; font: inherit; font-size: 13px">Schemat</button>
+      <button type="button" role="radio" aria-checked="true" style="height: 38px; padding: 0 14px; border-radius: 7px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-size: 13px; font-weight: 600">Szafa + schemat</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" role="switch" aria-checked="{{simAttr}}" onClick="{{toggleSim}}" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid {{sw.border}}; background: {{sw.bg}}; color: #E7ECF1; font: inherit; font-weight: 500; cursor: pointer">
+        Symulacja
+        <span style="width: 40px; height: 22px; border-radius: 11px; position: relative; display: inline-block; background: {{sw.track}}"><span style="position: absolute; top: 3px; width: 16px; height: 16px; border-radius: 8px; left: {{sw.knobX}}; background: {{sw.knob}}"></span></span>
+        <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{sw.fg}}">{{sw.txt}}</span>
+      </button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-weight: 600">Sprawdź rozwiązanie</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 12px; box-sizing: border-box; background: #0B0F13">
+      <div style="display: flex; flex-wrap: wrap; gap: 0; align-items: stretch">
+        <!-- panel: szafa -->
+        <section aria-label="Szafa" style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; border-radius: 10px; background: #141A20; border: 1px solid #252E37; overflow: hidden">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; height: 44px; border-bottom: 1px solid #252E37">
+            <span style="font-weight: 600">Szafa <span style="font-weight: 400; color: #9BA8B5">· płyta montażowa</span></span>
+            <div style="display: flex; gap: 4px">
+              <button type="button" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid #4EA8FF; background: rgba(78,168,255,0.14); color: #4EA8FF; font: inherit; font-size: 12px">Płyta</button>
+              <button type="button" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid #33404C; background: transparent; color: #9BA8B5; font: inherit; font-size: 12px">Drzwi</button>
+            </div>
+          </div>
+          <div style="padding: 12px; display: flex; align-items: center; justify-content: center; flex: 1">
+            <div style="width: 100%"><dc-import name="Plyta" mode="{{plateMode}}" theme="dark" select="K1" hint-size="100%,360px"></dc-import></div>
+          </div>
+        </section>
+        <!-- uchwyt podziału -->
+        <div role="separator" aria-orientation="vertical" aria-label="Zmień proporcje paneli" style="flex: 0 0 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: col-resize">
+          <span style="width: 4px; height: 40px; border-radius: 2px; background: #33404C"></span>
+        </div>
+        <!-- panel: schemat -->
+        <section aria-label="Schemat" style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; border-radius: 10px; background: #141A20; border: 1px solid #252E37; overflow: hidden">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; height: 44px; border-bottom: 1px solid #252E37">
+            <span style="font-weight: 600">Schemat <span style="font-weight: 400; color: #9BA8B5">· arkusz 1 (tylko do odczytu)</span></span>
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #9BA8B5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>dany w zadaniu</span>
+          </div>
+          <div style="padding: 12px; display: flex; align-items: center; justify-content: center; flex: 1">
+            <div style="width: 100%"><dc-import name="SchematRys" mode="{{sheetMode}}" theme="dark" select="K1" hint-size="100%,360px"></dc-import></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- powiązania zaznaczonego aparatu -->
+      <section aria-label="Powiązania -K1" style="border-radius: 10px; background: #141A20; border: 1px solid #252E37; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+          <span style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: rgba(78,168,255,0.14); color: #4EA8FF; font-size: 12px; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M10 14l4-4M8 16a3 3 0 01-4-4l3-3a3 3 0 014 0M16 8a3 3 0 014 4l-3 3a3 3 0 01-4 0"></path></svg>Zaznaczenie zsynchronizowane</span>
+          <h2 style="margin: 0; font-size: 15px; font-weight: 600"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-K1</span> stycznik · w szafie i na schemacie</h2>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+          <thead><tr style="text-align: left; color: #9BA8B5; font-size: 12px">
+            <th scope="col" style="padding: 6px 8px; font-weight: 500; border-bottom: 1px solid #252E37">Element</th>
+            <th scope="col" style="padding: 6px 8px; font-weight: 500; border-bottom: 1px solid #252E37">Schemat</th>
+            <th scope="col" style="padding: 6px 8px; font-weight: 500; border-bottom: 1px solid #252E37">Szafa</th>
+            <th scope="col" style="padding: 6px 8px; font-weight: 500; border-bottom: 1px solid #252E37">Zgodność</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{links}}" as="l" hint-placeholder-count="4">
+              <tr style="background: {{l.bg}}">
+                <td style="padding: 8px; border-bottom: 1px solid #252E37; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{{l.el}}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #252E37; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{{l.sch}}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #252E37; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{{l.cab}}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #252E37; font-weight: 600; color: {{l.fg}}">{{l.ok}}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <aside aria-label="Zadanie" style="flex: 1 1 320px; max-width: 100%; box-sizing: border-box; background: #141A20; border-left: 1px solid #252E37; display: flex; flex-direction: column">
+      <section style="padding: 16px; border-bottom: 1px solid #252E37; display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Treść zadania</h2>
+        <p style="margin: 0">Schemat jest dany. Zmontuj aparaty i wykonaj okablowanie tak, aby szafa odpowiadała schematowi, a następnie uruchom symulację.</p>
+      </section>
+      <section style="padding: 16px; border-bottom: 1px solid #252E37; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Wymagania</h2>
+        <sc-for list="{{reqGroups}}" as="g" hint-placeholder-count="2">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 12px; font-weight: 600; color: #E7ECF1">{{g.name}}</span>
+            <sc-for list="{{g.items}}" as="r" hint-placeholder-count="3">
+              <label style="display: flex; align-items: flex-start; gap: 10px; min-height: 32px; font-size: 13px"><input type="checkbox" checked="{{r.done}}" style="width: 18px; height: 18px; margin: 1px 0 0; accent-color: #3FCF8E; flex: 0 0 auto"><span style="color: {{r.fg}}">{{r.text}}</span></label>
+            </sc-for>
+          </div>
+        </sc-for>
+      </section>
+      <section style="padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Schemat ↔ szafa</h2>
+        <sc-if value="{{noSim}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 8px; background: rgba(240,86,79,0.10)">
+            <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 500; color: #FF8A84">Niezgodność: -S2:14 ↔ -K1:A1</span>
+            <span style="font-size: 12px; color: #9BA8B5">Połączenie jest na schemacie (5.D), w szafie brakuje przewodu -X3:4 → -K1:A1.</span>
+            <button type="button" style="align-self: flex-start; height: 36px; padding: 0 12px; border-radius: 6px; border: 1px solid #6B3A3A; background: transparent; color: #FFD9D6; font: inherit; font-size: 12px">Pokaż w obu widokach</button>
+          </div>
+          <div style="padding: 10px; border-radius: 8px; background: rgba(240,86,79,0.10); display: flex; flex-direction: column; gap: 4px">
+            <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 500; color: #FF8A84">Kolor N: -X1:N → -T1:N</span>
+            <span style="font-size: 12px; color: #9BA8B5">W szafie przewód czarny; schemat oznacza N – wymagany niebieski.</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{sim}}" hint-placeholder-val="{{false}}">
+          <div style="padding: 10px; border-radius: 8px; background: rgba(245,181,63,0.12); display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 13px; font-weight: 600; color: #F5B53F">Symulacja liczona z szafy</span>
+            <span style="font-size: 12px; color: #C9D0D6">Schemat pokazuje te same potencjały i przepływ prądu. Styki zmieniają położenie zgodnie ze stanem aparatów.</span>
+          </div>
+        </sc-if>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sim: false }; }
+  renderVals() {
+    const sim = this.state.sim;
+    const ok = '#5BDDA1', bad = '#FF8A84';
+    const L = (el, sch, cab, good) => ({ el, sch, cab, ok: good ? '✓ zgodne' : '✗ brak w szafie', fg: good ? ok : bad, bg: good ? 'transparent' : 'rgba(240,86,79,0.08)' });
+    const links = [
+      L('1–2 · 3–4 · 5–6', '2.C ← -Q1 → -F2', 'szyna 1 · W4–W6, W7–W9', true),
+      L('13–14 (NO)', '6.C ∥ -S2', '-X3:2 / -X3:4', true),
+      L('A1', '5.D ← -S2:14', sim ? '-X3:4 (C4)' : 'brak przewodu', sim),
+      L('A2', '5.D → -F2:95', '-F2:95 (C6)', true)
+    ];
+    const R = (text, done) => ({ text, done, fg: done ? '#9BA8B5' : '#E7ECF1' });
+    const reqGroups = [
+      { name: 'Montaż', items: [R('Aparaty zgodne z oznaczeniami schematu', true), R('-F2 obok -K1, -X3 dla drzwi', true)] },
+      { name: 'Okablowanie zgodne ze schematem', items: [R('Obwód główny', true), R('Obwód sterowania', false), R('Kolory przewodów', false)] },
+      { name: 'Test', items: [R('START → -K1 → -M1 pracuje', false)] }
+    ];
+    return {
+      sim, noSim: !sim, simAttr: sim ? 'true' : 'false',
+      plateMode: sim ? 'on' : 'edit', sheetMode: sim ? 'on' : 'done',
+      links, reqGroups,
+      sw: sim ? { border: '#F5B53F', bg: 'rgba(245,181,63,0.10)', track: '#F5B53F', knob: '#1A1204', knobX: '21px', fg: '#F5B53F', txt: 'WŁ' }
+              : { border: '#33404C', bg: '#1A2129', track: '#33404C', knob: '#9BA8B5', knobX: '3px', fg: '#9BA8B5', txt: 'WYŁ' },
+      toggleSim: () => this.setState({ sim: !sim })
+    };
+  }
+}
+</script>
+</body>
+</html>

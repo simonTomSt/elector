@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Zbliżenie – ciągnięcie przewodu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #0E1217; color: #E7ECF1; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #141A20; border-bottom: 1px solid #252E37">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #33404C; display: flex; align-items: center; justify-content: center; color: #4EA8FF; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="1.5"></rect><path d="M7 7h10M7 12h10M7 17h4"></path><circle cx="16" cy="17" r="1"></circle></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #9BA8B5">Zadanie 3 z 8 · Okablowanie</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Rozruch bezpośredni silnika 3~ 4 kW z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <nav aria-label="Ścieżka widoku" style="display: flex; align-items: center; gap: 8px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; color: #9BA8B5">
+      <a href="#" style="color: #9BA8B5">Płyta</a><span aria-hidden="true">›</span><a href="#" style="color: #9BA8B5">Szyna 1</a><span aria-hidden="true">›</span><span style="color: #E7ECF1">-K1</span>
+    </nav>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" style="height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-weight: 500">Symulacja · WYŁ</button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-weight: 600">Sprawdź rozwiązanie</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <!-- wąski pasek narzędzi -->
+    <nav aria-label="Narzędzia" style="flex: 0 0 72px; box-sizing: border-box; padding: 12px; background: #141A20; border-right: 1px solid #252E37; display: flex; flex-direction: column; gap: 8px; align-items: center">
+      <button type="button" aria-label="Paleta aparatów" style="width: 48px; height: 48px; border-radius: 10px; border: none; background: transparent; color: #9BA8B5; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1"></rect></svg></button>
+      <button type="button" aria-label="Przewody (aktywne)" aria-pressed="true" style="width: 48px; height: 48px; border-radius: 10px; border: 1px solid #4EA8FF; background: rgba(78,168,255,0.14); color: #4EA8FF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="6" r="2"></circle><circle cx="19" cy="18" r="2"></circle><path d="M7 6h5a3 3 0 013 3v6a3 3 0 003 3"></path></svg></button>
+      <button type="button" aria-label="Miernik" style="width: 48px; height: 48px; border-radius: 10px; border: none; background: transparent; color: #9BA8B5; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2"></rect><rect x="8" y="5.5" width="8" height="4" rx="0.5"></rect><circle cx="12" cy="15" r="3"></circle></svg></button>
+      <button type="button" aria-label="Warstwy" style="width: 48px; height: 48px; border-radius: 10px; border: none; background: transparent; color: #9BA8B5; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"></path><path d="M3 13l9 5 9-5"></path></svg></button>
+    </nav>
+
+    <main style="flex: 999 1 560px; min-width: 0; position: relative; min-height: 836px; overflow: hidden; background: #0B0F13">
+      <svg viewBox="0 0 960 640" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display: block; position: absolute; inset: 0; width: 100%; height: 100%" role="img" aria-label="Zbliżenie stycznika -K1 z numerami zacisków; przeciągany przewód od zacisku A1, podświetlony kompatybilny zacisk 14">
+        <defs>
+          <pattern id="zb-grid" width="36" height="36" patternUnits="userSpaceOnUse"><circle cx="18" cy="18" r="1.2" fill="#323C46"></circle></pattern>
+          <pattern id="zb-f" width="22" height="14" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="14" height="14" fill="#3A444F"></rect></pattern>
+          <pattern id="zb-rail" width="60" height="90" patternUnits="userSpaceOnUse"><rect x="12" y="36" width="36" height="18" rx="5" fill="#5F6872"></rect></pattern>
+          <filter id="zb-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"></feGaussianBlur></filter>
+        </defs>
+        <rect x="0" y="0" width="960" height="640" fill="#1F262D"></rect>
+        <rect x="0" y="0" width="960" height="640" fill="url(#zb-grid)"></rect>
+        <!-- korytka -->
+        <rect x="0" y="0" width="960" height="70" fill="#2A323B"></rect>
+        <rect x="0" y="56" width="960" height="14" fill="url(#zb-f)"></rect>
+        <rect x="0" y="596" width="960" height="44" fill="#2A323B"></rect>
+        <rect x="0" y="596" width="960" height="14" fill="url(#zb-f)"></rect>
+        <!-- szyna -->
+        <rect x="0" y="280" width="960" height="90" fill="#8A939C"></rect>
+        <rect x="0" y="280" width="960" height="90" fill="url(#zb-rail)"></rect>
+
+        <!-- -T1 (fragment) -->
+        <rect x="-40" y="100" width="230" height="448" rx="8" fill="#D3D8DD" stroke="#7E8892" stroke-width="1.5"></rect>
+        <rect x="-30" y="452" width="210" height="88" rx="4" fill="#BCC3CA"></rect>
+        <text x="20" y="160" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="26" font-weight="600" fill="#11161B">-T1</text>
+        <text x="20" y="186" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="14" fill="#3B4651">24 V DC · 2,5 A</text>
+        <circle cx="140" cy="380" r="10" fill="#56616C"></circle>
+        <text x="140" y="410" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="12" fill="#3B4651">DC OK</text>
+
+        <!-- -K1 -->
+        <rect x="300" y="100" width="234" height="448" rx="8" fill="#D3D8DD" stroke="#7E8892" stroke-width="1.5"></rect>
+        <rect x="308" y="108" width="218" height="96" rx="4" fill="#BCC3CA"></rect>
+        <rect x="308" y="444" width="218" height="96" rx="4" fill="#BCC3CA"></rect>
+        <text x="320" y="246" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="28" font-weight="600" fill="#11161B">-K1</text>
+        <text x="320" y="270" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="13" fill="#3B4651">AC-3 9 A · 4 kW / 400 V</text>
+        <text x="320" y="288" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="13" fill="#3B4651">cewka =24 V · 1NO + 1NC</text>
+        <rect x="380" y="310" width="74" height="74" rx="6" fill="#3A4149" stroke="#7E8892"></rect>
+        <text x="417" y="358" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="30" font-weight="600" fill="#C9D0D6">0</text>
+        <text x="417" y="410" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="12" fill="#3B4651">ręczne dociśnięcie</text>
+
+        <!-- przewody istniejące z tulejkami -->
+        <sc-for list="{{fixed}}" as="w" hint-placeholder-count="10">
+          <path d="{{w.d}}" fill="none" stroke="rgba(255,255,255,0.34)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="{{w.d}}" fill="none" stroke="{{w.c}}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></path>
+          <sc-if value="{{w.pe}}" hint-placeholder-val="{{false}}"><path d="{{w.d}}" fill="none" stroke="#F2D02B" stroke-width="9" stroke-dasharray="16 16"></path></sc-if>
+          <rect x="{{w.cx}}" y="{{w.cy}}" width="18" height="18" rx="3" fill="{{w.collar}}" stroke="#0B0F13" stroke-width="1"></rect>
+          <rect x="{{w.tx}}" y="{{w.ty}}" width="10" height="28" rx="1.5" fill="#C9CED3" stroke="#6B7580"></rect>
+        </sc-for>
+
+        <!-- zaciski -->
+        <sc-for list="{{terms}}" as="z" hint-placeholder-count="14">
+          <rect x="{{z.rx}}" y="{{z.ry}}" width="40" height="44" rx="5" fill="#20262C"></rect>
+          <circle cx="{{z.x}}" cy="{{z.y}}" r="14" fill="#D7DCE1" stroke="#4E5964" stroke-width="1.5"></circle>
+          <path d="{{z.slot}}" stroke="#4E5964" stroke-width="2.4" stroke-linecap="round"></path>
+          <rect x="{{z.lx}}" y="{{z.ly}}" width="{{z.lw}}" height="22" rx="4" fill="{{z.tagBg}}"></rect>
+          <text x="{{z.x}}" y="{{z.ty}}" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="{{z.tagInk}}">{{z.lab}}</text>
+          <sc-if value="{{z.dim}}" hint-placeholder-val="{{false}}"><circle cx="{{z.x}}" cy="{{z.y}}" r="22" fill="#0B0F13" opacity="0.5"></circle></sc-if>
+        </sc-for>
+        <text x="373" y="236" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="12" fill="#3B4651" opacity="0">.</text>
+
+        <!-- cel kompatybilny: -K1:14 -->
+        <circle cx="462" cy="500" r="26" fill="none" stroke="#4EA8FF" stroke-width="3">
+          <animate attributeName="r" values="22;32;22" dur="1.4s" repeatCount="indefinite"></animate>
+          <animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"></animate>
+        </circle>
+        <circle cx="462" cy="500" r="20" fill="none" stroke="#4EA8FF" stroke-width="3"></circle>
+        <rect x="560" y="482" width="196" height="36" rx="6" fill="#141A20" stroke="#4EA8FF"></rect>
+        <path d="M560 500 L486 500" stroke="#4EA8FF" stroke-width="1.5" stroke-dasharray="4 4"></path>
+        <text x="574" y="505" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#4EA8FF">14 · samopodtrzymanie</text>
+
+        <!-- niezgodne: obwód główny -->
+        <rect x="312" y="196" width="128" height="22" rx="4" fill="#141A20" opacity="0.85"></rect>
+        <text x="376" y="211" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="11" fill="#9BA8B5">400 V AC · niezgodne</text>
+
+        <!-- przeciągany przewód od A1 -->
+        <path d="M504 150 C 504 96, 560 92, 640 160 S 742 282, 756 300" fill="none" stroke="{{dragC}}" stroke-width="14" stroke-linecap="round" opacity="0.35" filter="url(#zb-glow)"></path>
+        <path d="M504 150 C 504 96, 560 92, 640 160 S 742 282, 756 300" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="10" stroke-linecap="round"></path>
+        <path d="M504 150 C 504 96, 560 92, 640 160 S 742 282, 756 300" fill="none" stroke="{{dragC}}" stroke-width="7" stroke-linecap="round"></path>
+        <circle cx="504" cy="150" r="20" fill="none" stroke="#4EA8FF" stroke-width="3"></circle>
+        <rect x="748" y="292" width="16" height="16" rx="3" fill="{{collar}}" stroke="#0B0F13" transform="rotate(42 756 300)"></rect>
+        <path d="M770 312 l0 30 l8 -8 l7 15 l5 -2.5 l-7 -15 l11 0 z" fill="#FFFFFF" stroke="#0B0F13" stroke-width="1.6" stroke-linejoin="round"></path>
+        <rect x="796" y="318" width="160" height="66" rx="8" fill="#141A20" stroke="#33404C"></rect>
+        <text x="808" y="340" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#E7ECF1">-K1:A1 → ?</text>
+        <text x="808" y="358" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#9BA8B5">{{sectionLabel}} · {{colorLabel}}</text>
+        <text x="808" y="374" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#9BA8B5">długość 0,31 m</text>
+
+        <!-- cel poza widokiem -->
+        <rect x="806" y="420" width="148" height="48" rx="8" fill="rgba(78,168,255,0.16)" stroke="#4EA8FF" stroke-width="1.5"></rect>
+        <text x="818" y="440" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#4EA8FF">-X3:4 →</text>
+        <text x="818" y="458" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="11" fill="#9BA8B5">S2:14 · poza widokiem</text>
+      </svg>
+
+      <!-- pływający toolbar: szpula -->
+      <div role="toolbar" aria-label="Szpula przewodu" style="position: absolute; top: 16px; left: 50%; transform: translateX(-50%); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 12px; background: #141A20; border: 1px solid #33404C; box-shadow: 0 12px 32px rgba(0,0,0,0.5); max-width: calc(100% - 32px); box-sizing: border-box">
+        <span style="display: flex; align-items: center; gap: 8px; font-weight: 600; padding-right: 4px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4EA8FF" stroke-width="1.7" aria-hidden="true"><ellipse cx="12" cy="5" rx="7" ry="2.5"></ellipse><ellipse cx="12" cy="19" rx="7" ry="2.5"></ellipse><path d="M7 6.5v11M17 6.5v11M7 10h10M7 13h10"></path></svg>
+          Szpula
+        </span>
+        <span style="width: 1px; height: 28px; background: #33404C"></span>
+        <div role="radiogroup" aria-label="Przekrój" style="display: flex; gap: 4px; align-items: center">
+          <span style="font-size: 12px; color: #9BA8B5; margin-right: 4px">Przekrój</span>
+          <sc-for list="{{sections}}" as="x" hint-placeholder-count="4">
+            <button type="button" role="radio" aria-checked="{{x.sel}}" onClick="{{x.pick}}" style="min-width: 52px; height: 40px; padding: 0 8px; border-radius: 8px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; cursor: pointer; background: {{x.bg}}; color: {{x.fg}}; border: 1px solid {{x.border}}">{{x.label}}</button>
+          </sc-for>
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5">mm²</span>
+        </div>
+        <span style="width: 1px; height: 28px; background: #33404C"></span>
+        <div role="radiogroup" aria-label="Kolor izolacji" style="display: flex; gap: 6px; align-items: center">
+          <span style="font-size: 12px; color: #9BA8B5; margin-right: 2px">Kolor</span>
+          <sc-for list="{{colors}}" as="c" hint-placeholder-count="6">
+            <button type="button" role="radio" aria-checked="{{c.sel}}" aria-label="{{c.name}}" title="{{c.name}}" onClick="{{c.pick}}" style="width: 40px; height: 40px; border-radius: 20px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; border: 2px solid {{c.ring}}">
+              <span style="width: 26px; height: 26px; border-radius: 13px; display: block; background: {{c.swatch}}; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35)"></span>
+            </button>
+          </sc-for>
+        </div>
+        <span style="width: 1px; height: 28px; background: #33404C"></span>
+        <button type="button" role="switch" aria-checked="{{ferr}}" onClick="{{toggleFerr}}" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-size: 13px; cursor: pointer">Tulejki: {{ferrLabel}}</button>
+        <button type="button" style="height: 40px; padding: 0 12px; border-radius: 8px; border: none; background: transparent; color: #9BA8B5; font: inherit; font-size: 13px; cursor: pointer">Anuluj <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; padding: 2px 5px; border: 1px solid #33404C; border-radius: 4px">Esc</span></button>
+      </div>
+
+      <div style="position: absolute; left: 16px; bottom: 16px; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 10px; background: #141A20; border: 1px solid #33404C">
+        <button type="button" aria-label="Oddal" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: #E7ECF1; font-size: 20px">−</button>
+        <span style="min-width: 56px; text-align: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px">400%</span>
+        <button type="button" aria-label="Przybliż" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: #E7ECF1; font-size: 20px">+</button>
+        <span style="padding: 0 10px; font-size: 12px; color: #9BA8B5">Zoom semantyczny: numery zacisków, śruby, tulejki</span>
+      </div>
+
+      <!-- minimapa -->
+      <div aria-label="Minimapa płyty" role="img" style="position: absolute; right: 16px; bottom: 16px; width: 208px; padding: 8px; border-radius: 10px; background: #141A20; border: 1px solid #33404C; box-sizing: border-box">
+        <svg viewBox="0 0 1000 640" width="100%" style="display: block" aria-hidden="true">
+          <rect x="0" y="0" width="1000" height="640" fill="#1F262D"></rect>
+          <path d="M18 20h964v42H18zM18 350h964v42H18zM18 568h964v44H18zM18 20h54v592H18zM938 20h44v592h-44z" fill="#2E3741"></path>
+          <rect x="90" y="78" width="108" height="172" fill="#A9B1B9"></rect><rect x="210" y="78" width="36" height="172" fill="#A9B1B9"></rect><rect x="258" y="78" width="72" height="172" fill="#A9B1B9"></rect><rect x="362" y="78" width="90" height="172" fill="#A9B1B9"></rect>
+          <rect x="90" y="410" width="160" height="138" fill="#A9B1B9"></rect><rect x="362" y="410" width="90" height="138" fill="#A9B1B9"></rect><rect x="470" y="410" width="128" height="138" fill="#A9B1B9"></rect><rect x="630" y="462" width="160" height="32" fill="#2E9E4F"></rect>
+          <rect x="300" y="40" width="240" height="160" fill="rgba(78,168,255,0.18)" stroke="#4EA8FF" stroke-width="8"></rect>
+        </svg>
+      </div>
+    </main>
+
+    <aside aria-label="Nowe połączenie" style="flex: 1 1 340px; max-width: 100%; box-sizing: border-box; background: #141A20; border-left: 1px solid #252E37; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+      <div>
+        <h2 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Nowe połączenie</h2>
+        <p style="margin: 0; font-size: 13px; color: #9BA8B5">Dotknij zacisku docelowego lub przeciągnij przewód nad podświetlony zacisk.</p>
+      </div>
+      <dl style="margin: 0; display: grid; grid-template-columns: 96px 1fr; gap: 8px 12px; font-size: 13px">
+        <dt style="color: #9BA8B5">Źródło</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-K1:A1 · cewka (+)</dd>
+        <dt style="color: #9BA8B5">Przewód</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">H05V-K {{sectionLabel}}</dd>
+        <dt style="color: #9BA8B5">Izolacja</dt><dd style="margin: 0; display: flex; align-items: center; gap: 8px"><span style="width: 14px; height: 14px; border-radius: 7px; background: {{dragC}}; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4)"></span>{{colorLabel}}</dd>
+        <dt style="color: #9BA8B5">Tulejka</dt><dd style="margin: 0; display: flex; align-items: center; gap: 8px"><span style="width: 14px; height: 14px; border-radius: 3px; background: {{collar}}"></span>{{collarLabel}}</dd>
+      </dl>
+      <section style="display: flex; flex-direction: column; gap: 8px">
+        <h3 style="margin: 0; font-size: 13px; font-weight: 600; color: #E7ECF1">Kompatybilne zaciski</h3>
+        <button type="button" style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border-radius: 8px; border: 1px solid #4EA8FF; background: rgba(78,168,255,0.12); color: #E7ECF1; font: inherit; text-align: left; cursor: pointer">
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; color: #4EA8FF; min-width: 72px">-X3:4</span>
+          <span style="flex: 1; display: flex; flex-direction: column"><span>do -S2:14 (START)</span><span style="font-size: 12px; color: #9BA8B5">wymagane w zadaniu · 0,31 m</span></span>
+          <span style="font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: #4EA8FF; color: #08121F">ZALECANE</span>
+        </button>
+        <button type="button" style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; text-align: left; cursor: pointer">
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; min-width: 72px">-K1:14</span>
+          <span style="flex: 1; display: flex; flex-direction: column"><span>styk pomocniczy NO</span><span style="font-size: 12px; color: #9BA8B5">samopodtrzymanie · 0,18 m</span></span>
+        </button>
+        <button type="button" style="display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; text-align: left; cursor: pointer">
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; min-width: 72px">-T1:+</span>
+          <span style="flex: 1; display: flex; flex-direction: column"><span>+24 V DC</span><span style="font-size: 12px; color: #F5B53F">pomija przyciski – stycznik stale załączony</span></span>
+        </button>
+      </section>
+      <section style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 8px; background: #1A2129">
+        <h3 style="margin: 0; font-size: 13px; font-weight: 600">Zablokowane</h3>
+        <p style="margin: 0; font-size: 13px; color: #9BA8B5"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">1/L1 3/L2 5/L3</span> – obwód główny 400 V AC, inny potencjał i przekrój niż sterowanie.</p>
+      </section>
+      <div style="margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; color: #9BA8B5">
+        <span><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; padding: 1px 5px; border: 1px solid #33404C; border-radius: 4px">Spacja</span> punkt zagięcia</span>
+        <span><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; padding: 1px 5px; border: 1px solid #33404C; border-radius: 4px">K</span> prowadź korytkiem</span>
+        <span><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; padding: 1px 5px; border: 1px solid #33404C; border-radius: 4px">Esc</span> anuluj</span>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sec: '0,75', col: 'db', ferr: true }; }
+  renderVals() {
+    const st = this.state;
+    const COL = [
+      ['br','brązowy','#8A5A2E'], ['bk','czarny','#1D1D1D'], ['gr','szary','#8F969D'],
+      ['bu','niebieski','#2D6FE0'], ['pe','żółto-zielony','linear-gradient(135deg,#2E9E4F 0 50%,#F2D02B 50% 100%)'], ['db','ciemnoniebieski','#2440A8']
+    ];
+    const SEC = [['0,75','#9AA3AB','szara (0,75)'], ['1','#D93A3A','czerwona (1)'], ['1,5','#1D1D1D','czarna (1,5)'], ['2,5','#2D6FE0','niebieska (2,5)']];
+    const colors = COL.map(([id, name, sw]) => ({ name, swatch: sw, sel: st.col === id ? 'true' : 'false', ring: st.col === id ? '#4EA8FF' : 'transparent', pick: () => this.setState({ col: id }) }));
+    const sections = SEC.map(([id]) => ({ label: id, sel: st.sec === id ? 'true' : 'false', bg: st.sec === id ? 'rgba(78,168,255,0.16)' : 'transparent', fg: st.sec === id ? '#4EA8FF' : '#E7ECF1', border: st.sec === id ? '#4EA8FF' : '#33404C', pick: () => this.setState({ sec: id }) }));
+    const cur = COL.find((c) => c[0] === st.col);
+    const sec = SEC.find((s) => s[0] === st.sec);
+    const dragC = st.col === 'pe' ? '#2E9E4F' : cur[2];
+    const collar = st.ferr ? sec[1] : '#C9CED3';
+
+    // zaciski stycznika i zasilacza
+    const terms = [];
+    const Z = (x, y, lab, pos, opts) => {
+      const o = opts || {};
+      const lw = Math.max(34, lab.length * 9 + 12);
+      terms.push({ x, y, lab, rx: x - 20, ry: y - 22,
+        slot: 'M' + (x - 8) + ' ' + y + ' L' + (x + 8) + ' ' + y + ' M' + x + ' ' + (y - 8) + ' L' + x + ' ' + (y + 8),
+        lx: x - lw / 2, lw, ly: pos === 'top' ? y + 28 : y - 50, ty: pos === 'top' ? y + 44 : y - 34,
+        tagBg: o.hl ? '#4EA8FF' : '#11161B', tagInk: o.hl ? '#08121F' : '#E7ECF1', dim: !!o.dim });
+    };
+    Z(331, 150, '1/L1', 'top', { dim: true }); Z(373, 150, '3/L2', 'top', { dim: true }); Z(415, 150, '5/L3', 'top', { dim: true });
+    Z(462, 150, '13', 'top'); Z(504, 150, 'A1', 'top', { hl: true });
+    Z(331, 500, '2/T1', 'bot'); Z(373, 500, '4/T2', 'bot'); Z(415, 500, '6/T3', 'bot'); Z(462, 500, '14', 'bot', { hl: true }); Z(504, 500, 'A2', 'bot');
+    Z(60, 500, 'N', 'bot'); Z(104, 500, '+', 'bot'); Z(148, 500, '−', 'bot');
+
+    // przewody z tulejkami: od góry (top) i od dołu (bot)
+    const F = (x, pos, c, coll, extra) => {
+      const top = pos === 'top';
+      const y = top ? 150 : 500;
+      const d = top ? 'M' + x + ' 20 L' + x + ' ' + (y - 64) : 'M' + x + ' ' + (y + 64) + ' L' + x + ' 630';
+      return Object.assign({ d, c, collar: coll, pe: false, cx: x - 9, cy: top ? y - 66 : y + 48, tx: x - 5, ty: top ? y - 48 : y + 20 }, extra || {});
+    };
+    const fixed = [
+      F(331, 'top', '#8A5A2E', '#1D1D1D'), F(373, 'top', '#1D1D1D', '#1D1D1D'), F(415, 'top', '#8F969D', '#1D1D1D'),
+      F(462, 'top', '#2440A8', '#9AA3AB'),
+      F(331, 'bot', '#8A5A2E', '#1D1D1D'), F(373, 'bot', '#1D1D1D', '#1D1D1D'), F(415, 'bot', '#8F969D', '#1D1D1D'),
+      F(504, 'bot', '#2440A8', '#9AA3AB'),
+      F(60, 'bot', '#1D1D1D', '#9AA3AB'), F(104, 'bot', '#2440A8', '#9AA3AB'), F(148, 'bot', '#2440A8', '#9AA3AB')
+    ];
+    return {
+      terms, fixed, colors, sections, dragC, collar,
+      colorLabel: cur[1], sectionLabel: st.sec + ' mm²', collarLabel: st.ferr ? 'izolowana, ' + sec[2] : 'bez tulejki',
+      ferr: st.ferr ? 'true' : 'false', ferrLabel: st.ferr ? 'wł.' : 'wył.', toggleFerr: () => this.setState({ ferr: !st.ferr })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Edytor szafy – płyta montażowa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: {{t.bg}}; color: {{t.text}}; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <!-- GÓRNY PASEK -->
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: {{t.panel}}; border-bottom: 1px solid {{t.line}}">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid {{t.line2}}; display: flex; align-items: center; justify-content: center; color: {{t.accent}}; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="1.5"></rect><path d="M7 7h10M7 12h10M7 17h4"></path><circle cx="16" cy="17" r="1"></circle></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: {{t.muted}}">Zadanie 3 z 8 · Układy stycznikowe</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Rozruch bezpośredni silnika 3~ 4 kW z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <nav aria-label="Postęp zadania">
+      <ol style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; list-style: none; margin: 0; padding: 0">
+        <sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+          <li style="display: flex; align-items: center; gap: 6px">
+            <a href="#" style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 8px; border-radius: 20px; text-decoration: none; font-weight: 500; font-size: 13px; background: {{s.bg}}; color: {{s.fg}}; border: 1px solid {{s.border}}">
+              <span style="width: 24px; height: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; background: {{s.dotBg}}; color: {{s.dotFg}}">
+                <sc-if value="{{s.done}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                <sc-if value="{{s.todo}}" hint-placeholder-val="{{true}}">{{s.n}}</sc-if>
+              </span>
+              {{s.label}}
+            </a>
+            <sc-if value="{{s.arrow}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.muted}}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></sc-if>
+          </li>
+        </sc-for>
+      </ol>
+    </nav>
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+      <button type="button" role="switch" aria-checked="false" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid {{t.line2}}; background: {{t.surface}}; color: {{t.text}}; font: inherit; font-weight: 500; cursor: pointer">
+        Symulacja
+        <span style="width: 40px; height: 22px; border-radius: 11px; background: {{t.line2}}; position: relative; display: inline-block">
+          <span style="position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 8px; background: {{t.muted}}"></span>
+        </span>
+        <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">WYŁ</span>
+      </button>
+      <button type="button" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: {{t.accent}}; color: {{t.accentInk}}; font: inherit; font-weight: 600; cursor: pointer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>
+        Sprawdź rozwiązanie
+      </button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+
+    <!-- LEWY PANEL: PALETA -->
+    <aside aria-label="Paleta aparatów" style="flex: 1 1 272px; max-width: 100%; box-sizing: border-box; background: {{t.panel}}; border-right: 1px solid {{t.line}}; display: flex; flex-direction: column">
+      <div style="padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: {{t.muted}}">Paleta aparatów</h2>
+        <label style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid {{t.line2}}; background: {{t.surface}}; color: {{t.muted}}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg>
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Szukaj aparatu</span>
+          <input type="search" placeholder="Szukaj aparatu…" style="flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: {{t.text}}; font: inherit">
+        </label>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <button type="button" style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid {{t.accent}}; background: {{t.accentSoft}}; color: {{t.accent}}; font: inherit; font-size: 12px; font-weight: 500">Wszystkie</button>
+          <button type="button" style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.muted}}; font: inherit; font-size: 12px">Zabezpieczenia</button>
+          <button type="button" style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.muted}}; font: inherit; font-size: 12px">Łączniki</button>
+          <button type="button" style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.muted}}; font: inherit; font-size: 12px">Zasilanie</button>
+          <button type="button" style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.muted}}; font: inherit; font-size: 12px">Złączki</button>
+        </div>
+      </div>
+      <ul style="list-style: none; margin: 0; padding: 4px 10px 12px; display: flex; flex-direction: column; gap: 4px">
+        <sc-for list="{{palette}}" as="p" hint-placeholder-count="8">
+          <li>
+            <button type="button" aria-label="Przeciągnij na płytę: {{p.name}}" style="width: 100%; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 6px 10px 6px 6px; box-sizing: border-box; border-radius: 8px; text-align: left; font: inherit; color: {{t.text}}; cursor: grab; background: {{p.bg}}; border: 1px solid {{p.border}}">
+              <span style="width: 52px; height: 52px; border-radius: 6px; background: {{t.surface}}; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">
+                <svg width="44" height="48" viewBox="0 0 44 48" aria-hidden="true">
+                  <rect x="{{p.tx}}" y="2" width="{{p.tw}}" height="44" rx="3" fill="{{t.devThumb}}" stroke="{{t.line2}}"></rect>
+                  <sc-for list="{{p.dots}}" as="d" hint-placeholder-count="3">
+                    <circle cx="{{d.cx}}" cy="8" r="2" fill="{{t.muted}}"></circle>
+                    <circle cx="{{d.cx}}" cy="40" r="2" fill="{{t.muted}}"></circle>
+                  </sc-for>
+                  <sc-if value="{{p.lever}}" hint-placeholder-val="{{false}}"><rect x="{{p.lx}}" y="18" width="{{p.lw}}" height="9" rx="2" fill="{{t.muted}}"></rect></sc-if>
+                  <sc-if value="{{p.win}}" hint-placeholder-val="{{false}}"><rect x="18" y="19" width="8" height="8" rx="1.5" fill="none" stroke="{{t.muted}}" stroke-width="1.4"></rect></sc-if>
+                </svg>
+              </span>
+              <span style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0">
+                <span style="font-weight: 500; font-size: 14px">{{p.name}}</span>
+                <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">{{p.meta}}</span>
+                <sc-if value="{{p.dragging}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: {{t.accent}}; font-weight: 500">Przeciąganie na szynę 1…</span></sc-if>
+              </span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="{{t.muted}}" aria-hidden="true"><circle cx="9" cy="6" r="1.5"></circle><circle cx="15" cy="6" r="1.5"></circle><circle cx="9" cy="12" r="1.5"></circle><circle cx="15" cy="12" r="1.5"></circle><circle cx="9" cy="18" r="1.5"></circle><circle cx="15" cy="18" r="1.5"></circle></svg>
+            </button>
+          </li>
+        </sc-for>
+      </ul>
+      <p style="margin: auto 16px 16px; padding: 10px 12px; border-radius: 8px; background: {{t.surface}}; font-size: 12px; color: {{t.muted}}">Przeciągnij aparat na szynę TH35. Aparaty przyciągają się do siatki 9 mm (½ modułu).</p>
+    </aside>
+
+    <!-- ŚRODEK: SCENA -->
+    <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+      <div role="tablist" aria-label="Widok szafy" style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 2px; padding: 8px 16px 0; background: {{t.panel}}; border-bottom: 1px solid {{t.line}}">
+        <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4">
+          <button type="button" role="tab" aria-selected="{{tb.sel}}" style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: none; background: transparent; font: inherit; font-weight: 500; cursor: pointer; color: {{tb.fg}}; border-bottom: 2px solid {{tb.bar}}">{{tb.label}}</button>
+        </sc-for>
+      </div>
+      <div style="position: relative; flex: 1 1 auto; min-height: 640px; padding: 56px 28px 64px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; overflow: hidden; background: {{t.stage}}">
+        <div style="position: absolute; top: 12px; left: 16px; right: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center">
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">=A1 · Szafa 600 × 800 · Płyta montażowa</span>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
+            <button type="button" aria-pressed="true" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.line2}}; background: {{t.panel}}; color: {{t.text}}; font: inherit; font-size: 12px">Pokrywy korytek: zdjęte</button>
+            <button type="button" aria-pressed="true" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.line2}}; background: {{t.panel}}; color: {{t.text}}; font: inherit; font-size: 12px">Oznaczenia</button>
+            <button type="button" aria-pressed="false" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.muted}}; font: inherit; font-size: 12px">Schemat obok</button>
+          </div>
+        </div>
+        <div style="width: 100%; max-width: 1000px; border-radius: 6px; box-shadow: {{t.shadow}}">
+          <dc-import name="Plyta" mode="edit" theme="{{theme}}" ghost="{{true}}" hint-size="100%,560px"></dc-import>
+        </div>
+        <div style="position: absolute; left: 16px; bottom: 16px; display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 10px; background: {{t.panel}}; border: 1px solid {{t.line2}}; box-shadow: {{t.shadow}}">
+          <button type="button" aria-label="Oddal" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+          <span style="min-width: 52px; text-align: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px">100%</span>
+          <button type="button" aria-label="Przybliż" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button>
+          <span style="width: 1px; height: 24px; background: {{t.line2}}"></span>
+          <button type="button" aria-label="Dopasuj do okna" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
+          <button type="button" aria-label="Przesuwanie widoku" aria-pressed="false" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V5.5a1.5 1.5 0 013 0V12M11 11V4.5a1.5 1.5 0 013 0V12M14 11.5V6a1.5 1.5 0 013 0v7c0 4-2.5 7-6.5 7S5 17 4.5 14.5L3.5 11a1.5 1.5 0 012.8-1L8 13"></path></svg></button>
+          <button type="button" aria-label="Cofnij" style="width: 44px; height: 44px; border: none; border-radius: 8px; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7L4 12l5 5"></path><path d="M4 12h10a6 6 0 010 12"></path></svg></button>
+        </div>
+        <div style="position: absolute; right: 16px; bottom: 16px; display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 12px; border-radius: 8px; background: {{t.panel}}; border: 1px solid {{t.line2}}; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">
+          <span>Siatka 9 mm</span><span>Przyciąganie: wł.</span><span>Aparaty 9</span><span>Przewody 21</span><span style="color: {{t.errInk}}">Błędy 2</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- PRAWY PANEL -->
+    <aside aria-label="Zadanie i walidacja" style="flex: 1 1 340px; max-width: 100%; box-sizing: border-box; background: {{t.panel}}; border-left: 1px solid {{t.line}}; display: flex; flex-direction: column">
+      <section style="padding: 16px; border-bottom: 1px solid {{t.line}}; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: {{t.muted}}">Treść zadania</h2>
+        <p style="margin: 0; font-size: 14px">Zbuduj układ rozruchu bezpośredniego silnika 3~ 4 kW (400 V, I<sub>n</sub> ≈ 8,2 A) z samopodtrzymaniem i zabezpieczeniem termicznym. Sterowanie 24 V DC z zasilacza <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-T1</span>, przyciski <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-S1</span> STOP i <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-S2</span> START na drzwiach.</p>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap">
+          <span style="padding: 3px 8px; border-radius: 4px; background: {{t.surface}}; font-size: 12px; color: {{t.muted}}">Poziom: podstawowy</span>
+          <span style="padding: 3px 8px; border-radius: 4px; background: {{t.surface}}; font-size: 12px; color: {{t.muted}}">ok. 35 min</span>
+          <a href="#" style="padding: 3px 0; font-size: 12px; color: {{t.accent}}">Schemat ideowy (PDF)</a>
+        </div>
+      </section>
+      <section style="padding: 16px; border-bottom: 1px solid {{t.line}}; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: {{t.muted}}">Wymagania</h2>
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">4 / 7</span>
+        </div>
+        <div style="height: 4px; border-radius: 2px; background: {{t.line}}"><div style="width: 57%; height: 4px; border-radius: 2px; background: {{t.ok}}"></div></div>
+        <sc-for list="{{reqs}}" as="r" hint-placeholder-count="7">
+          <label style="display: flex; align-items: flex-start; gap: 10px; min-height: 36px; padding: 4px 0; font-size: 14px; cursor: pointer">
+            <input type="checkbox" checked="{{r.done}}" style="width: 18px; height: 18px; margin: 1px 0 0; accent-color: {{t.ok}}; flex: 0 0 auto">
+            <span style="color: {{r.fg}}">{{r.text}}</span>
+          </label>
+        </sc-for>
+      </section>
+      <section style="padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: {{t.muted}}">Walidacja</h2>
+          <span style="font-size: 12px; color: {{t.muted}}">na żywo</span>
+        </div>
+        <sc-for list="{{issues}}" as="v" hint-placeholder-count="4">
+          <div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 8px; background: {{v.bg}}; border: 1px solid {{v.border}}">
+            <span style="width: 22px; height: 22px; border-radius: 11px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; background: {{v.dot}}; color: {{v.dotInk}}">{{v.n}}</span>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-weight: 500; color: {{v.fg}}">{{v.title}}</span>
+              <span style="font-size: 12px; color: {{t.muted}}">{{v.body}}</span>
+            </div>
+            <button type="button" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid {{t.line2}}; background: {{t.panel}}; color: {{t.text}}; font: inherit; font-size: 12px; cursor: pointer; flex: 0 0 auto">Pokaż</button>
+          </div>
+        </sc-for>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'dark';
+    const T = {
+      dark: {bg:'#0E1217',stage:'#0B0F13',panel:'#141A20',surface:'#1A2129',raised:'#212A33',line:'#252E37',line2:'#33404C',text:'#E7ECF1',muted:'#9BA8B5',accent:'#4EA8FF',accentInk:'#08121F',accentSoft:'rgba(78,168,255,0.14)',ok:'#3FCF8E',okInk:'#5BDDA1',err:'#F0564F',errInk:'#FF8A84',errSoft:'rgba(240,86,79,0.10)',on:'#F5B53F',onInk:'#F5B53F',onSoft:'rgba(245,181,63,0.12)',devThumb:'#3A4550',shadow:'0 12px 32px rgba(0,0,0,0.45)'},
+      light: {bg:'#EEF1F4',stage:'#E3E8ED',panel:'#FFFFFF',surface:'#F3F5F8',raised:'#FFFFFF',line:'#DCE2E8',line2:'#C5CED7',text:'#121820',muted:'#53606C',accent:'#1D6FD8',accentInk:'#FFFFFF',accentSoft:'rgba(29,111,216,0.10)',ok:'#22A06B',okInk:'#167A50',err:'#E5484D',errInk:'#B4232A',errSoft:'rgba(229,72,77,0.07)',on:'#F5B53F',onInk:'#8A5300',onSoft:'rgba(245,181,63,0.14)',devThumb:'#E4E8EC',shadow:'0 12px 32px rgba(16,24,32,0.14)'}
+    };
+    const t = T[theme] || T.dark;
+    const stepDefs = [['Schemat','done'],['Montaż','done'],['Okablowanie','active'],['Test','todo']];
+    const steps = stepDefs.map(([label, st], i) => ({
+      label, n: String(i + 1), done: st === 'done', todo: st !== 'done', arrow: i < 3,
+      bg: st === 'active' ? t.accentSoft : 'transparent',
+      fg: st === 'todo' ? t.muted : t.text,
+      border: st === 'active' ? t.accent : 'transparent',
+      dotBg: st === 'done' ? t.ok : (st === 'active' ? t.accent : t.surface),
+      dotFg: st === 'todo' ? t.muted : t.accentInk
+    }));
+    const mk = (name, meta, mods, poles, opts) => {
+      const tw = Math.min(40, Math.max(12, mods * 9));
+      const tx = (44 - tw) / 2;
+      const dots = [];
+      for (let i = 0; i < poles; i++) dots.push({ cx: tx + tw * (i + 0.5) / poles });
+      const o = opts || {};
+      return { name, meta, tw, tx, dots, lever: !!o.lever, lx: tx + 3, lw: tw - 6, win: !!o.win, dragging: !!o.drag,
+        bg: o.drag ? t.accentSoft : 'transparent', border: o.drag ? t.accent : 'transparent' };
+    };
+    const palette = [
+      mk('Wyłącznik silnikowy', '-Q · 2,5 mod. · 45 mm', 2.5, 3, {lever:true}),
+      mk('Wyłącznik nadprądowy', '-Q/-F · 1–3 mod.', 3, 3, {lever:true}),
+      mk('Stycznik', '-K · 2,5 mod. · 45 mm', 2.5, 4, {win:true}),
+      mk('Przekaźnik termiczny', '-F · 2,5 mod. · 45 mm', 2.5, 3, {}),
+      mk('Przekaźnik czasowy', '-K · 1 mod. · 18 mm', 1.4, 2, {drag:true}),
+      mk('Zasilacz 24 V DC', '-T · 4 mod. · 72 mm', 4, 4, {}),
+      mk('Złączki', '-X · 5,2 mm / tor', 1.4, 1, {}),
+      mk('Szyna PE', '-PE · 10 zacisków', 4.4, 5, {})
+    ];
+    const tabs = ['Płyta montażowa','Drzwi','Listwy i przyłącza','Podgląd 3D'].map((label, i) => ({
+      label, sel: i === 0 ? 'true' : 'false', fg: i === 0 ? t.text : t.muted, bar: i === 0 ? t.accent : 'transparent'
+    }));
+    const reqDefs = [
+      ['Zabezpieczenie zwarciowe obwodu głównego (-Q1)', true],
+      ['Stycznik -K1 z cewką 24 V DC', true],
+      ['Przekaźnik termiczny -F2 nastawiony na Iₙ silnika', true],
+      ['Obwód sterowania zabezpieczony (-F1) i zasilany z -T1', true],
+      ['Samopodtrzymanie przez styk -K1:13–14', false],
+      ['Styk -F2:95–96 w obwodzie cewki', false],
+      ['Kolory przewodów zgodne z PN-EN 60204-1', false]
+    ];
+    const reqs = reqDefs.map(([text, done]) => ({ text, done, fg: done ? t.muted : t.text }));
+    const sev = {
+      err: { bg: t.errSoft, border: 'transparent', dot: t.err, dotInk: '#FFFFFF', fg: t.errInk },
+      warn: { bg: t.onSoft, border: 'transparent', dot: t.on, dotInk: '#1A1204', fg: t.onInk },
+      info: { bg: t.surface, border: 'transparent', dot: t.line2, dotInk: t.text, fg: t.text }
+    };
+    const issues = [
+      Object.assign({ n: '1', title: 'Brak połączenia -K1:A1 ↔ -S2:14', body: 'Obwód cewki jest otwarty – po naciśnięciu START stycznik nie zadziała.' }, sev.err),
+      Object.assign({ n: '2', title: 'Przewód N w złym kolorze', body: '-X1:N → -T1:N jest czarny. Dla przewodu neutralnego wymagany niebieski.' }, sev.err),
+      Object.assign({ n: '3', title: 'Nastawa -F2: 10 A > Iₙ 8,2 A', body: 'Termik nie ochroni silnika przy przeciążeniu do 20%.' }, sev.warn),
+      Object.assign({ n: 'i', title: 'Korytko K2 zapełnione w 72%', body: 'Zalecane maks. 70% – rozważ prowadzenie części przewodów w K4.' }, sev.info)
+    ];
+    return { t, theme, steps, palette, tabs, reqs, issues };
+  }
+}
+</script>
+</body>
+</html>

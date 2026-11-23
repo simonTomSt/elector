@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Wirtualny miernik</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #0E1217; color: #E7ECF1; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #141A20; border-bottom: 1px solid #252E37">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #33404C; display: flex; align-items: center; justify-content: center; color: #4EA8FF; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="1.5"></rect><path d="M7 7h10M7 12h10M7 17h4"></path><circle cx="16" cy="17" r="1"></circle></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #9BA8B5">Zadanie 3 z 8 · Test</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Rozruch bezpośredni silnika 3~ 4 kW z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <span style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 16px; background: rgba(245,181,63,0.14); color: #F5B53F; font-weight: 600; font-size: 13px">
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#F5B53F"><animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"></animate></circle></svg>
+      POD NAPIĘCIEM · 400 V
+    </span>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" role="switch" aria-checked="true" style="display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #F5B53F; background: rgba(245,181,63,0.10); color: #E7ECF1; font: inherit; font-weight: 500">
+        Symulacja
+        <span style="width: 40px; height: 22px; border-radius: 11px; background: #F5B53F; position: relative; display: inline-block"><span style="position: absolute; top: 3px; left: 21px; width: 16px; height: 16px; border-radius: 8px; background: #1A1204"></span></span>
+        <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #F5B53F">WŁ</span>
+      </button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-weight: 600">Sprawdź rozwiązanie</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <main style="flex: 999 1 640px; min-width: 0; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 32px 24px; box-sizing: border-box; background: #0B0F13; min-height: 700px; overflow: hidden">
+      <div style="width: 100%; max-width: 860px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); border-radius: 6px">
+        <dc-import name="Plyta" mode="meter" theme="dark" hint-size="100%,550px"></dc-import>
+      </div>
+
+      <!-- pływający multimetr -->
+      <section aria-label="Multimetr" style="position: absolute; right: 24px; top: 24px; width: 272px; border-radius: 22px; background: #262C33; border: 6px solid #F5B53F; box-shadow: 0 20px 48px rgba(0,0,0,0.6); padding: 12px 14px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; justify-content: space-between; cursor: grab">
+          <span style="font-size: 12px; font-weight: 600; color: #C9D0D6">MULTIMETR · True RMS</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#9BA8B5" aria-label="Przeciągnij" role="img"><circle cx="9" cy="6" r="1.5"></circle><circle cx="15" cy="6" r="1.5"></circle><circle cx="9" cy="12" r="1.5"></circle><circle cx="15" cy="12" r="1.5"></circle><circle cx="9" cy="18" r="1.5"></circle><circle cx="15" cy="18" r="1.5"></circle></svg>
+        </div>
+        <div role="status" aria-live="polite" style="border-radius: 8px; background: #B8C6AE; padding: 10px 12px 8px; color: #10170E; box-shadow: inset 0 2px 6px rgba(0,0,0,0.35)">
+          <div style="display: flex; justify-content: space-between; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600"><span>{{r.flags}}</span><span>AUTO</span></div>
+          <div style="display: flex; align-items: baseline; justify-content: flex-end; gap: 8px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">
+            <span style="font-size: 48px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1">{{r.value}}</span>
+            <span style="font-size: 18px; font-weight: 600">{{r.unit}}</span>
+          </div>
+          <div style="height: 6px; border-radius: 1px; background: rgba(16,23,14,0.15); margin-top: 4px"><div style="height: 6px; background: #10170E; width: {{r.bar}}"></div></div>
+        </div>
+        <div style="display: flex; gap: 8px">
+          <button type="button" style="flex: 1; height: 40px; border-radius: 8px; border: 1px solid #46515C; background: #323942; color: #E7ECF1; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600">HOLD</button>
+          <button type="button" style="flex: 1; height: 40px; border-radius: 8px; border: 1px solid #46515C; background: #323942; color: #E7ECF1; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600">MIN/MAX</button>
+          <button type="button" style="flex: 1; height: 40px; border-radius: 8px; border: 1px solid #46515C; background: #323942; color: #E7ECF1; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600">REL</button>
+        </div>
+        <!-- pokrętło zakresu -->
+        <div role="radiogroup" aria-label="Zakres pomiarowy" style="position: relative; width: 220px; height: 196px; align-self: center">
+          <div style="position: absolute; left: 60px; top: 58px; width: 100px; height: 100px; border-radius: 50px; background: #1A1F25; border: 3px solid #46515C; box-sizing: border-box">
+            <svg width="94" height="94" viewBox="0 0 94 94" style="display: block" aria-hidden="true">
+              <g transform="rotate({{angle}} 47 47)"><rect x="42" y="4" width="10" height="44" rx="5" fill="#F5B53F"></rect></g>
+              <circle cx="47" cy="47" r="12" fill="#323942"></circle>
+            </svg>
+          </div>
+          <sc-for list="{{ranges}}" as="g" hint-placeholder-count="6">
+            <button type="button" role="radio" aria-checked="{{g.sel}}" aria-label="{{g.aria}}" onClick="{{g.pick}}" style="position: absolute; left: {{g.x}}; top: {{g.y}}; width: 48px; height: 40px; border-radius: 8px; cursor: pointer; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; font-weight: 600; background: {{g.bg}}; color: {{g.fg}}; border: 1px solid {{g.border}}">{{g.label}}</button>
+          </sc-for>
+        </div>
+        <div style="display: flex; justify-content: space-around; align-items: center">
+          <span style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #C9D0D6"><span style="width: 26px; height: 26px; border-radius: 13px; background: #111418; border: 3px solid #5C6670"></span>COM</span>
+          <span style="display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #C9D0D6"><span style="width: 26px; height: 26px; border-radius: 13px; background: #111418; border: 3px solid #D92D20"></span>V Ω ·)))</span>
+          <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 10px; color: #9BA8B5">CAT III 600 V</span>
+        </div>
+      </section>
+
+      <div style="position: absolute; left: 24px; bottom: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        <span style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 18px; background: #141A20; border: 1px solid #33404C; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px"><span style="width: 10px; height: 10px; border-radius: 5px; background: #D92D20"></span>czerwona: -X1:L1</span>
+        <span style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 18px; background: #141A20; border: 1px solid #33404C; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px"><span style="width: 10px; height: 10px; border-radius: 5px; background: #E7ECF1"></span>czarna: -X1:N</span>
+        <span style="display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 18px; background: #141A20; border: 1px solid #33404C; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px"><span style="width: 10px; height: 10px; border-radius: 5px; background: #F5B53F"></span>cęgi: -W8 (L2 silnika)</span>
+        <span style="font-size: 12px; color: #9BA8B5">Przeciągnij końcówkę sondy na dowolny zacisk</span>
+      </div>
+    </main>
+
+    <aside aria-label="Pomiary" style="flex: 1 1 340px; max-width: 100%; box-sizing: border-box; background: #141A20; border-left: 1px solid #252E37; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+      <div>
+        <h2 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Dziennik pomiarów</h2>
+        <p style="margin: 0; font-size: 13px; color: #9BA8B5">Każdy odczyt zapisuje się automatycznie po 1 s stabilnego wskazania.</p>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+        <thead>
+          <tr style="text-align: left; color: #9BA8B5; font-size: 12px">
+            <th scope="col" style="padding: 6px 4px; font-weight: 500; border-bottom: 1px solid #252E37">Punkty</th>
+            <th scope="col" style="padding: 6px 4px; font-weight: 500; border-bottom: 1px solid #252E37; text-align: right">Odczyt</th>
+            <th scope="col" style="padding: 6px 4px; font-weight: 500; border-bottom: 1px solid #252E37; text-align: right">Ocena</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{log}}" as="l" hint-placeholder-count="6">
+            <tr>
+              <td style="padding: 8px 4px; border-bottom: 1px solid #252E37; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{{l.pts}}</td>
+              <td style="padding: 8px 4px; border-bottom: 1px solid #252E37; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; text-align: right; font-weight: 600">{{l.val}}</td>
+              <td style="padding: 8px 4px; border-bottom: 1px solid #252E37; text-align: right; font-size: 12px; color: {{l.fg}}">{{l.ok}}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <section style="padding: 12px; border-radius: 8px; background: #1A2129; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <h3 style="margin: 0; font-size: 14px; font-weight: 600">Cęgi prądowe</h3>
+          <button type="button" role="switch" aria-checked="true" aria-label="Cęgi prądowe" style="width: 52px; height: 32px; border-radius: 16px; border: none; background: #F5B53F; position: relative; cursor: pointer"><span style="position: absolute; top: 4px; left: 24px; width: 24px; height: 24px; border-radius: 12px; background: #1A1204"></span></button>
+        </div>
+        <p style="margin: 0; font-size: 13px; color: #9BA8B5">Zaciśnięte na przewodzie <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: #E7ECF1">-K1:4 → -F2:3</span> (faza L2 silnika).</p>
+        <div style="display: flex; align-items: baseline; gap: 8px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace"><span style="font-size: 28px; font-weight: 600; color: #F5B53F">7,8 A</span><span style="font-size: 12px; color: #9BA8B5">AC · 95% Iₙ</span></div>
+      </section>
+      <section style="padding: 12px; border-radius: 8px; background: rgba(240,86,79,0.10); display: flex; gap: 10px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF8A84" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto"><path d="M12 3l10 18H2L12 3z"></path><path d="M12 10v5M12 18v.5" stroke-linecap="round"></path></svg>
+        <p style="margin: 0; font-size: 13px; color: #FFB4AE">Zakres Ω i ciągłość są blokowane na obwodach pod napięciem. Wyłącz -Q0 i zabezpiecz kłódką, zanim zmierzysz rezystancję.</p>
+      </section>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { range: 'vac' }; }
+  renderVals() {
+    const R = [
+      { id: 'off', label: 'OFF', aria: 'Wyłączony', a: -90 },
+      { id: 'vac', label: 'V~', aria: 'Napięcie przemienne', a: -45 },
+      { id: 'vdc', label: 'V=', aria: 'Napięcie stałe', a: 0 },
+      { id: 'ohm', label: 'Ω', aria: 'Rezystancja', a: 45 },
+      { id: 'cont', label: '·)))', aria: 'Ciągłość', a: 90 },
+      { id: 'aac', label: 'A~', aria: 'Prąd przemienny – cęgi', a: 135 }
+    ];
+    const cur = this.state.range;
+    const ranges = R.map((g) => {
+      const rad = (g.a - 90) * Math.PI / 180;
+      const cx = 110 + 86 * Math.cos(rad), cy = 108 + 84 * Math.sin(rad);
+      const sel = g.id === cur;
+      return { label: g.label, aria: g.aria, sel: sel ? 'true' : 'false', x: (cx - 24).toFixed(0) + 'px', y: (cy - 20).toFixed(0) + 'px',
+        bg: sel ? '#F5B53F' : '#323942', fg: sel ? '#1A1204' : '#E7ECF1', border: sel ? '#F5B53F' : '#46515C',
+        pick: () => this.setState({ range: g.id }) };
+    });
+    const READ = {
+      off: { value: '', unit: '', flags: '', bar: '0%' },
+      vac: { value: '230,4', unit: 'V AC', flags: '~ TRMS', bar: '38%' },
+      vdc: { value: '0,02', unit: 'V DC', flags: '=', bar: '1%' },
+      ohm: { value: 'BLOK', unit: 'Ω', flags: '⚠ NAPIĘCIE', bar: '0%' },
+      cont: { value: 'BLOK', unit: '', flags: '⚠ NAPIĘCIE', bar: '0%' },
+      aac: { value: '7,8', unit: 'A AC', flags: '~ CĘGI', bar: '20%' }
+    };
+    const angle = (R.find((g) => g.id === cur) || R[1]).a;
+    const ok = '#5BDDA1', warn = '#F5B53F';
+    const log = [
+      { pts: '-X1:L1 – N', val: '230,4 V~', ok: 'w normie', fg: ok },
+      { pts: '-X1:L1 – L2', val: '399,1 V~', ok: 'w normie', fg: ok },
+      { pts: '-X1:L3 – PE', val: '231,0 V~', ok: 'w normie', fg: ok },
+      { pts: '-T1:+ – −', val: '24,1 V=', ok: 'w normie', fg: ok },
+      { pts: '-K1:A1 – A2', val: '23,8 V=', ok: 'cewka zasilona', fg: ok },
+      { pts: '-W8 (cęgi)', val: '7,8 A~', ok: '95% Iₙ', fg: warn }
+    ];
+    return { ranges, r: READ[cur] || READ.vac, angle, log };
+  }
+}
+</script>
+</body>
+</html>

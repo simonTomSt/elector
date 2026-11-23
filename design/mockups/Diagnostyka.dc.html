@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Zadanie diagnostyczne – bezpieczeństwo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; min-height: 900px; width: 100%; display: flex; flex-direction: column; background: #0E1217; color: #E7ECF1; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: #141A20; border-bottom: 1px solid #252E37">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #33404C; display: flex; align-items: center; justify-content: center; color: #F5B53F; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5M11 8v3.5M11 14v.2"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: #9BA8B5">Diagnostyka · zadanie D-02</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Silnik nie startuje – znajdź usterkę</h1>
+      </div>
+    </div>
+    <span style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 16px; font-weight: 600; font-size: 13px; background: {{badge.bg}}; color: {{badge.fg}}"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{badge.fg}}"></span>{{badge.txt}}</span>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; color: #9BA8B5">czas 06:42</span>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: #4EA8FF; color: #08121F; font: inherit; font-weight: 600">Zgłoś usterkę</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <main style="flex: 999 1 600px; min-width: 0; position: relative; display: flex; align-items: center; justify-content: center; padding: 32px 24px; box-sizing: border-box; background: #0B0F13; min-height: 700px">
+      <div style="width: 100%; max-width: 920px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); border-radius: 6px">
+        <dc-import name="Plyta" mode="{{plateMode}}" theme="dark" hint-size="100%,580px"></dc-import>
+      </div>
+      <span style="position: absolute; top: 12px; left: 20px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5">Narzędzie: wkrętak 3,5 mm · cel: -K1:A2</span>
+    </main>
+
+    <aside aria-label="Karta zadania" style="flex: 1 1 360px; max-width: 100%; box-sizing: border-box; background: #141A20; border-left: 1px solid #252E37; display: flex; flex-direction: column">
+      <section style="padding: 16px; border-bottom: 1px solid #252E37; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Zgłoszenie od operatora</h2>
+        <p style="margin: 0; font-size: 15px">„Po naciśnięciu START silnik pompy nie rusza. Lampka PRACA się nie świeci. Wczoraj wszystko działało.”</p>
+        <ul style="margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #9BA8B5">
+          <li>-T1 sygnalizuje DC OK</li>
+          <li>-Q1 i -F1 załączone, -F2 nie wyzwolony</li>
+          <li>Brak słyszalnego „kliknięcia” stycznika -K1</li>
+        </ul>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button type="button" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-size: 13px">Podpowiedź · 0 / 3</button>
+          <button type="button" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-size: 13px">Schemat</button>
+        </div>
+      </section>
+
+      <section style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #9BA8B5">Procedura LOTO</h2>
+        <div style="display: flex; gap: 16px; align-items: center">
+          <div role="img" aria-label="{{q0.aria}}" style="position: relative; width: 120px; height: 150px; flex: 0 0 auto">
+            <div style="position: absolute; top: 0; left: 0; width: 120px; height: 120px; border-radius: 8px; background: #F2C230; border: 1px solid #A8841A; display: flex; align-items: center; justify-content: center">
+              <span style="position: absolute; top: 6px; left: 10px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; color: #11161B">0</span>
+              <span style="position: absolute; top: 6px; right: 10px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; color: #11161B">I</span>
+              <span style="width: 78px; height: 78px; border-radius: 39px; background: #C8241C; box-shadow: 0 3px 0 #8E1812; display: flex; align-items: center; justify-content: center; transform: rotate({{q0.rot}})">
+                <span style="width: 20px; height: 72px; border-radius: 8px; background: #D9342B; box-shadow: 0 0 0 1px #8E1812"></span>
+              </span>
+            </div>
+            <sc-if value="{{locked}}" hint-placeholder-val="{{true}}">
+              <svg width="56" height="80" viewBox="0 0 56 80" style="position: absolute; left: 70px; top: 70px" aria-hidden="true">
+                <path d="M16 30 V18 a12 12 0 0 1 24 0 V30" fill="none" stroke="#C9CED3" stroke-width="5"></path>
+                <rect x="8" y="28" width="40" height="32" rx="5" fill="#E5484D" stroke="#8E1812"></rect>
+                <circle cx="28" cy="42" r="4" fill="#5A0E0B"></circle><rect x="26.5" y="44" width="3" height="8" fill="#5A0E0B"></rect>
+                <path d="M28 60 L28 66" stroke="#9BA8B5" stroke-width="1.5"></path>
+                <rect x="14" y="66" width="28" height="14" rx="2" fill="#FFFFFF" stroke="#E5484D"></rect>
+                <text x="28" y="76" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="6.5" font-weight="600" fill="#B4232A">NIE ZAŁ.</text>
+              </svg>
+            </sc-if>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+            <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600">-Q0 · wyłącznik główny</span>
+            <span style="font-size: 13px; color: {{q0.fg}}">{{q0.state}}</span>
+            <sc-if value="{{locked}}" hint-placeholder-val="{{true}}"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #9BA8B5">Kłódka: J. Nowak · 11:58</span></sc-if>
+          </div>
+        </div>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px">
+          <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+            <li style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px; border-radius: 8px; background: #1A2129">
+              <span style="width: 26px; height: 26px; border-radius: 13px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; background: {{s.dotBg}}; color: {{s.dotFg}}">{{s.mark}}</span>
+              <span style="flex: 1; font-size: 13px; color: {{s.fg}}">{{s.txt}}</span>
+            </li>
+          </sc-for>
+        </ol>
+        <sc-if value="{{locked}}" hint-placeholder-val="{{true}}">
+          <button type="button" style="height: 48px; border-radius: 8px; border: 1px solid #4EA8FF; background: rgba(78,168,255,0.12); color: #4EA8FF; font: inherit; font-weight: 600">Weź miernik i sprawdź brak napięcia</button>
+        </sc-if>
+        <sc-if value="{{unlocked}}" hint-placeholder-val="{{false}}">
+          <button type="button" onClick="{{openModal}}" style="height: 48px; border-radius: 8px; border: 1px solid #33404C; background: #1A2129; color: #E7ECF1; font: inherit; font-weight: 600">Odkręć zacisk -K1:A2</button>
+        </sc-if>
+      </section>
+    </aside>
+  </div>
+
+  <!-- MODAL -->
+  <sc-if value="{{modal}}" hint-placeholder-val="{{true}}">
+    <div style="position: absolute; inset: 0; background: rgba(5,8,11,0.72); display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="loto-title" style="width: min(560px, 100%); border-radius: 14px; background: #141A20; border: 1px solid #F5B53F; box-shadow: 0 24px 64px rgba(0,0,0,0.6); overflow: hidden">
+        <div style="height: 10px; background: repeating-linear-gradient(-45deg, #F5B53F 0 14px, #11161B 14px 28px)"></div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; gap: 14px; align-items: flex-start">
+            <span style="width: 52px; height: 52px; border-radius: 12px; background: rgba(245,181,63,0.16); display: flex; align-items: center; justify-content: center; flex: 0 0 auto">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F5B53F" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2L12 3z"></path><path d="M13 9l-3 4.5h3l-2 4" stroke-linecap="round"></path></svg>
+            </span>
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 id="loto-title" style="margin: 0; font-size: 22px; font-weight: 700; color: #F5B53F">Praca pod napięciem!</h2>
+              <p style="margin: 0; color: #C9D0D6">Próbujesz odkręcić zacisk <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: #E7ECF1">-K1:A2</span>, a szafa jest zasilona (400 V AC, 24 V DC). Zanim dotkniesz okablowania:</p>
+            </div>
+          </div>
+          <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+            <li style="display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 8px; background: #1A2129"><span style="width: 28px; height: 28px; border-radius: 14px; background: #F5B53F; color: #1A1204; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">1</span><span><strong>Wyłącz zasilanie</strong> – przestaw <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">-Q0</span> w pozycję 0.</span></li>
+            <li style="display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 8px; background: #1A2129"><span style="width: 28px; height: 28px; border-radius: 14px; background: #F5B53F; color: #1A1204; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">2</span><span><strong>Zabezpiecz przed ponownym załączeniem</strong> – kłódka i zawieszka.</span></li>
+            <li style="display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 8px; background: #1A2129"><span style="width: 28px; height: 28px; border-radius: 14px; background: #F5B53F; color: #1A1204; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: 0 0 auto">3</span><span><strong>Sprawdź brak napięcia</strong> – miernikiem, na każdym biegunie.</span></li>
+          </ol>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+            <button type="button" onClick="{{lock}}" style="height: 52px; padding: 0 20px; border-radius: 10px; border: none; background: #F5B53F; color: #1A1204; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>
+              Wyłącz -Q0 i załóż kłódkę
+            </button>
+            <button type="button" onClick="{{closeModal}}" style="height: 52px; padding: 0 18px; border-radius: 10px; border: 1px solid #33404C; background: transparent; color: #E7ECF1; font: inherit; font-weight: 500; cursor: pointer">Anuluj</button>
+            <a href="#" style="margin-left: auto; font-size: 13px; color: #4EA8FF">Pięć reguł bezpieczeństwa</a>
+          </div>
+          <p style="margin: 0; font-size: 12px; color: #9BA8B5">W tym zadaniu ocenia się też kolejność czynności. Pominięcie LOTO = −30 pkt.</p>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { modal: true, locked: false }; }
+  renderVals() {
+    const { modal, locked } = this.state;
+    const S = (txt, done, active) => ({ txt, mark: done ? '✓' : '', fg: done ? '#9BA8B5' : '#E7ECF1',
+      dotBg: done ? '#3FCF8E' : (active ? '#F5B53F' : '#33404C'), dotFg: done ? '#06240F' : '#1A1204' });
+    const steps = [
+      S('Wyłącz -Q0 (pozycja 0)', locked, !locked),
+      S('Załóż kłódkę i zawieszkę', locked, false),
+      S('Sprawdź brak napięcia miernikiem', false, locked)
+    ];
+    steps.forEach((s, i) => { if (!s.mark) s.mark = String(i + 1); });
+    return {
+      modal, locked, unlocked: !locked,
+      plateMode: locked ? 'off' : 'on',
+      badge: locked ? { bg: 'rgba(63,207,142,0.14)', fg: '#5BDDA1', txt: 'ODŁĄCZONO · LOTO' } : { bg: 'rgba(245,181,63,0.14)', fg: '#F5B53F', txt: 'POD NAPIĘCIEM' },
+      q0: locked
+        ? { rot: '-45deg', state: 'Pozycja 0 · zablokowany kłódką', fg: '#5BDDA1', aria: 'Wyłącznik -Q0 w pozycji 0 z kłódką LOTO' }
+        : { rot: '45deg', state: 'Pozycja I · szafa zasilona', fg: '#F5B53F', aria: 'Wyłącznik -Q0 w pozycji I' },
+      steps,
+      lock: () => this.setState({ locked: true, modal: false }),
+      closeModal: () => this.setState({ modal: false }),
+      openModal: () => this.setState({ modal: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

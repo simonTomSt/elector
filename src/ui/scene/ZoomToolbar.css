@@ -1,0 +1,46 @@
+.zoombar {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--theme-panel);
+  border: 1px solid var(--theme-line2);
+  box-shadow: var(--theme-shadow);
+}
+
+.zoombar button {
+  width: calc(var(--size-touchMin) * 1px);
+  height: calc(var(--size-touchMin) * 1px);
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoombar button:hover {
+  background: var(--theme-surface);
+}
+
+.zoombar__val {
+  min-width: 52px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--theme-text);
+}
+
+.zoombar__sep {
+  width: 1px;
+  height: 24px;
+  background: var(--theme-line2);
+}

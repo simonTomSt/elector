@@ -1,0 +1,17 @@
+{
+  "id": "dol-mixed",
+  "extends": "dol-4kw",
+  "type": "mixed",
+  "title": "Zmontuj szafę według schematu – rozruch bezpośredni 4 kW",
+  "level": "średni",
+  "durationMin": 45,
+  "statement": "Schemat jest dany. Zmontuj aparaty i wykonaj okablowanie tak, aby szafa odpowiadała schematowi, a następnie uruchom symulację.",
+  "givenSchematic": { "$ref": "dol-schematic#givenSchematic+solutionSchematic", "comment": "Schemat kompletny = givenSchematic ∪ solutionSchematic z dol-schematic.json. Loader łączy oba zbiory symboli i połączeń." },
+  "requirements": [
+    { "id": "m1", "group": "Montaż", "text": "Aparaty zgodne z oznaczeniami schematu", "check": "deviceExists", "args": { "tags": ["-Q1", "-F1", "-T1", "-K1", "-F2", "-PE"] } },
+    { "id": "m2", "group": "Okablowanie zgodne ze schematem", "text": "Szafa odpowiada schematowi", "check": "schematicMatchesCabinet" },
+    { "id": "m3", "group": "Okablowanie zgodne ze schematem", "text": "Kolory przewodów", "check": "wireColors" },
+    { "id": "m4", "group": "Test", "text": "START → -K1 → -M1 pracuje", "check": "scenario", "args": { "id": "start-stop" } }
+  ],
+  "uiHints": { "defaultView": "split", "schematicReadOnly": true, "syncSelection": true }
+}

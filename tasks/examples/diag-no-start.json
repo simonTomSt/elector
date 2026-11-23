@@ -1,0 +1,45 @@
+{
+  "id": "diag-no-start",
+  "extends": "dol-4kw",
+  "type": "diagnostic",
+  "title": "Silnik nie startuje – znajdź usterkę",
+  "level": "średni",
+  "durationMin": 15,
+  "statement": "Operator zgłasza awarię pompy. Znajdź i usuń usterkę, przestrzegając zasad pracy bezpiecznej.",
+  "symptom": "„Po naciśnięciu START silnik pompy nie rusza. Lampka PRACA się nie świeci. Wczoraj wszystko działało.”",
+  "scene": { "start": "wired", "supply": "-Q0" },
+  "faults": [
+    { "id": "f-coil", "label": "Przerwa cewki -K1", "apply": { "device": "-K1", "deviceFault": "coilOpen" } },
+    { "id": "f-loose-a2", "label": "Luźny zacisk -K1:A2", "apply": { "wire": "C6", "wireFault": "loose" } },
+    { "id": "f-open-c4", "label": "Przerwany przewód -X3:4 → -K1:A1", "apply": { "wire": "C4", "wireFault": "open" } },
+    { "id": "f-f1", "label": "Wyzwolony -F1", "apply": { "device": "-F1", "deviceFault": "tripped" } }
+  ],
+  "pickFaults": 1,
+  "requirements": [
+    { "id": "d1", "text": "LOTO przed pracą na okablowaniu", "check": "scenario", "args": { "id": "loto-order" } },
+    { "id": "d2", "text": "Usterka usunięta – rozruch działa", "check": "scenario", "args": { "id": "start-stop" } }
+  ],
+  "testScenarios": [
+    {
+      "id": "fault-visible", "name": "Usterka f-open-c4 daje objaw",
+      "steps": [
+        { "do": "set", "tag": "@fault", "state": { "id": "f-open-c4" } },
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 200 },
+        { "do": "press", "tag": "-S2", "ms": 200 },
+        { "do": "wait", "ms": 300 },
+        { "expect": { "-K1.closed": false, "-H1.lit": false, "-T1.out": true } },
+        { "do": "measure", "range": "vdc", "probes": ["-K1:A1", "-T1:-"], "expect": { "value": { "approx": 0, "tol": 0.1 } } }
+      ]
+    }
+  ],
+  "loto": { "lockDevice": "-Q0", "verifyPairs": [["-X1:L1.top", "-X1:L2.top"], ["-X1:L2.top", "-X1:L3.top"], ["-X1:L1.top", "-X1:L3.top"], ["-X1:L1.top", "-X1:PE.top"]] },
+  "scoring": { "lotoPenalty": 30, "hintPenalty": 10 },
+  "hints": [
+    "Zmierz napięcie na cewce -K1 (A1–A2) przy wciśniętym START.",
+    "Jeśli na A1 nie ma 24 V, idź wstecz: -X3:4, -S2, -X3:3.",
+    "Pomiar ciągłości wykonuj tylko po LOTO."
+  ]
+}

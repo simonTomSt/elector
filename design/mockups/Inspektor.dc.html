@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Inspektor aparatu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 900px; width: 100%; display: flex; flex-direction: column; background: {{t.bg}}; color: {{t.text}}; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4">
+
+  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 10px 16px; min-height: 64px; box-sizing: border-box; background: {{t.panel}}; border-bottom: 1px solid {{t.line}}">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1 1 320px; min-width: 0">
+      <div style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid {{t.line2}}; display: flex; align-items: center; justify-content: center; color: {{t.accent}}; flex: 0 0 auto">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="1.5"></rect><path d="M7 7h10M7 12h10M7 17h4"></path><circle cx="16" cy="17" r="1"></circle></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 12px; color: {{t.muted}}">Zadanie 3 z 8 · Okablowanie</span>
+        <h1 style="margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Rozruch bezpośredni silnika 3~ 4 kW z samopodtrzymaniem</h1>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button type="button" style="height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid {{t.line2}}; background: {{t.surface}}; color: {{t.text}}; font: inherit; font-weight: 500">Symulacja · WYŁ</button>
+      <button type="button" style="height: 44px; padding: 0 18px; border-radius: 8px; border: none; background: {{t.accent}}; color: {{t.accentInk}}; font: inherit; font-weight: 600">Sprawdź rozwiązanie</button>
+    </div>
+  </header>
+
+  <div style="display: flex; flex-wrap: wrap; flex: 1 1 auto; min-height: 0">
+    <main style="flex: 999 1 520px; min-width: 0; position: relative; display: flex; align-items: center; justify-content: center; padding: 32px 24px; box-sizing: border-box; background: {{t.stage}}; min-height: 600px">
+      <div style="width: 100%; max-width: 880px; box-shadow: {{t.shadow}}; border-radius: 6px">
+        <dc-import name="Plyta" mode="edit" theme="{{theme}}" select="{{device}}" hint-size="100%,560px"></dc-import>
+      </div>
+      <span style="position: absolute; top: 14px; left: 20px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">Zaznaczono: {{d.tag}} · dwuklik otwiera inspektor</span>
+    </main>
+
+    <aside aria-label="Inspektor aparatu" style="flex: 1 1 560px; max-width: 100%; box-sizing: border-box; background: {{t.panel}}; border-left: 1px solid {{t.line}}; display: flex; flex-direction: column">
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 16px 16px 12px; border-bottom: 1px solid {{t.line}}">
+        <div style="flex: 1; min-width: 0">
+          <span style="font-size: 12px; color: {{t.muted}}; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600">Inspektor aparatu</span>
+          <h2 style="margin: 2px 0 0; font-size: 20px; font-weight: 600; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap"><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">{{d.tag}}</span><span style="font-weight: 500">{{d.name}}</span></h2>
+        </div>
+        <span style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 16px; font-weight: 600; font-size: 13px; background: {{status.bg}}; color: {{status.fg}}">
+          <span style="width: 10px; height: 10px; border-radius: 5px; background: {{status.dot}}"></span>{{status.label}}
+        </span>
+        <button type="button" aria-label="Zamknij inspektor" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.text}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 16px">
+        <!-- front aparatu -->
+        <div style="flex: 0 0 236px; display: flex; flex-direction: column; align-items: center; gap: 8px">
+          <div style="width: 236px; box-sizing: border-box; padding: 10px; border-radius: 10px; background: {{t.dev}}; border: 1px solid {{t.devEdge}}; display: flex; flex-direction: column; gap: 10px; color: #11161B">
+            <div style="display: flex; justify-content: space-between; gap: 4px; padding: 8px 6px; border-radius: 6px; background: {{t.devShade}}">
+              <sc-for list="{{topT}}" as="z" hint-placeholder-count="5">
+                <button type="button" aria-label="Zacisk {{z.lab}}" aria-pressed="{{z.sel}}" onClick="{{z.pick}}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40px; padding: 2px 0; border: none; background: transparent; cursor: pointer; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600; color: #11161B">
+                  <span style="width: 32px; height: 32px; border-radius: 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: #D7DCE1; border: 2px solid {{z.ring}}; box-shadow: 0 0 0 3px {{z.halo}}">
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10" stroke="#4E5964" stroke-width="2" stroke-linecap="round"></path></svg>
+                  </span>
+                  {{z.lab}}
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{isK1}}" hint-placeholder-val="{{true}}">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 0">
+                <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 22px; font-weight: 600">-K1</span>
+                <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #3B4651">AC-3 9 A · =24 V</span>
+                <button type="button" aria-pressed="{{pressedAttr}}" aria-label="Ręczne dociśnięcie stycznika" onClick="{{togglePress}}" style="width: 84px; height: 84px; border-radius: 8px; border: 2px solid #7E8892; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; background: {{k1win.bg}}; color: {{k1win.fg}}">
+                  <span style="font-size: 30px; font-weight: 600; line-height: 1">{{k1win.txt}}</span>
+                  <span style="font-size: 10px">dociśnij</span>
+                </button>
+                <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #3B4651">1NO + 1NC</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{isF2}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 0">
+                <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 22px; font-weight: 600">-F2</span>
+                <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Pokrętło nastawy {{setLabel}}">
+                  <sc-for list="{{ticks}}" as="k" hint-placeholder-count="9">
+                    <path d="{{k.d}}" stroke="#3B4651" stroke-width="{{k.w}}" stroke-linecap="round"></path>
+                    <sc-if value="{{k.major}}" hint-placeholder-val="{{false}}"><text x="{{k.tx}}" y="{{k.ty}}" text-anchor="middle" font-family="ui-monospace, SF Mono, Menlo, Consolas, monospace" font-size="10" font-weight="600" fill="#11161B">{{k.lab}}</text></sc-if>
+                  </sc-for>
+                  <circle cx="60" cy="60" r="30" fill="#E9ECEF" stroke="#7E8892" stroke-width="1.5"></circle>
+                  <g transform="rotate({{angle}} 60 60)"><rect x="57" y="32" width="6" height="26" rx="3" fill="#11161B"></rect></g>
+                  <circle cx="60" cy="60" r="5" fill="#7E8892"></circle>
+                </svg>
+                <div style="display: flex; gap: 8px">
+                  <button type="button" aria-label="Wyzwól testowo (TEST)" onClick="{{doTest}}" style="width: 64px; height: 44px; border-radius: 6px; border: 1px solid #A3261F; background: #D92D20; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; cursor: pointer">TEST</button>
+                  <button type="button" aria-label="Kasuj wyzwolenie (RESET)" onClick="{{doReset}}" style="width: 64px; height: 44px; border-radius: 6px; border: 1px solid #1E4FA8; background: #2D6FE0; color: #FFFFFF; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; cursor: pointer">RESET</button>
+                </div>
+                <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; background: {{f2win.bg}}; color: {{f2win.fg}}">{{f2win.txt}}</span>
+              </div>
+            </sc-if>
+            <div style="display: flex; justify-content: space-between; gap: 4px; padding: 8px 6px; border-radius: 6px; background: {{t.devShade}}">
+              <sc-for list="{{botT}}" as="z" hint-placeholder-count="5">
+                <button type="button" aria-label="Zacisk {{z.lab}}" aria-pressed="{{z.sel}}" onClick="{{z.pick}}" style="display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; width: 40px; padding: 2px 0; border: none; background: transparent; cursor: pointer; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; font-weight: 600; color: #11161B">
+                  <span style="width: 32px; height: 32px; border-radius: 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: #D7DCE1; border: 2px solid {{z.ring}}; box-shadow: 0 0 0 3px {{z.halo}}">
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10" stroke="#4E5964" stroke-width="2" stroke-linecap="round"></path></svg>
+                  </span>
+                  {{z.lab}}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <span style="font-size: 12px; color: {{t.muted}}">Kliknij zacisk, aby zobaczyć podłączenia</span>
+        </div>
+
+        <!-- podłączenia -->
+        <div style="flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+          <h3 style="margin: 0 0 2px; font-size: 13px; font-weight: 600; color: {{t.muted}}; text-transform: uppercase; letter-spacing: 0.04em">Podłączenia</h3>
+          <sc-for list="{{conns}}" as="c" hint-placeholder-count="10">
+            <div style="display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 4px 8px; border-radius: 6px; font-size: 13px; background: {{c.bg}}; border: 1px solid {{c.border}}">
+              <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600; min-width: 40px">{{c.lab}}</span>
+              <span style="width: 22px; height: 8px; border-radius: 4px; flex: 0 0 auto; background: {{c.color}}; box-shadow: inset 0 0 0 1px {{c.edge}}"></span>
+              <span style="flex: 1; min-width: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: {{c.fg}}">{{c.to}}</span>
+              <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: {{t.muted}}">{{c.sec}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 0 16px 16px">
+        <section style="flex: 1 1 240px; min-width: 0; padding: 12px; border-radius: 8px; background: {{t.surface}}">
+          <h3 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: {{t.muted}}; text-transform: uppercase; letter-spacing: 0.04em">Dane znamionowe</h3>
+          <dl style="margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 13px">
+            <sc-for list="{{rated}}" as="r" hint-placeholder-count="6">
+              <dt style="color: {{t.muted}}">{{r.k}}</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; text-align: right">{{r.v}}</dd>
+            </sc-for>
+          </dl>
+        </section>
+        <section style="flex: 1 1 240px; min-width: 0; padding: 12px; border-radius: 8px; background: {{t.surface}}; display: flex; flex-direction: column; gap: 10px">
+          <h3 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.muted}}; text-transform: uppercase; letter-spacing: 0.04em">Sterowanie</h3>
+          <sc-if value="{{isK1}}" hint-placeholder-val="{{true}}">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <button type="button" aria-pressed="{{pressedAttr}}" onClick="{{togglePress}}" style="height: 48px; border-radius: 8px; border: 1px solid {{t.line2}}; background: {{t.panel}}; color: {{t.text}}; font: inherit; font-weight: 600; cursor: pointer">{{pressLabel}}</button>
+              <p style="margin: 0; font-size: 12px; color: {{t.muted}}">Ręczne dociśnięcie zamyka styki główne i 13–14 bez zasilania cewki. Dostępne tylko przy wyłączonym napięciu.</p>
+              <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: {{t.muted}}">Cewka A1–A2</span><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace">0,0 V · brak napięcia</span></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{isF2}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+                <span style="display: flex; justify-content: space-between"><span style="color: {{t.muted}}">Nastawa prądu</span><span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-weight: 600">{{setLabel}}</span></span>
+                <span style="display: flex; align-items: center; gap: 8px">
+                  <button type="button" aria-label="Zmniejsz nastawę" onClick="{{dec}}" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid {{t.line2}}; background: {{t.panel}}; color: {{t.text}}; font-size: 20px; cursor: pointer">−</button>
+                  <input type="range" min="6" max="10" step="0.1" value="{{set}}" onChange="{{onRange}}" aria-label="Nastawa prądu termika" style="flex: 1; accent-color: {{t.accent}}; height: 44px">
+                  <button type="button" aria-label="Zwiększ nastawę" onClick="{{inc}}" style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid {{t.line2}}; background: {{t.panel}}; color: {{t.text}}; font-size: 20px; cursor: pointer">+</button>
+                </span>
+              </label>
+              <div style="padding: 8px 10px; border-radius: 6px; font-size: 12px; background: {{hint.bg}}; color: {{hint.fg}}">{{hint.txt}}</div>
+              <div role="radiogroup" aria-label="Tryb kasowania" style="display: flex; gap: 6px">
+                <button type="button" role="radio" aria-checked="true" style="flex: 1; height: 40px; border-radius: 6px; border: 1px solid {{t.accent}}; background: {{t.accentSoft}}; color: {{t.accent}}; font: inherit; font-size: 13px; font-weight: 600">H · ręczny</button>
+                <button type="button" role="radio" aria-checked="false" style="flex: 1; height: 40px; border-radius: 6px; border: 1px solid {{t.line2}}; background: transparent; color: {{t.muted}}; font: inherit; font-size: 13px">A · automatyczny</button>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"device":{"editor":"enum","options":["K1","F2"],"default":"K1"},"theme":{"editor":"enum","options":["dark","light"],"default":"dark"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { term: 'A1', pressed: false, set: 10, tripped: false }; }
+  renderVals() {
+    const theme = this.props.theme ?? 'dark';
+    const device = this.props.device ?? 'K1';
+    const st = this.state;
+    const TH = {
+      dark: {bg:'#0E1217',stage:'#0B0F13',panel:'#141A20',surface:'#1A2129',line:'#252E37',line2:'#33404C',text:'#E7ECF1',muted:'#9BA8B5',accent:'#4EA8FF',accentInk:'#08121F',accentSoft:'rgba(78,168,255,0.14)',dev:'#D3D8DD',devShade:'#BCC3CA',devEdge:'#7E8892',errInk:'#FF8A84',errSoft:'rgba(240,86,79,0.12)',onInk:'#F5B53F',onSoft:'rgba(245,181,63,0.14)',okInk:'#5BDDA1',okSoft:'rgba(63,207,142,0.14)',flowInk:'#3CC7F0',flowSoft:'rgba(60,199,240,0.14)',tripInk:'#BBA2FF',tripSoft:'rgba(169,139,250,0.16)',offInk:'#9BA8B5',offSoft:'rgba(123,135,148,0.16)',shadow:'0 12px 32px rgba(0,0,0,0.45)'},
+      light: {bg:'#EEF1F4',stage:'#E3E8ED',panel:'#FFFFFF',surface:'#F3F5F8',line:'#DCE2E8',line2:'#C5CED7',text:'#121820',muted:'#53606C',accent:'#1D6FD8',accentInk:'#FFFFFF',accentSoft:'rgba(29,111,216,0.10)',dev:'#F4F6F8',devShade:'#E1E6EA',devEdge:'#7F8992',errInk:'#B4232A',errSoft:'rgba(229,72,77,0.08)',onInk:'#8A5300',onSoft:'rgba(245,181,63,0.16)',okInk:'#167A50',okSoft:'rgba(34,160,107,0.10)',flowInk:'#0B6F93',flowSoft:'rgba(14,165,216,0.10)',tripInk:'#6D3FD6',tripSoft:'rgba(139,92,246,0.10)',offInk:'#53606C',offSoft:'rgba(140,151,163,0.16)',shadow:'0 12px 32px rgba(16,24,32,0.14)'}
+    };
+    const t = TH[theme] || TH.dark;
+    const isK1 = device !== 'F2';
+    const WC = { br:'#8A5A2E', bk:'#1D1D1D', gr:'#8F969D', bu:'#2D6FE0', db:'#2440A8', none:'transparent' };
+    const K1C = [
+      ['1/L1','br','← -Q1:2','1,5 mm²'], ['3/L2','bk','← -Q1:4','1,5 mm²'], ['5/L3','gr','← -Q1:6','1,5 mm²'],
+      ['13','db','→ -X3:2 (za -S1)','0,75 mm²'], ['A1','none','brak · wymagane -S2:14','—'],
+      ['2/T1','br','→ -F2:1','1,5 mm²'], ['4/T2','bk','→ -F2:3','1,5 mm²'], ['6/T3','gr','→ -F2:5','1,5 mm²'],
+      ['14','db','→ -X3:4','0,75 mm²'], ['A2','db','→ -F2:95','0,75 mm²']
+    ];
+    const F2C = [
+      ['1/L1','br','← -K1:2','1,5 mm²'], ['3/L2','bk','← -K1:4','1,5 mm²'], ['5/L3','gr','← -K1:6','1,5 mm²'], ['95','db','← -K1:A2','0,75 mm²'],
+      ['2/T1','br','→ -X2:U1','1,5 mm²'], ['4/T2','bk','→ -X2:V1','1,5 mm²'], ['6/T3','gr','→ -X2:W1','1,5 mm²'], ['96','db','→ -T1:− (0 V)','0,75 mm²'],
+      ['97','none','wolny (NO, sygnalizacja)','—'], ['98','none','wolny','—']
+    ];
+    const list = isK1 ? K1C : F2C;
+    const sel = st.term && list.some((r) => r[0] === st.term) ? st.term : list[0][0];
+    const mkT = (lab) => {
+      const row = list.find((r) => r[0] === lab);
+      const missing = row && row[1] === 'none' && lab === 'A1';
+      return { lab, sel: sel === lab ? 'true' : 'false',
+        ring: missing ? '#F0564F' : (sel === lab ? t.accent : '#7E8892'),
+        halo: sel === lab ? t.accentSoft : 'transparent',
+        pick: () => this.setState({ term: lab }) };
+    };
+    const topT = (isK1 ? ['1/L1','3/L2','5/L3','13','A1'] : ['1/L1','3/L2','5/L3','95']).map(mkT);
+    const botT = (isK1 ? ['2/T1','4/T2','6/T3','14','A2'] : ['2/T1','4/T2','6/T3','96','98']).map(mkT);
+    const conns = list.map(([lab, col, to, sec]) => {
+      const err = col === 'none' && lab === 'A1';
+      const isSel = sel === lab;
+      return { lab, to, sec, color: WC[col], edge: col === 'none' ? t.line2 : 'rgba(255,255,255,0.35)',
+        fg: err ? t.errInk : (col === 'none' ? t.muted : t.text),
+        bg: err ? t.errSoft : (isSel ? t.accentSoft : 'transparent'),
+        border: isSel ? t.accent : 'transparent' };
+    });
+    const set = Math.round(st.set * 10) / 10;
+    const setLabel = set.toFixed(1).replace('.', ',') + ' A';
+    const angle = -135 + (set - 6) / 4 * 270;
+    const ticks = [];
+    for (let i = 0; i <= 8; i++) {
+      const v = 6 + i * 0.5; const a = (-135 + i / 8 * 270 - 90) * Math.PI / 180;
+      const major = i % 2 === 0; const r1 = major ? 38 : 40, r2 = 46;
+      ticks.push({ d: 'M' + (60 + r1 * Math.cos(a)).toFixed(1) + ' ' + (60 + r1 * Math.sin(a)).toFixed(1) + ' L' + (60 + r2 * Math.cos(a)).toFixed(1) + ' ' + (60 + r2 * Math.sin(a)).toFixed(1),
+        w: major ? 2 : 1.2, major, lab: String(v), tx: (60 + 55 * Math.cos(a)).toFixed(1), ty: (60 + 55 * Math.sin(a) + 3.5).toFixed(1) });
+    }
+    let status, hint;
+    if (isK1) {
+      status = st.pressed ? { label: 'Załączony (ręcznie)', bg: t.flowSoft, fg: t.flowInk, dot: '#3CC7F0' } : { label: 'Rozwarty · brak napięcia', bg: t.offSoft, fg: t.offInk, dot: '#7B8794' };
+    } else {
+      status = st.tripped ? { label: 'Wyzwolony', bg: t.tripSoft, fg: t.tripInk, dot: '#A98BFA' } : { label: 'Gotowy · 95–96 zwarty', bg: t.okSoft, fg: t.okInk, dot: '#3FCF8E' };
+    }
+    if (set > 9) hint = { txt: 'Nastawa ' + setLabel + ' przekracza Iₙ silnika 8,2 A o ponad 10% – termik zadziała za późno.', bg: t.onSoft, fg: t.onInk };
+    else if (set < 8.2) hint = { txt: 'Nastawa ' + setLabel + ' poniżej Iₙ 8,2 A – możliwe zbędne wyzwolenia przy rozruchu.', bg: t.onSoft, fg: t.onInk };
+    else hint = { txt: 'Nastawa ' + setLabel + ' dopasowana do Iₙ silnika 8,2 A.', bg: t.okSoft, fg: t.okInk };
+    const rated = isK1
+      ? [{k:'Napięcie cewki',v:'24 V DC'},{k:'Kategoria AC-3',v:'9 A · 4 kW / 400 V'},{k:'Kategoria AC-1',v:'25 A'},{k:'Styki pomocnicze',v:'1NO (13–14) + 1NC (21–22)'},{k:'Moc cewki',v:'2,4 W'},{k:'Szerokość',v:'45 mm · 2,5 mod.'}]
+      : [{k:'Zakres nastawy',v:'6–10 A'},{k:'Klasa wyzwalania',v:'10A'},{k:'Styk rozwierny',v:'95–96 (NC)'},{k:'Styk zwierny',v:'97–98 (NO)'},{k:'Montaż',v:'pod stycznikiem / osobno'},{k:'Szerokość',v:'45 mm · 2,5 mod.'}];
+    return {
+      t, theme, device, isK1, isF2: !isK1,
+      d: isK1 ? { tag: '-K1', name: 'Stycznik 3P' } : { tag: '-F2', name: 'Przekaźnik termiczny' },
+      topT, botT, conns, rated, status, hint, ticks, angle: angle.toFixed(1), set, setLabel,
+      pressedAttr: st.pressed ? 'true' : 'false',
+      pressLabel: st.pressed ? 'Zwolnij dociśnięcie' : 'Dociśnij ręcznie (przytrzymaj)',
+      togglePress: () => this.setState({ pressed: !st.pressed }),
+      k1win: st.pressed ? { bg: '#3CC7F0', fg: '#06222C', txt: 'I' } : { bg: '#3A4149', fg: '#C9D0D6', txt: '0' },
+      f2win: st.tripped ? { bg: '#A98BFA', fg: '#140A2E', txt: 'WYZWOLONY' } : { bg: '#2A3036', fg: '#5BDDA1', txt: 'OK' },
+      doTest: () => this.setState({ tripped: true }), doReset: () => this.setState({ tripped: false }),
+      dec: () => this.setState({ set: Math.max(6, Math.round((st.set - 0.1) * 10) / 10) }),
+      inc: () => this.setState({ set: Math.min(10, Math.round((st.set + 0.1) * 10) / 10) }),
+      onRange: (e) => this.setState({ set: parseFloat(e.target.value) })
+    };
+  }
+}
+</script>
+</body>
+</html>
