@@ -110,16 +110,19 @@ export type SymbolElement =
   | 'contactNO'
   | 'contactNC'
   | 'coil'
+  | 'coilTimer'
   | 'thermal3'
   | 'thermalNC'
   | 'thermalNO'
   | 'pbNO'
   | 'pbNC'
+  | 'fuse'
   | 'lamp'
   | 'motor3'
   | 'psu'
   | 'terminal'
-  | 'potential';
+  | 'potential'
+  | 'reference';
 
 export interface SchematicSymbol {
   id: string;
@@ -129,6 +132,9 @@ export interface SchematicSymbol {
   sheet?: number;
   col?: number;
   row?: string;
+  /** Pozycja symbolu na arkuszu w jednostkach użytkownika (siatka 10). */
+  x?: number;
+  y?: number;
 }
 
 export interface SchematicSheet {
@@ -136,10 +142,21 @@ export interface SchematicSheet {
   title?: string;
 }
 
+export interface PotentialTag {
+  id: string;
+  name: string;
+  sheet?: number;
+  x?: number;
+  y?: number;
+  /** Pin, którego dotyczy etykieta potencjału. */
+  pin?: TerminalRef;
+}
+
 export interface Schematic {
   sheets?: SchematicSheet[];
   symbols: SchematicSymbol[];
   connections: [string, string][];
+  potentials?: PotentialTag[];
 }
 
 export type TaskType = 'cabinet' | 'schematic' | 'mixed' | 'diagnostic';

@@ -3,6 +3,7 @@ import { Shell } from '@/ui/components/Shell';
 import { TopBar } from '@/ui/components/TopBar';
 import { Inspector } from '@/ui/components/Inspector';
 import { EditorScreen } from '@/ui/screens/EditorScreen';
+import { SchematicScreen } from '@/ui/screens/SchematicScreen';
 import { useTheme } from '@/ui/theme/useTheme';
 import { ShortToast } from '@/ui/components/ShortToast';
 import { Meter } from '@/ui/components/Meter';
@@ -10,6 +11,7 @@ import { LotoModal } from '@/ui/components/LotoModal';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore } from '@/store/sim';
 import { useSimTicker } from '@/store/useSimTicker';
+import { useUiStore } from '@/store/ui';
 
 const SimProjectSync: FC = () => {
   const task = useProjectStore((s) => s.task);
@@ -32,6 +34,8 @@ const SimProjectSync: FC = () => {
 
 export const App: FC = () => {
   const { theme, toggle } = useTheme();
+  const view = useUiStore((s) => s.view);
+  const isSchematic = view === 'schematic';
 
   return (
     <Shell
@@ -41,16 +45,16 @@ export const App: FC = () => {
           <SimProjectSync />
         </>
       }
-      left={<EditorScreen slot="palette" />}
+      left={isSchematic ? <SchematicScreen slot="palette" /> : <EditorScreen slot="palette" />}
       stage={
         <>
-          <EditorScreen slot="stage" />
+          {isSchematic ? <SchematicScreen slot="stage" /> : <EditorScreen slot="stage" />}
           <Meter />
           <ShortToast />
           <LotoModal />
         </>
       }
-      right={<Inspector />}
+      right={isSchematic ? <SchematicScreen slot="right" /> : <Inspector />}
     />
   );
 };

@@ -40,6 +40,8 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const stepOnce = useSimStore((s) => s.stepOnce);
   const sceneTab = useUiStore((s) => s.sceneTab);
   const setSceneTab = useUiStore((s) => s.setSceneTab);
+  const view = useUiStore((s) => s.view);
+  const setView = useUiStore((s) => s.setView);
   const meterOpen = useMeterStore((s) => s.open);
   const toggleMeter = useMeterStore((s) => s.togglePanel);
 
@@ -92,9 +94,23 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
       </nav>
       <div className="topbar__right">
         <div className="topbar__views" role="group" aria-label="Widok">
-          <button type="button" className="is-active">Szafa</button>
-          <button type="button" disabled>Schemat</button>
-          <button type="button" disabled>Szafa + schemat</button>
+          <button
+            type="button"
+            className={view === 'cabinet' ? 'is-active' : ''}
+            onClick={() => setView('cabinet')}
+          >
+            Szafa
+          </button>
+          <button
+            type="button"
+            className={view === 'schematic' ? 'is-active' : ''}
+            onClick={() => setView('schematic')}
+          >
+            Schemat
+          </button>
+          <button type="button" disabled title="Tryb mieszany będzie w etapie M10">
+            Szafa + schemat
+          </button>
         </div>
         {simOn && (
           <div className="topbar__sim-ctl" role="group" aria-label="Sterowanie symulacją">

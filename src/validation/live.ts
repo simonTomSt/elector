@@ -1,10 +1,12 @@
 import type {
   Requirement,
+  Schematic,
   TerminalRef,
   Wire,
   WireColor,
 } from '@/domain/types';
 import type { ResolvedProject } from '@/sim/model';
+import { buildSchematicNetlist, compareSchematicWithCabinet, runErc } from '@/sim/schematic';
 
 export type IssueSeverity = 'error' | 'warning';
 
@@ -273,9 +275,87 @@ const checkWireColors = (
   };
 };
 
+const checkSchematicConnected = (
+  req: Requirement,
+  schematic: Schematic | undefined,
+): ValidationIssue | null => {
+  if (!schematic) {
+    return {
+      requirementId: req.id,
+      text: req.text,
+      detail: 'Brak schematu',
+      severity: 'error',
+    };
+  }
+  const a = req.args?.['a'] as TerminalRef | undefined;
+  const b = req.args?.['b'] as TerminalRef | undefined;
+  if (!a || !b) return null;
+  const nl = buildSchematicNetlist(schematic);
+  const ra = nl.netOf.get(a);
+  const rb = nl.netOf.get(b);
+  if (ra && rb && ra === rb) return null;
+  return {
+    requirementId: req.id,
+    text: req.text,
+    detail: `Brak połączenia ${a} ↔ ${b}`,
+    severity: 'error',
+  };
+};
+
+const checkNoErc = (
+  req: Requirement,
+  schematic: Schematic | undefined,
+): ValidationIssue | null => {
+  if (!schematic) {
+    return {
+      requirementId: req.id,
+      text: req.text,
+      detail: 'Brak schematu',
+      severity: 'error',
+    };
+  }
+  const issues = runErc(schematic);
+  if (issues.length === 0) return null;
+  const first = issues[0]!;
+  return {
+    requirementId: req.id,
+    text: req.text,
+    detail: first.text,
+    severity: 'error',
+  };
+};
+
+const checkSchematicMatchesCabinet = (
+  req: Requirement,
+  project: ResolvedProject,
+  schematic: Schematic | undefined,
+): ValidationIssue | null => {
+  if (!schematic) {
+    return {
+      requirementId: req.id,
+      text: req.text,
+      detail: 'Brak schematu',
+      severity: 'error',
+    };
+  }
+  const diffs = compareSchematicWithCabinet(schematic, project);
+  if (diffs.length === 0) return null;
+  const first = diffs[0]!;
+  const parts: string[] = [];
+  if (first.inSchematic.length > 0) parts.push(`schemat ↗ ${first.inSchematic.join(', ')}`);
+  if (first.inCabinet.length > 0) parts.push(`szafa ↗ ${first.inCabinet.join(', ')}`);
+  return {
+    requirementId: req.id,
+    text: req.text,
+    detail: `Niezgodność: ${first.terminal}${parts.length ? ` (${parts.join(' · ')})` : ''}`,
+    severity: 'error',
+  };
+};
+
 export const validateLive = (
   requirements: readonly Requirement[],
   project: ResolvedProject,
+  schematic?: Schematic,
 ): ValidationResult => {
   const uf = buildStaticNets(project);
   const issues: ValidationIssue[] = [];
@@ -301,6 +381,15 @@ export const validateLive = (
         break;
       case 'setting':
         issue = checkSetting(req, project);
+        break;
+      case 'schematicConnected':
+        issue = checkSchematicConnected(req, schematic);
+        break;
+      case 'noErc':
+        issue = checkNoErc(req, schematic);
+        break;
+      case 'schematicMatchesCabinet':
+        issue = checkSchematicMatchesCabinet(req, project, schematic);
         break;
       default:
         issue = null;
