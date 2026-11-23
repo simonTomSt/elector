@@ -6,6 +6,7 @@ import { EditorScreen } from '@/ui/screens/EditorScreen';
 import { SchematicScreen } from '@/ui/screens/SchematicScreen';
 import { MixedScreen } from '@/ui/screens/MixedScreen';
 import { TaskEditorScreen } from '@/ui/screens/TaskEditorScreen';
+import { TasksScreen } from '@/ui/screens/TasksScreen';
 import { useTheme } from '@/ui/theme/useTheme';
 import { ShortToast } from '@/ui/components/ShortToast';
 import { Meter } from '@/ui/components/Meter';
@@ -39,7 +40,7 @@ export const App: FC = () => {
   const view = useUiStore((s) => s.view);
 
   const left =
-    view === 'schematic' ? (
+    view === 'tasks' ? null : view === 'schematic' ? (
       <SchematicScreen slot="palette" />
     ) : view === 'mixed' ? (
       <MixedScreen slot="palette" />
@@ -49,7 +50,9 @@ export const App: FC = () => {
       <EditorScreen slot="palette" />
     );
   const stage =
-    view === 'schematic' ? (
+    view === 'tasks' ? (
+      <TasksScreen slot="stage" />
+    ) : view === 'schematic' ? (
       <SchematicScreen slot="stage" />
     ) : view === 'mixed' ? (
       <MixedScreen slot="stage" />
@@ -59,7 +62,7 @@ export const App: FC = () => {
       <EditorScreen slot="stage" />
     );
   const right =
-    view === 'schematic' ? (
+    view === 'tasks' ? null : view === 'schematic' ? (
       <SchematicScreen slot="right" />
     ) : view === 'mixed' ? (
       <MixedScreen slot="right" />

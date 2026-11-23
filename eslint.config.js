@@ -35,6 +35,7 @@ export default [
         cancelAnimationFrame: 'readonly',
         Blob: 'readonly',
         URL: 'readonly',
+        File: 'readonly',
       },
     },
     plugins: {

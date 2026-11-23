@@ -11,6 +11,12 @@ import type {
 import type { DeviceLibrary } from '@/tasks/devices';
 import { buildProjectFromTask, resolveProject, type ResolvedProject } from '@/sim/model';
 import { buildOrthoRoute, type PointMm } from '@/domain/routing';
+import {
+  loadProject as loadPersistedProject,
+  loadProgress,
+  saveProgress,
+  saveProject as savePersistedProject,
+} from '@/store/persist';
 
 export type RailIndex = 1 | 2;
 
@@ -210,12 +216,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   spool: { ...DEFAULT_SPOOL },
 
   init(task, library) {
-    const project = buildProjectFromTask(task);
+    const saved = loadPersistedProject(task.id);
+    const base = buildProjectFromTask(task);
+    const devices = saved ? cloneDevices(saved.devices) : cloneDevices(base.devices);
+    const wires = saved ? [...saved.wires] : [...base.wires];
     set({
       task,
       library,
-      devices: cloneDevices(project.devices),
-      wires: [...project.wires],
+      devices,
+      wires,
       selectedTag: null,
       selectedWireId: null,
       view: { zoom: 1, panXPx: 0, panYPx: 0 },
@@ -359,3 +368,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ view: { zoom: 1, panXPx: 0, panYPx: 0 } });
   },
 }));
+
+let lastAutosaveKey: string | null = null;
+useProjectStore.subscribe((state, prev) => {
+  if (!state.task) return;
+  if (state.devices === prev.devices && state.wires === prev.wires) return;
+  savePersistedProject(state.task.id, { devices: state.devices, wires: state.wires });
+  const key = `${state.task.id}:${state.devices.length}:${state.wires.length}`;
+  if (key !== lastAutosaveKey) {
+    lastAutosaveKey = key;
+    const progress = loadProgress();
+    const current = progress[state.task.id];
+    if (!current || current.status === 'nie-zaczete') {
+      saveProgress({
+        ...progress,
+        [state.task.id]: { status: 'w-toku', updatedAt: Date.now() },
+      });
+    } else {
+      saveProgress({
+        ...progress,
+        [state.task.id]: { ...current, updatedAt: Date.now() },
+      });
+    }
+  }
+});

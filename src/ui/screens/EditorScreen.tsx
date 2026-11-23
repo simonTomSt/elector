@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState, type FC } from 'react';
 import dol4kwRaw from '../../../tasks/examples/dol-4kw.json';
+import diagNoStartRaw from '../../../tasks/examples/diag-no-start.json';
+import dolMixedRaw from '../../../tasks/examples/dol-mixed.json';
+import dolSchematicRaw from '../../../tasks/examples/dol-schematic.json';
 import { loadDeviceLibrary } from '@/tasks/devices';
 import { loadTask } from '@/tasks/loader';
 import { resolveState, useProjectStore } from '@/store/project';
@@ -10,6 +13,7 @@ import { DoorView } from '@/ui/scene/DoorView';
 import { useUiStore } from '@/store/ui';
 import { useSimStore } from '@/store/sim';
 import { isAnyWireLive, useLotoStore } from '@/store/loto';
+import { clearProject, loadProgress, saveProgress } from '@/store/persist';
 
 interface Props {
   slot?: 'palette' | 'stage';
@@ -27,16 +31,25 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   const wires = useProjectStore((s) => s.wires);
   const [draggingTypeId, setDraggingTypeId] = useState<string | null>(null);
   const sceneTab = useUiStore((s) => s.sceneTab);
+  const currentTaskId = useUiStore((s) => s.currentTaskId);
   const simOn = useSimStore((s) => s.on);
   const wireRuntime = useSimStore((s) => s.view.wires);
   const openLotoPrompt = useLotoStore((s) => s.openPrompt);
 
   useEffect(() => {
-    if (task && library) return;
+    const byId: Record<string, unknown> = {
+      'dol-4kw': dol4kwRaw,
+      'diag-no-start': diagNoStartRaw,
+      'dol-mixed': dolMixedRaw,
+      'dol-schematic': dolSchematicRaw,
+    };
+    const id = currentTaskId ?? 'dol-4kw';
+    if (task?.id === id && library) return;
     const lib = loadDeviceLibrary();
-    const t = loadTask(dol4kwRaw, { devices: lib });
+    const raw = byId[id] ?? dol4kwRaw;
+    const t = loadTask(raw, { devices: lib });
     init(t, lib);
-  }, [init, task, library]);
+  }, [init, task, library, currentTaskId]);
 
   useEffect(() => {
     if (slot !== 'stage') return;
@@ -104,6 +117,7 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
         alignItems: 'center',
       }}
     >
+      <ResumeBanner taskId={task.id} />
       {sceneTab === 'door' ? (
         <DoorView project={project} />
       ) : (
@@ -113,6 +127,85 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
           <ZoomToolbar />
         </>
       )}
+    </div>
+  );
+};
+
+const ResumeBanner: FC<{ taskId: string }> = ({ taskId }) => {
+  const [dismissed, setDismissed] = useState(false);
+  const reinit = useProjectStore((s) => s.init);
+  const task = useProjectStore((s) => s.task);
+  const library = useProjectStore((s) => s.library);
+  const entry = loadProgress()[taskId];
+  if (dismissed || !entry || entry.status === 'nie-zaczete') return null;
+  const when = new Date(entry.updatedAt);
+  const label = when.toLocaleString('pl-PL', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const reset = (): void => {
+    clearProject(taskId);
+    const p = loadProgress();
+    const rest = { ...p };
+    delete rest[taskId];
+    saveProgress(rest);
+    if (task && library) reinit(task, library);
+    setDismissed(true);
+  };
+  return (
+    <div
+      role="status"
+      style={{
+        position: 'absolute',
+        top: 8,
+        left: 8,
+        right: 8,
+        padding: '8px 12px',
+        background: 'var(--theme-panel)',
+        border: '1px solid var(--theme-border)',
+        borderRadius: 6,
+        color: 'var(--theme-fg)',
+        fontSize: 13,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        zIndex: 10,
+      }}
+    >
+      <span>Wznowiono zapis z {label}.</span>
+      <button
+        type="button"
+        onClick={reset}
+        style={{
+          background: 'transparent',
+          border: '1px solid var(--theme-border)',
+          color: 'var(--theme-fg)',
+          borderRadius: 4,
+          padding: '2px 8px',
+          cursor: 'pointer',
+          fontSize: 12,
+        }}
+      >
+        Zacznij od nowa
+      </button>
+      <button
+        type="button"
+        onClick={() => setDismissed(true)}
+        aria-label="Zamknij"
+        style={{
+          marginLeft: 'auto',
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--theme-muted)',
+          cursor: 'pointer',
+          fontSize: 16,
+        }}
+      >
+        ×
+      </button>
     </div>
   );
 };

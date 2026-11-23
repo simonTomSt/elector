@@ -56,3 +56,13 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 
 ## M11 – Edytor zadań
 - Formularz z `design/mockups/EdytorZadan.dc.html`, nagrywanie scenariuszy, usterki, eksport/import JSON.
+
+## M12 – Persystencja i wybór zadania
+- Autosave projektu kursanta w `localStorage` per `taskId` (`elector:project:<taskId>`), wersjonowany schema (`schemaVersion`), odporny na uszkodzone/stare zapisy (fallback do pustego stanu).
+- Ustawienia UI (motyw, bieżący widok, otwarte zadanie) w `elector:ui`, też wersjonowane.
+- Postęp zadań w `elector:progress` (status `nie-zaczete | w-toku | ukonczone`, czas ostatniej edycji).
+- Nowy widok `tasks` – ekran wyboru zadania z kafelkami (`tasks/examples/*.json`), statusem i akcją „Zacznij od nowa".
+- Przy wznowieniu dyskretny baner „Wznowiono zapis z &lt;data&gt;" z akcją „Zacznij od nowa".
+- Eksport/import pełnego snapshotu (wszystkie zapisy zadań + ustawienia + postęp) jako jeden JSON, walidowany przy wczytaniu.
+
+**Akceptacja:** po reloadzie przeglądarki stan sceny, motyw i widok są przywrócone; uszkodzony zapis nie wywala apki; eksport→import round-trip daje identyczny stan.

@@ -1,9 +1,10 @@
-import { useMemo, type FC } from 'react';
+import { useMemo, useRef, type FC } from 'react';
 import type { ThemeName } from '@/ui/theme/tokens';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore, SPEEDS, type SimSpeed } from '@/store/sim';
 import { useUiStore, type SceneTab } from '@/store/ui';
 import { useMeterStore } from '@/store/meter';
+import { exportSnapshot, importSnapshot } from '@/store/persist';
 import './TopBar.css';
 
 type Props = {
@@ -122,7 +123,16 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
           >
             Edytor zadań
           </button>
+          <button
+            type="button"
+            className={view === 'tasks' ? 'is-active' : ''}
+            onClick={() => setView('tasks')}
+            title="Wybór zadania"
+          >
+            Zadania
+          </button>
         </div>
+        <SnapshotControls />
         {simOn && (
           <div className="topbar__sim-ctl" role="group" aria-label="Sterowanie symulacją">
             <button
@@ -192,5 +202,65 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
         </button>
       </div>
     </header>
+  );
+};
+
+const SnapshotControls: FC = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const onExport = (): void => {
+    const data = exportSnapshot();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `elector-snapshot-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const onImport = async (file: File): Promise<void> => {
+    const text = await file.text();
+    const ok = importSnapshot(text);
+    if (ok) {
+      window.location.reload();
+    } else {
+      window.alert('Nie udało się wczytać snapshotu – zły format lub wersja.');
+    }
+  };
+
+  return (
+    <div className="topbar__snapshot" role="group" aria-label="Snapshot">
+      <button
+        type="button"
+        className="topbar__theme"
+        onClick={onExport}
+        title="Eksportuj pełny snapshot do pliku JSON"
+      >
+        ⬇ Eksport
+      </button>
+      <button
+        type="button"
+        className="topbar__theme"
+        onClick={() => inputRef.current?.click()}
+        title="Wczytaj snapshot z pliku JSON"
+      >
+        ⬆ Import
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/json,.json"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) void onImport(f);
+          e.target.value = '';
+        }}
+        aria-label="Wczytaj snapshot"
+      />
+    </div>
   );
 };
