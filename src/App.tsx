@@ -4,6 +4,8 @@ import { TopBar } from '@/ui/components/TopBar';
 import { Inspector } from '@/ui/components/Inspector';
 import { EditorScreen } from '@/ui/screens/EditorScreen';
 import { SchematicScreen } from '@/ui/screens/SchematicScreen';
+import { MixedScreen } from '@/ui/screens/MixedScreen';
+import { TaskEditorScreen } from '@/ui/screens/TaskEditorScreen';
 import { useTheme } from '@/ui/theme/useTheme';
 import { ShortToast } from '@/ui/components/ShortToast';
 import { Meter } from '@/ui/components/Meter';
@@ -35,7 +37,37 @@ const SimProjectSync: FC = () => {
 export const App: FC = () => {
   const { theme, toggle } = useTheme();
   const view = useUiStore((s) => s.view);
-  const isSchematic = view === 'schematic';
+
+  const left =
+    view === 'schematic' ? (
+      <SchematicScreen slot="palette" />
+    ) : view === 'mixed' ? (
+      <MixedScreen slot="palette" />
+    ) : view === 'editor' ? (
+      <TaskEditorScreen slot="palette" />
+    ) : (
+      <EditorScreen slot="palette" />
+    );
+  const stage =
+    view === 'schematic' ? (
+      <SchematicScreen slot="stage" />
+    ) : view === 'mixed' ? (
+      <MixedScreen slot="stage" />
+    ) : view === 'editor' ? (
+      <TaskEditorScreen slot="stage" />
+    ) : (
+      <EditorScreen slot="stage" />
+    );
+  const right =
+    view === 'schematic' ? (
+      <SchematicScreen slot="right" />
+    ) : view === 'mixed' ? (
+      <MixedScreen slot="right" />
+    ) : view === 'editor' ? (
+      <TaskEditorScreen slot="right" />
+    ) : (
+      <Inspector />
+    );
 
   return (
     <Shell
@@ -45,16 +77,16 @@ export const App: FC = () => {
           <SimProjectSync />
         </>
       }
-      left={isSchematic ? <SchematicScreen slot="palette" /> : <EditorScreen slot="palette" />}
+      left={left}
       stage={
         <>
-          {isSchematic ? <SchematicScreen slot="stage" /> : <EditorScreen slot="stage" />}
+          {stage}
           <Meter />
           <ShortToast />
           <LotoModal />
         </>
       }
-      right={isSchematic ? <SchematicScreen slot="right" /> : <Inspector />}
+      right={right}
     />
   );
 };

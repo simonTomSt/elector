@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type SceneTab = 'plate' | 'door' | 'terminals' | 'preview3d';
-export type MainView = 'cabinet' | 'schematic' | 'mixed';
+export type MainView = 'cabinet' | 'schematic' | 'mixed' | 'editor';
 
 interface UiState {
   sceneTab: SceneTab;

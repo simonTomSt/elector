@@ -33,6 +33,8 @@ export default [
         performance: 'readonly',
         requestAnimationFrame: 'readonly',
         cancelAnimationFrame: 'readonly',
+        Blob: 'readonly',
+        URL: 'readonly',
       },
     },
     plugins: {

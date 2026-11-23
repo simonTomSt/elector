@@ -108,8 +108,19 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
           >
             Schemat
           </button>
-          <button type="button" disabled title="Tryb mieszany będzie w etapie M10">
+          <button
+            type="button"
+            className={view === 'mixed' ? 'is-active' : ''}
+            onClick={() => setView('mixed')}
+          >
             Szafa + schemat
+          </button>
+          <button
+            type="button"
+            className={view === 'editor' ? 'is-active' : ''}
+            onClick={() => setView('editor')}
+          >
+            Edytor zadań
           </button>
         </div>
         {simOn && (
