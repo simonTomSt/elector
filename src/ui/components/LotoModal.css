@@ -1,0 +1,144 @@
+.loto-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: calc(var(--space-4) * 1px);
+}
+
+.loto-modal {
+  background: var(--theme-panel);
+  border: 1px solid var(--state-err-color);
+  border-radius: calc(var(--radius-md) * 1px);
+  padding: calc(var(--space-4) * 1px);
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-3) * 1px);
+}
+
+.loto-modal__header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-2) * 1px);
+}
+
+.loto-modal__icon {
+  font-size: 24px;
+  color: var(--state-err-color);
+}
+
+.loto-modal__title {
+  margin: 0;
+  font-size: 18px;
+  color: var(--theme-text);
+}
+
+.loto-modal__body {
+  margin: 0;
+  color: var(--theme-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.loto-modal__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-2) * 1px);
+}
+
+.loto-modal__step {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: calc(var(--space-2) * 1px);
+  align-items: center;
+  padding: calc(var(--space-2) * 1px);
+  border: 1px solid var(--theme-line);
+  border-radius: calc(var(--radius-sm) * 1px);
+  background: var(--theme-surface);
+}
+
+.loto-modal__step.is-done {
+  border-color: var(--state-ok-color);
+  background: var(--state-ok-soft);
+}
+
+.loto-modal__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--theme-raised);
+  color: var(--theme-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+.loto-modal__step.is-done .loto-modal__badge {
+  background: var(--state-ok-color);
+  color: #fff;
+}
+
+.loto-modal__step-label {
+  font-size: 14px;
+  color: var(--theme-text);
+}
+
+.loto-modal__btn {
+  min-height: 32px;
+  padding: 0 calc(var(--space-3) * 1px);
+  border: 1px solid var(--theme-accent);
+  background: var(--theme-raised);
+  color: var(--theme-accent);
+  border-radius: calc(var(--radius-sm) * 1px);
+  cursor: pointer;
+  font-weight: var(--font-weight-semibold);
+}
+
+.loto-modal__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: var(--theme-line);
+  color: var(--theme-muted);
+}
+
+.loto-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: calc(var(--space-2) * 1px);
+}
+
+.loto-modal__cancel,
+.loto-modal__confirm {
+  min-height: calc(var(--size-buttonMain) * 1px);
+  padding: 0 calc(var(--space-4) * 1px);
+  border-radius: calc(var(--radius-md) * 1px);
+  border: 0;
+  cursor: pointer;
+  font-weight: var(--font-weight-semibold);
+}
+
+.loto-modal__cancel {
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-line);
+}
+
+.loto-modal__confirm {
+  background: var(--state-ok-color);
+  color: #fff;
+}
+
+.loto-modal__confirm:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

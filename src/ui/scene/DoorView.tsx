@@ -25,6 +25,7 @@ export const DoorView: FC<Props> = ({ project }) => {
   const states = useSimStore((s) => s.view.devices);
   const pressButton = useSimStore((s) => s.pressButton);
   const setDeviceState = useSimStore((s) => s.setDeviceState);
+  const setLock = useSimStore((s) => s.setLock);
 
   const doorDevices = project.devices.filter(
     (d) => isPushButton(d) || isLamp(d) || isMainSwitch(d),
@@ -89,19 +90,35 @@ export const DoorView: FC<Props> = ({ project }) => {
             }
             if (isMainSwitch(rd)) {
               const on = st.on === true;
+              const locked = st.locked === true;
+              const lockable = String(rd.type.params['lockable']) === 'true';
               return (
                 <div key={tag} className="doorview__cell">
                   <button
                     type="button"
-                    className={`doorview__switch ${on ? 'is-on' : ''}`}
+                    className={`doorview__switch ${on ? 'is-on' : ''} ${locked ? 'is-locked' : ''}`}
                     onClick={() => onSwitchToggle(tag)}
-                    disabled={!simOn}
+                    disabled={!simOn || locked}
                     aria-pressed={on}
+                    aria-label={`Wyłącznik ${tag} ${on ? 'załączony' : 'wyłączony'}${locked ? ', zablokowany kłódką' : ''}`}
                   >
                     <span className="doorview__switch-handle" />
                     <span className="doorview__switch-label mono">{on ? 'I' : '0'}</span>
                   </button>
                   <div className="doorview__label mono">{tag}</div>
+                  {lockable && (
+                    <button
+                      type="button"
+                      className={`doorview__lock ${locked ? 'is-locked' : ''}`}
+                      onClick={() => simOn && setLock(tag, !locked)}
+                      disabled={!simOn}
+                      aria-pressed={locked}
+                      aria-label={locked ? `Zdejmij kłódkę z ${tag}` : `Załóż kłódkę na ${tag}`}
+                      title={locked ? 'Zdejmij kłódkę (LOTO)' : 'Załóż kłódkę (LOTO)'}
+                    >
+                      {locked ? '🔒' : '🔓'}
+                    </button>
+                  )}
                 </div>
               );
             }

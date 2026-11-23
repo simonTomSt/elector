@@ -166,7 +166,7 @@ export interface Requirement {
   args?: Record<string, unknown>;
 }
 
-export type ScenarioAction = 'set' | 'press' | 'release' | 'wait' | 'measure';
+export type ScenarioAction = 'set' | 'press' | 'release' | 'wait' | 'measure' | 'lock' | 'unlock';
 export type MeterRange = 'vac' | 'vdc' | 'ohm' | 'cont' | 'aac';
 
 export interface ScenarioStep {

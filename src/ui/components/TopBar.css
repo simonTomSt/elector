@@ -130,6 +130,12 @@
   cursor: pointer;
 }
 
+.topbar__theme.is-active {
+  background: var(--theme-raised);
+  color: var(--theme-accent);
+  border-color: var(--theme-accent);
+}
+
 .topbar__cta {
   min-height: calc(var(--size-buttonMain) * 1px);
   padding: 0 calc(var(--space-4) * 1px);

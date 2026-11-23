@@ -40,6 +40,8 @@ import { DraftWireView } from './DraftWireView';
 import { ZoomContext } from './zoomContext';
 import type { TerminalHighlight } from './DeviceView';
 import { useSimStore } from '@/store/sim';
+import { useMeterStore } from '@/store/meter';
+import { isAnyWireLive, useLotoStore } from '@/store/loto';
 
 interface Props {
   task: Task;
@@ -83,6 +85,10 @@ export const SceneView: FC<Props> = ({ task, project }) => {
   const existingWires = useProjectStore((s) => s.wires);
   const simOn = useSimStore((s) => s.on);
   const wireRuntime = useSimStore((s) => s.view.wires);
+  const meterPickActive = useMeterStore((s) => s.pickActive);
+  const meterPickTerminal = useMeterStore((s) => s.pickTerminal);
+  const meterProbes = useMeterStore((s) => s.probes);
+  const openLotoPrompt = useLotoStore((s) => s.openPrompt);
   const [hoverTerm, setHoverTerm] = useState<string | null>(null);
   const dragRef = useRef<{ tag: string; offsetMm: number; startX: number; startXMm: number } | null>(
     null,
@@ -121,11 +127,16 @@ export const SceneView: FC<Props> = ({ task, project }) => {
   };
 
   const highlightOf = (ref: string): TerminalHighlight => {
+    if (meterPickActive !== null) {
+      if (meterProbes[0] === ref || meterProbes[1] === ref) return 'source';
+      return 'target';
+    }
     if (draft) {
       if (ref === draft.from) return 'source';
       if (hoverTerm === ref) return canCommitTo(ref) ? 'target' : 'reject';
       return 'none';
     }
+    if (meterProbes[0] === ref || meterProbes[1] === ref) return 'source';
     return 'none';
   };
 
@@ -135,7 +146,15 @@ export const SceneView: FC<Props> = ({ task, project }) => {
     if (!svg) return;
     const pos = termIndex.get(ref);
     if (!pos) return;
+    if (meterPickActive !== null) {
+      meterPickTerminal(ref);
+      return;
+    }
     if (!draft) {
+      if (simOn && isAnyWireLive(wireRuntime)) {
+        openLotoPrompt({ reason: 'terminal', target: ref });
+        return;
+      }
       beginWire(ref, { xMm: pos.xMm, yMm: pos.yMm });
       return;
     }

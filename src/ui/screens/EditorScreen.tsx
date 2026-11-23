@@ -8,6 +8,8 @@ import { SpoolToolbar } from '@/ui/scene/SpoolToolbar';
 import { Palette } from '@/ui/components/Palette';
 import { DoorView } from '@/ui/scene/DoorView';
 import { useUiStore } from '@/store/ui';
+import { useSimStore } from '@/store/sim';
+import { isAnyWireLive, useLotoStore } from '@/store/loto';
 
 interface Props {
   slot?: 'palette' | 'stage';
@@ -25,6 +27,9 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   const wires = useProjectStore((s) => s.wires);
   const [draggingTypeId, setDraggingTypeId] = useState<string | null>(null);
   const sceneTab = useUiStore((s) => s.sceneTab);
+  const simOn = useSimStore((s) => s.on);
+  const wireRuntime = useSimStore((s) => s.view.wires);
+  const openLotoPrompt = useLotoStore((s) => s.openPrompt);
 
   useEffect(() => {
     if (task && library) return;
@@ -37,6 +42,16 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
     if (slot !== 'stage') return;
     const onKey = (e: KeyboardEvent): void => {
       if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (simOn && isAnyWireLive(wireRuntime)) {
+          const target = selectedWireId ?? selectedTag;
+          if (target) {
+            openLotoPrompt({
+              reason: selectedWireId ? 'wire' : 'device',
+              target,
+            });
+          }
+          return;
+        }
         if (selectedWireId) {
           removeWire(selectedWireId);
           return;
@@ -46,7 +61,16 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedTag, selectedWireId, removeDevice, removeWire, slot]);
+  }, [
+    selectedTag,
+    selectedWireId,
+    removeDevice,
+    removeWire,
+    slot,
+    simOn,
+    wireRuntime,
+    openLotoPrompt,
+  ]);
 
   const project = useMemo(() => {
     if (!task || !library) return null;

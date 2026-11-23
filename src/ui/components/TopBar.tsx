@@ -3,6 +3,7 @@ import type { ThemeName } from '@/ui/theme/tokens';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore, SPEEDS, type SimSpeed } from '@/store/sim';
 import { useUiStore, type SceneTab } from '@/store/ui';
+import { useMeterStore } from '@/store/meter';
 import './TopBar.css';
 
 type Props = {
@@ -39,6 +40,8 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const stepOnce = useSimStore((s) => s.stepOnce);
   const sceneTab = useUiStore((s) => s.sceneTab);
   const setSceneTab = useUiStore((s) => s.setSceneTab);
+  const meterOpen = useMeterStore((s) => s.open);
+  const toggleMeter = useMeterStore((s) => s.togglePanel);
 
   const project = useMemo(() => {
     if (!task || !library) return null;
@@ -129,6 +132,16 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             </span>
           </div>
         )}
+        <button
+          type="button"
+          className={`topbar__theme ${meterOpen ? 'is-active' : ''}`}
+          onClick={toggleMeter}
+          aria-label={meterOpen ? 'Schowaj multimetr' : 'Pokaż multimetr'}
+          aria-pressed={meterOpen}
+          title="Multimetr"
+        >
+          ⌧
+        </button>
         <label className="topbar__sim">
           <input
             type="checkbox"

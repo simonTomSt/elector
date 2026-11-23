@@ -33,6 +33,23 @@
         { "expect": { "-K1.closed": false, "-H1.lit": false, "-T1.out": true } },
         { "do": "measure", "range": "vdc", "probes": ["-K1:A1", "-T1:-"], "expect": { "value": { "approx": 0, "tol": 0.1 } } }
       ]
+    },
+    {
+      "id": "loto-order", "name": "Procedura LOTO (3 kroki)",
+      "steps": [
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 100 },
+        { "expect": { "-T1.out": true } },
+        { "do": "set", "tag": "-Q0", "state": { "on": false } },
+        { "do": "lock", "tag": "-Q0" },
+        { "expect": { "-Q0.locked": true, "-Q0.on": false } },
+        { "do": "measure", "range": "vac", "probes": ["-X1:L1.top", "-X1:L2.top"], "expect": { "value": { "approx": 0, "tol": 0.1 } } },
+        { "do": "measure", "range": "vac", "probes": ["-X1:L1.top", "-X1:PE.top"], "expect": { "value": { "approx": 0, "tol": 0.1 } } },
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "expect": { "-Q0.on": false } }
+      ]
     }
   ],
   "loto": { "lockDevice": "-Q0", "verifyPairs": [["-X1:L1.top", "-X1:L2.top"], ["-X1:L2.top", "-X1:L3.top"], ["-X1:L1.top", "-X1:L3.top"], ["-X1:L1.top", "-X1:PE.top"]] },

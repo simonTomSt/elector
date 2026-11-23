@@ -5,6 +5,8 @@ import { Inspector } from '@/ui/components/Inspector';
 import { EditorScreen } from '@/ui/screens/EditorScreen';
 import { useTheme } from '@/ui/theme/useTheme';
 import { ShortToast } from '@/ui/components/ShortToast';
+import { Meter } from '@/ui/components/Meter';
+import { LotoModal } from '@/ui/components/LotoModal';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore } from '@/store/sim';
 import { useSimTicker } from '@/store/useSimTicker';
@@ -43,7 +45,9 @@ export const App: FC = () => {
       stage={
         <>
           <EditorScreen slot="stage" />
+          <Meter />
           <ShortToast />
+          <LotoModal />
         </>
       }
       right={<Inspector />}

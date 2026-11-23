@@ -148,7 +148,7 @@
     "step": {
       "type": "object",
       "properties": {
-        "do": { "enum": ["set", "press", "release", "wait", "measure"] },
+        "do": { "enum": ["set", "press", "release", "wait", "measure", "lock", "unlock"] },
         "tag": { "type": "string" },
         "state": { "type": "object" },
         "ms": { "type": "integer" },

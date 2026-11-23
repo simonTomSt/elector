@@ -145,7 +145,13 @@ const runStep = (ctx: RunContext, s: ScenarioStep, failures: string[], readings:
       return;
     }
     const st = ctx.sim.states[tag] ?? {};
-    Object.assign(st, s.state ?? {});
+    const patch = s.state ?? {};
+    Object.assign(st, patch);
+    // Kłódka LOTO: wyłącznik główny z locked=true nie może przejść w on=true.
+    const dev = ctx.project.byTag.get(tag);
+    if (dev?.type.kind === 'mainSwitch' && st.locked && st.on === true) {
+      st.on = false;
+    }
     ctx.sim.states[tag] = st;
     return;
   }
@@ -165,6 +171,22 @@ const runStep = (ctx: RunContext, s: ScenarioStep, failures: string[], readings:
     const tag = s.tag ?? '';
     const st = ctx.sim.states[tag] ?? {};
     st.pressed = false;
+    ctx.sim.states[tag] = st;
+    return;
+  }
+  if (s.do === 'lock') {
+    const tag = s.tag ?? '';
+    const st = ctx.sim.states[tag] ?? {};
+    st.locked = true;
+    // Założenie kłódki wymaga pozycji 0.
+    st.on = false;
+    ctx.sim.states[tag] = st;
+    return;
+  }
+  if (s.do === 'unlock') {
+    const tag = s.tag ?? '';
+    const st = ctx.sim.states[tag] ?? {};
+    st.locked = false;
     ctx.sim.states[tag] = st;
     return;
   }

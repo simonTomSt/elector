@@ -57,4 +57,11 @@ describe('M3 – scenariusze testowe przykładów', () => {
     expect(res.failures).toEqual([]);
     expect(res.ok).toBe(true);
   });
+
+  it('diag-no-start: loto-order (M8)', () => {
+    const task = byId.get('diag-no-start');
+    const res = runScenario(task!, 'loto-order', devices);
+    expect(res.failures).toEqual([]);
+    expect(res.ok).toBe(true);
+  });
 });

@@ -49,6 +49,7 @@ interface SimStoreState {
   tick(wallNowMs: number): void;
   setDeviceState(tag: string, patch: Record<string, unknown>): void;
   pressButton(tag: string, pressed: boolean): void;
+  setLock(tag: string, locked: boolean): void;
 }
 
 const buildWireRuntime = (
@@ -237,11 +238,28 @@ export const useSimStore = create<SimStoreState>((set, get) => ({
     const { _sim, _project } = get();
     if (!_sim || !_project) return;
     const st = _sim.states[tag] ?? {};
-    _sim.states[tag] = { ...st, ...patch } as typeof st;
+    // Kłódka LOTO: zablokowany wyłącznik nie wchodzi w on=true.
+    const next = { ...st, ...patch } as typeof st;
+    const dev = _project.byTag.get(tag);
+    if (dev?.type.kind === 'mainSwitch' && st.locked && next.on === true) {
+      next.on = false;
+    }
+    _sim.states[tag] = next;
     set({ view: refreshView(_project, _sim) });
   },
 
   pressButton(tag, pressed) {
     get().setDeviceState(tag, { pressed });
+  },
+
+  setLock(tag, locked) {
+    const { _sim, _project } = get();
+    if (!_sim || !_project) return;
+    const st = _sim.states[tag] ?? {};
+    const next = { ...st, locked } as typeof st;
+    // Założenie kłódki wymaga wyłącznika w pozycji 0.
+    if (locked) next.on = false;
+    _sim.states[tag] = next;
+    set({ view: refreshView(_project, _sim) });
   },
 }));

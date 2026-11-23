@@ -19,6 +19,7 @@ export default [
         localStorage: 'readonly',
         console: 'readonly',
         HTMLElement: 'readonly',
+        HTMLDivElement: 'readonly',
         HTMLInputElement: 'readonly',
         SVGElement: 'readonly',
         SVGSVGElement: 'readonly',
