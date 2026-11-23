@@ -39,6 +39,7 @@ import { pickRailForY, svgPointToMm } from './dnd';
 import { DraftWireView } from './DraftWireView';
 import { ZoomContext } from './zoomContext';
 import type { TerminalHighlight } from './DeviceView';
+import { useSimStore } from '@/store/sim';
 
 interface Props {
   task: Task;
@@ -80,6 +81,8 @@ export const SceneView: FC<Props> = ({ task, project }) => {
   const commitWire = useProjectStore((s) => s.commitWire);
   const cancelWire = useProjectStore((s) => s.cancelWire);
   const existingWires = useProjectStore((s) => s.wires);
+  const simOn = useSimStore((s) => s.on);
+  const wireRuntime = useSimStore((s) => s.view.wires);
   const [hoverTerm, setHoverTerm] = useState<string | null>(null);
   const dragRef = useRef<{ tag: string; offsetMm: number; startX: number; startXMm: number } | null>(
     null,
@@ -429,6 +432,7 @@ export const SceneView: FC<Props> = ({ task, project }) => {
             fallbackStart={resolveEndpoint(w.a)}
             fallbackEnd={resolveEndpoint(w.b)}
             selected={selectedWireId === w.id}
+            runtime={simOn ? wireRuntime[w.id] : undefined}
             onPointerDown={(id, e) => {
               e.stopPropagation();
               if (draft) return;

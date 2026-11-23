@@ -6,6 +6,8 @@ import { resolveState, useProjectStore } from '@/store/project';
 import { SceneView, ZoomToolbar } from '@/ui/scene';
 import { SpoolToolbar } from '@/ui/scene/SpoolToolbar';
 import { Palette } from '@/ui/components/Palette';
+import { DoorView } from '@/ui/scene/DoorView';
+import { useUiStore } from '@/store/ui';
 
 interface Props {
   slot?: 'palette' | 'stage';
@@ -22,6 +24,7 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   const devices = useProjectStore((s) => s.devices);
   const wires = useProjectStore((s) => s.wires);
   const [draggingTypeId, setDraggingTypeId] = useState<string | null>(null);
+  const sceneTab = useUiStore((s) => s.sceneTab);
 
   useEffect(() => {
     if (task && library) return;
@@ -77,9 +80,15 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
         alignItems: 'center',
       }}
     >
-      <SceneView task={task} project={project} />
-      <SpoolToolbar />
-      <ZoomToolbar />
+      {sceneTab === 'door' ? (
+        <DoorView project={project} />
+      ) : (
+        <>
+          <SceneView task={task} project={project} />
+          <SpoolToolbar />
+          <ZoomToolbar />
+        </>
+      )}
     </div>
   );
 };

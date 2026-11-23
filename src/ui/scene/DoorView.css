@@ -1,0 +1,129 @@
+.doorview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--space-4) * 1px);
+}
+
+.doorview__panel {
+  background: var(--scene-plate, var(--theme-panel));
+  border: 1px solid var(--theme-line);
+  border-radius: calc(var(--radius-lg) * 1px);
+  padding: calc(var(--space-4) * 1px);
+  min-width: 420px;
+  max-width: 720px;
+  width: 100%;
+}
+
+.doorview__title {
+  color: var(--theme-muted);
+  font-size: calc(var(--font-size-sm) * 1px);
+  margin-bottom: calc(var(--space-3) * 1px);
+}
+
+.doorview__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: calc(var(--space-4) * 1px);
+}
+
+.doorview__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--space-2) * 1px);
+}
+
+.doorview__label {
+  color: var(--theme-text);
+  font-size: calc(var(--font-size-sm) * 1px);
+}
+
+.doorview__lamp {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--lamp-color, #3FCF8E);
+  opacity: 0.25;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+  transition: opacity 120ms, box-shadow 120ms;
+}
+
+.doorview__lamp.is-lit {
+  opacity: 1;
+  box-shadow:
+    0 0 24px var(--lamp-color, #3FCF8E),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35);
+}
+
+.doorview__button {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  background: var(--btn-color, var(--theme-accent));
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  transition: transform 80ms, box-shadow 80ms;
+  touch-action: none;
+  user-select: none;
+}
+
+.doorview__button.is-pressed {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.doorview__button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.doorview__switch {
+  width: 64px;
+  height: 80px;
+  border-radius: 10px;
+  border: 1px solid var(--theme-line);
+  background: var(--theme-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.doorview__switch-handle {
+  display: inline-block;
+  width: 24px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--theme-line2);
+  transform: translateY(16px);
+  transition: transform 150ms, background 150ms;
+}
+
+.doorview__switch.is-on .doorview__switch-handle {
+  background: var(--state-on-color);
+  transform: translateY(-4px);
+}
+
+.doorview__switch-label {
+  color: var(--theme-muted);
+}
+
+.doorview__switch.is-on .doorview__switch-label {
+  color: var(--state-on-color);
+}
+
+.doorview__hint {
+  margin: calc(var(--space-3) * 1px) 0 0;
+  color: var(--theme-muted);
+  font-size: calc(var(--font-size-sm) * 1px);
+}

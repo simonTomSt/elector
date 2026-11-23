@@ -22,11 +22,18 @@ const strokeWidthFor = (cs: Wire['cs']): number => {
   return tokens.wire.width.core * 1.4;
 };
 
+export interface WireRuntimeFlags {
+  live: boolean;
+  flow: boolean;
+  short: boolean;
+}
+
 interface Props {
   wire: Wire;
   fallbackStart?: { xMm: number; yMm: number } | undefined;
   fallbackEnd?: { xMm: number; yMm: number } | undefined;
   selected?: boolean;
+  runtime?: WireRuntimeFlags | undefined;
   onPointerDown?: (id: string, e: ReactPointerEvent<SVGGElement>) => void;
 }
 
@@ -40,6 +47,7 @@ export const WireView: FC<Props> = ({
   fallbackStart,
   fallbackEnd,
   selected = false,
+  runtime,
   onPointerDown,
 }) => {
   let d = '';
@@ -61,10 +69,17 @@ export const WireView: FC<Props> = ({
   const coreW = strokeWidthFor(wire.cs);
   const isPe = wire.color === 'greenYellow';
 
+  const isLive = runtime?.live === true;
+  const isFlow = runtime?.flow === true;
+  const isShort = runtime?.short === true;
+
   return (
     <g
       data-wire={wire.id}
       data-selected={selected ? '1' : '0'}
+      data-live={isLive ? '1' : '0'}
+      data-flow={isFlow ? '1' : '0'}
+      data-short={isShort ? '1' : '0'}
       onPointerDown={onPointerDown ? (e) => onPointerDown(wire.id, e) : undefined}
       style={onPointerDown ? { cursor: 'pointer' } : undefined}
     >
@@ -77,6 +92,19 @@ export const WireView: FC<Props> = ({
           strokeLinecap="round"
           strokeLinejoin="round"
           opacity={0.35}
+        />
+      )}
+      {(isLive || isShort) && (
+        <path
+          d={d}
+          fill="none"
+          stroke={isShort ? 'var(--state-err-color)' : 'var(--state-on-color)'}
+          strokeWidth={coreW + 7}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={0.55}
+          filter="blur(3px)"
+          className={isShort ? 'wire__pulse' : undefined}
         />
       )}
       <path
@@ -95,6 +123,7 @@ export const WireView: FC<Props> = ({
         strokeWidth={coreW}
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeDasharray={isShort ? '5 5' : undefined}
       />
       {isPe && (
         <path
@@ -104,6 +133,18 @@ export const WireView: FC<Props> = ({
           strokeWidth={coreW}
           strokeDasharray="7 7"
           strokeLinejoin="round"
+        />
+      )}
+      {isFlow && (
+        <path
+          d={d}
+          fill="none"
+          stroke="var(--state-flow-dash)"
+          strokeWidth={coreW * 0.55}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="2 12"
+          className="wire__flow"
         />
       )}
       {onPointerDown && (

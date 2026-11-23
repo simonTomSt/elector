@@ -38,3 +38,37 @@ code,
 .mono {
   font-family: var(--font-mono);
 }
+
+@keyframes wire-flow-dash {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@keyframes wire-short-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.wire__flow {
+  animation: wire-flow-dash 900ms linear infinite;
+}
+
+.wire__pulse {
+  animation: wire-short-pulse 900ms ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wire__flow,
+  .wire__pulse {
+    animation: none;
+  }
+}

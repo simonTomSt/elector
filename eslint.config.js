@@ -29,6 +29,9 @@ export default [
         MouseEvent: 'readonly',
         PointerEvent: 'readonly',
         WheelEvent: 'readonly',
+        performance: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
       },
     },
     plugins: {
