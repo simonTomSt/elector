@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, PointerEvent as ReactPointerEvent } from 'react';
 import type { Wire, WireColor } from '@/domain/types';
 import { tokens } from '@/ui/theme/tokens';
 import { mmToPx } from './layout';
@@ -26,6 +26,8 @@ interface Props {
   wire: Wire;
   fallbackStart?: { xMm: number; yMm: number } | undefined;
   fallbackEnd?: { xMm: number; yMm: number } | undefined;
+  selected?: boolean;
+  onPointerDown?: (id: string, e: ReactPointerEvent<SVGGElement>) => void;
 }
 
 const buildStraightPath = (
@@ -33,7 +35,13 @@ const buildStraightPath = (
   end: { xMm: number; yMm: number },
 ): string => `M${mmToPx(start.xMm)} ${mmToPx(start.yMm)} L${mmToPx(end.xMm)} ${mmToPx(end.yMm)}`;
 
-export const WireView: FC<Props> = ({ wire, fallbackStart, fallbackEnd }) => {
+export const WireView: FC<Props> = ({
+  wire,
+  fallbackStart,
+  fallbackEnd,
+  selected = false,
+  onPointerDown,
+}) => {
   let d = '';
   if (wire.route && wire.route.length >= 2) {
     d = roundedOrthogonalPath(wire.route);
@@ -54,7 +62,23 @@ export const WireView: FC<Props> = ({ wire, fallbackStart, fallbackEnd }) => {
   const isPe = wire.color === 'greenYellow';
 
   return (
-    <g data-wire={wire.id}>
+    <g
+      data-wire={wire.id}
+      data-selected={selected ? '1' : '0'}
+      onPointerDown={onPointerDown ? (e) => onPointerDown(wire.id, e) : undefined}
+      style={onPointerDown ? { cursor: 'pointer' } : undefined}
+    >
+      {selected && (
+        <path
+          d={d}
+          fill="none"
+          stroke="var(--theme-accent)"
+          strokeWidth={coreW + 6}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={0.35}
+        />
+      )}
       <path
         d={d}
         fill="none"
@@ -80,6 +104,15 @@ export const WireView: FC<Props> = ({ wire, fallbackStart, fallbackEnd }) => {
           strokeWidth={coreW}
           strokeDasharray="7 7"
           strokeLinejoin="round"
+        />
+      )}
+      {onPointerDown && (
+        <path
+          d={d}
+          fill="none"
+          stroke="transparent"
+          strokeWidth={Math.max(12, haloW + 8)}
+          strokeLinecap="round"
         />
       )}
     </g>

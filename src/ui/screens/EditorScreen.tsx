@@ -4,6 +4,7 @@ import { loadDeviceLibrary } from '@/tasks/devices';
 import { loadTask } from '@/tasks/loader';
 import { resolveState, useProjectStore } from '@/store/project';
 import { SceneView, ZoomToolbar } from '@/ui/scene';
+import { SpoolToolbar } from '@/ui/scene/SpoolToolbar';
 import { Palette } from '@/ui/components/Palette';
 
 interface Props {
@@ -13,7 +14,9 @@ interface Props {
 export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   const init = useProjectStore((s) => s.init);
   const removeDevice = useProjectStore((s) => s.removeDevice);
+  const removeWire = useProjectStore((s) => s.removeWire);
   const selectedTag = useProjectStore((s) => s.selectedTag);
+  const selectedWireId = useProjectStore((s) => s.selectedWireId);
   const task = useProjectStore((s) => s.task);
   const library = useProjectStore((s) => s.library);
   const devices = useProjectStore((s) => s.devices);
@@ -30,13 +33,17 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   useEffect(() => {
     if (slot !== 'stage') return;
     const onKey = (e: KeyboardEvent): void => {
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedTag) {
-        removeDevice(selectedTag);
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedWireId) {
+          removeWire(selectedWireId);
+          return;
+        }
+        if (selectedTag) removeDevice(selectedTag);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedTag, removeDevice, slot]);
+  }, [selectedTag, selectedWireId, removeDevice, removeWire, slot]);
 
   const project = useMemo(() => {
     if (!task || !library) return null;
@@ -71,6 +78,7 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
       }}
     >
       <SceneView task={task} project={project} />
+      <SpoolToolbar />
       <ZoomToolbar />
     </div>
   );

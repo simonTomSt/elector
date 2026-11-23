@@ -1,7 +1,16 @@
 import { create } from 'zustand';
-import type { DeviceInstance, Project, Task, Wire } from '@/domain/types';
+import type {
+  DeviceInstance,
+  Project,
+  Task,
+  TerminalRef,
+  Wire,
+  WireColor,
+  WireCrossSection,
+} from '@/domain/types';
 import type { DeviceLibrary } from '@/tasks/devices';
 import { buildProjectFromTask, resolveProject, type ResolvedProject } from '@/sim/model';
+import { buildOrthoRoute, type PointMm } from '@/domain/routing';
 
 export type RailIndex = 1 | 2;
 
@@ -23,18 +32,56 @@ export interface ViewState {
   panYPx: number;
 }
 
+export interface SpoolState {
+  color: WireColor;
+  cs: WireCrossSection;
+  ferrule: boolean;
+}
+
+export const DEFAULT_SPOOL: SpoolState = {
+  color: 'darkBlue',
+  cs: 0.75,
+  ferrule: true,
+};
+
+export interface WireDraft {
+  from: TerminalRef;
+  origin: PointMm;
+  bends: PointMm[];
+  cursor: PointMm;
+}
+
+export type WireBeginResult =
+  | { ok: true }
+  | { ok: false; reason: 'unknown-terminal' };
+
+export type WireCommitResult =
+  | { ok: true; wireId: string }
+  | { ok: false; reason: 'no-draft' | 'unknown-terminal' | 'same-terminal' | 'duplicate' };
+
 interface ProjectState {
   task: Task;
   library: DeviceLibrary;
   devices: DeviceInstance[];
   wires: Wire[];
   selectedTag: string | null;
+  selectedWireId: string | null;
   view: ViewState;
+  draft: WireDraft | null;
+  spool: SpoolState;
   init(task: Task, library: DeviceLibrary): void;
   addDeviceOnRail(typeId: string, rail: RailIndex, xMm: number): string | null;
   moveDevice(tag: string, xMm: number): void;
   removeDevice(tag: string): void;
   selectDevice(tag: string | null): void;
+  selectWire(wireId: string | null): void;
+  removeWire(wireId: string): void;
+  setSpool(patch: Partial<SpoolState>): void;
+  beginWire(from: TerminalRef, origin: PointMm): WireBeginResult;
+  updateDraftCursor(cursor: PointMm): void;
+  addDraftBend(point: PointMm): void;
+  commitWire(to: TerminalRef, endPoint: PointMm): WireCommitResult;
+  cancelWire(): void;
   setZoom(zoom: number): void;
   setPan(xPx: number, yPx: number): void;
   resetView(): void;
@@ -120,13 +167,47 @@ export const resolveState = (
   state: Pick<ProjectState, 'devices' | 'wires' | 'library'>,
 ): ResolvedProject => resolveProject(projectFromState(state), state.library);
 
+const terminalExists = (
+  ref: TerminalRef,
+  library: DeviceLibrary,
+  devices: readonly DeviceInstance[],
+): boolean => {
+  for (const d of devices) {
+    const type = library.byId.get(d.typeId);
+    if (!type) continue;
+    const sep = type.kind === 'terminal' ? '.' : ':';
+    const prefix = `${d.tag}${sep}`;
+    if (!ref.startsWith(prefix)) continue;
+    const term = ref.slice(prefix.length);
+    if (type.terminals.some((t) => t.id === term)) return true;
+  }
+  return false;
+};
+
+const nextWireId = (existing: readonly Wire[]): string => {
+  const used = new Set<number>();
+  for (const w of existing) {
+    const m = /^U(\d+)$/.exec(w.id);
+    if (m && m[1]) used.add(Number(m[1]));
+  }
+  let n = 1;
+  while (used.has(n)) n += 1;
+  return `U${n}`;
+};
+
+const samePair = (a: TerminalRef, b: TerminalRef, c: TerminalRef, d: TerminalRef): boolean =>
+  (a === c && b === d) || (a === d && b === c);
+
 export const useProjectStore = create<ProjectState>((set, get) => ({
   task: null as unknown as Task,
   library: null as unknown as DeviceLibrary,
   devices: [],
   wires: [],
   selectedTag: null,
+  selectedWireId: null,
   view: { zoom: 1, panXPx: 0, panYPx: 0 },
+  draft: null,
+  spool: { ...DEFAULT_SPOOL },
 
   init(task, library) {
     const project = buildProjectFromTask(task);
@@ -136,7 +217,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       devices: cloneDevices(project.devices),
       wires: [...project.wires],
       selectedTag: null,
+      selectedWireId: null,
       view: { zoom: 1, panXPx: 0, panYPx: 0 },
+      draft: null,
+      spool: { ...DEFAULT_SPOOL },
     });
   },
 
@@ -190,7 +274,76 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   selectDevice(tag) {
-    set({ selectedTag: tag });
+    set({ selectedTag: tag, selectedWireId: tag ? null : get().selectedWireId });
+  },
+
+  selectWire(wireId) {
+    set({ selectedWireId: wireId, selectedTag: wireId ? null : get().selectedTag });
+  },
+
+  removeWire(wireId) {
+    const { wires, selectedWireId } = get();
+    const next = wires.filter((w) => w.id !== wireId);
+    if (next.length === wires.length) return;
+    set({ wires: next, selectedWireId: selectedWireId === wireId ? null : selectedWireId });
+  },
+
+  setSpool(patch) {
+    set((s) => ({ spool: { ...s.spool, ...patch } }));
+  },
+
+  beginWire(from, origin) {
+    const { library, devices } = get();
+    if (!terminalExists(from, library, devices)) {
+      return { ok: false, reason: 'unknown-terminal' };
+    }
+    set({
+      draft: { from, origin, bends: [], cursor: origin },
+      selectedTag: null,
+      selectedWireId: null,
+    });
+    return { ok: true };
+  },
+
+  updateDraftCursor(cursor) {
+    const d = get().draft;
+    if (!d) return;
+    set({ draft: { ...d, cursor } });
+  },
+
+  addDraftBend(point) {
+    const d = get().draft;
+    if (!d) return;
+    set({ draft: { ...d, bends: [...d.bends, point], cursor: point } });
+  },
+
+  commitWire(to, endPoint) {
+    const { draft, library, devices, wires, spool } = get();
+    if (!draft) return { ok: false, reason: 'no-draft' };
+    if (!terminalExists(to, library, devices)) {
+      return { ok: false, reason: 'unknown-terminal' };
+    }
+    if (to === draft.from) return { ok: false, reason: 'same-terminal' };
+    if (wires.some((w) => samePair(w.a, w.b, draft.from, to))) {
+      return { ok: false, reason: 'duplicate' };
+    }
+    const route = buildOrthoRoute(draft.origin, draft.bends, endPoint);
+    const id = nextWireId(wires);
+    const wire: Wire = {
+      id,
+      a: draft.from,
+      b: to,
+      color: spool.color,
+      cs: spool.cs,
+      ferrule: spool.ferrule,
+      route,
+    };
+    set({ wires: [...wires, wire], draft: null, selectedWireId: id });
+    return { ok: true, wireId: id };
+  },
+
+  cancelWire() {
+    set({ draft: null });
   },
 
   setZoom(zoom) {

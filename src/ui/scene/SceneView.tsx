@@ -36,7 +36,9 @@ import { DeviceView } from './DeviceView';
 import { WireView } from './WireView';
 import { DoorStrip } from './DoorStrip';
 import { pickRailForY, svgPointToMm } from './dnd';
+import { DraftWireView } from './DraftWireView';
 import { ZoomContext } from './zoomContext';
+import type { TerminalHighlight } from './DeviceView';
 
 interface Props {
   task: Task;
@@ -64,10 +66,21 @@ export const SceneView: FC<Props> = ({ task, project }) => {
   const moveDevice = useProjectStore((s) => s.moveDevice);
   const selectDevice = useProjectStore((s) => s.selectDevice);
   const selectedTag = useProjectStore((s) => s.selectedTag);
+  const selectedWireId = useProjectStore((s) => s.selectedWireId);
+  const selectWire = useProjectStore((s) => s.selectWire);
   const view = useProjectStore((s) => s.view);
   const setZoom = useProjectStore((s) => s.setZoom);
   const setPan = useProjectStore((s) => s.setPan);
   const resetView = useProjectStore((s) => s.resetView);
+  const draft = useProjectStore((s) => s.draft);
+  const spool = useProjectStore((s) => s.spool);
+  const beginWire = useProjectStore((s) => s.beginWire);
+  const updateDraftCursor = useProjectStore((s) => s.updateDraftCursor);
+  const addDraftBend = useProjectStore((s) => s.addDraftBend);
+  const commitWire = useProjectStore((s) => s.commitWire);
+  const cancelWire = useProjectStore((s) => s.cancelWire);
+  const existingWires = useProjectStore((s) => s.wires);
+  const [hoverTerm, setHoverTerm] = useState<string | null>(null);
   const dragRef = useRef<{ tag: string; offsetMm: number; startX: number; startXMm: number } | null>(
     null,
   );
@@ -94,6 +107,42 @@ export const SceneView: FC<Props> = ({ task, project }) => {
 
   const resolveEndpoint = (ref: string): { xMm: number; yMm: number } | undefined =>
     termIndex.get(ref);
+
+  const canCommitTo = (ref: string): boolean => {
+    if (!draft) return false;
+    if (ref === draft.from) return false;
+    return !existingWires.some(
+      (w) =>
+        (w.a === draft.from && w.b === ref) || (w.b === draft.from && w.a === ref),
+    );
+  };
+
+  const highlightOf = (ref: string): TerminalHighlight => {
+    if (draft) {
+      if (ref === draft.from) return 'source';
+      if (hoverTerm === ref) return canCommitTo(ref) ? 'target' : 'reject';
+      return 'none';
+    }
+    return 'none';
+  };
+
+  const onTerminalPointerDown = (ref: string, e: ReactPointerEvent<SVGGElement>): void => {
+    e.stopPropagation();
+    const svg = svgRef.current;
+    if (!svg) return;
+    const pos = termIndex.get(ref);
+    if (!pos) return;
+    if (!draft) {
+      beginWire(ref, { xMm: pos.xMm, yMm: pos.yMm });
+      return;
+    }
+    const result = commitWire(ref, { xMm: pos.xMm, yMm: pos.yMm });
+    if (!result.ok) {
+      // zły cel – zostaw draft, kursor podąża dalej
+      return;
+    }
+  };
+
 
   const computeGhost = useCallback(
     (e: DragEvent<SVGSVGElement>): GhostState | null => {
@@ -185,10 +234,26 @@ export const SceneView: FC<Props> = ({ task, project }) => {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && dragRef.current) {
-        moveDevice(dragRef.current.tag, dragRef.current.startXMm);
-        dragRef.current = null;
-        setDragTag(null);
+      if (e.key === 'Escape') {
+        if (dragRef.current) {
+          moveDevice(dragRef.current.tag, dragRef.current.startXMm);
+          dragRef.current = null;
+          setDragTag(null);
+        }
+        if (draft) {
+          cancelWire();
+          setHoverTerm(null);
+        }
+      }
+      if (draft) {
+        if (e.key === ' ' || e.code === 'Space') {
+          e.preventDefault();
+          addDraftBend({ xMm: draft.cursor.xMm, yMm: draft.cursor.yMm });
+        }
+        if (e.key === 'Enter' && hoverTerm) {
+          const pos = termIndex.get(hoverTerm);
+          if (pos) commitWire(hoverTerm, { xMm: pos.xMm, yMm: pos.yMm });
+        }
       }
       if (e.key === '+' || e.key === '=') setZoom(view.zoom * 1.2);
       if (e.key === '-' || e.key === '_') setZoom(view.zoom / 1.2);
@@ -196,7 +261,18 @@ export const SceneView: FC<Props> = ({ task, project }) => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [moveDevice, setZoom, resetView, view.zoom]);
+  }, [
+    moveDevice,
+    setZoom,
+    resetView,
+    view.zoom,
+    draft,
+    cancelWire,
+    addDraftBend,
+    hoverTerm,
+    commitWire,
+    termIndex,
+  ]);
 
   const onWheel = (e: ReactWheelEvent<SVGSVGElement>): void => {
     if (!(e.ctrlKey || e.metaKey)) return;
@@ -217,10 +293,39 @@ export const SceneView: FC<Props> = ({ task, project }) => {
     (e.currentTarget as unknown as Element).setPointerCapture(e.pointerId);
   };
 
+  const findNearestTerminal = (xMm: number, yMm: number): string | null => {
+    let best: { ref: string; d2: number } | null = null;
+    const R2 = 6 * 6;
+    for (const [ref, pos] of termIndex) {
+      const dx = pos.xMm - xMm;
+      const dy = pos.yMm - yMm;
+      const d2 = dx * dx + dy * dy;
+      if (d2 <= R2 && (!best || d2 < best.d2)) best = { ref, d2 };
+    }
+    return best?.ref ?? null;
+  };
+
   const onSvgPointerMove = (e: ReactPointerEvent<SVGSVGElement>): void => {
     const p = panRef.current;
-    if (!p) return;
-    setPan(p.panX0 + (e.clientX - p.startX), p.panY0 + (e.clientY - p.startY));
+    if (p) {
+      setPan(p.panX0 + (e.clientX - p.startX), p.panY0 + (e.clientY - p.startY));
+      return;
+    }
+    if (!draft) return;
+    const svg = svgRef.current;
+    if (!svg) return;
+    const local = svgPointToMm(svg, e.clientX, e.clientY, PX_PER_MM);
+    if (!local) return;
+    const near = findNearestTerminal(local.xMm, local.yMm);
+    setHoverTerm(near);
+    if (near && near !== draft.from) {
+      const pos = termIndex.get(near);
+      if (pos) {
+        updateDraftCursor({ xMm: pos.xMm, yMm: pos.yMm });
+        return;
+      }
+    }
+    updateDraftCursor({ xMm: local.xMm, yMm: local.yMm });
   };
 
   const onSvgPointerUp = (e: ReactPointerEvent<SVGSVGElement>): void => {
@@ -242,7 +347,10 @@ export const SceneView: FC<Props> = ({ task, project }) => {
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       onClick={(e) => {
-        if (e.target === e.currentTarget) selectDevice(null);
+        if (e.target === e.currentTarget) {
+          selectDevice(null);
+          selectWire(null);
+        }
       }}
       onWheel={onWheel}
       onPointerDown={onSvgPointerDown}
@@ -289,7 +397,11 @@ export const SceneView: FC<Props> = ({ task, project }) => {
                 opacity: beingDragged ? 0.7 : 1,
               }}
             >
-              <DeviceView rd={rd} box={box} />
+              <DeviceView
+                rd={rd}
+                box={box}
+                terminals={{ highlightOf, onPointerDown: onTerminalPointerDown }}
+              />
               {selected && (
                 <rect
                   x={mmToPx(box.xMm) - 2}
@@ -316,9 +428,26 @@ export const SceneView: FC<Props> = ({ task, project }) => {
             wire={w}
             fallbackStart={resolveEndpoint(w.a)}
             fallbackEnd={resolveEndpoint(w.b)}
+            selected={selectedWireId === w.id}
+            onPointerDown={(id, e) => {
+              e.stopPropagation();
+              if (draft) return;
+              selectWire(id);
+            }}
           />
         ))}
       </g>
+
+      {draft && (
+        <DraftWireView
+          origin={draft.origin}
+          bends={draft.bends}
+          cursor={draft.cursor}
+          color={spool.color}
+          cs={spool.cs}
+          valid={hoverTerm ? canCommitTo(hoverTerm) : true}
+        />
+      )}
 
       {ghost && (
         <g data-layer="ghost" pointerEvents="none">

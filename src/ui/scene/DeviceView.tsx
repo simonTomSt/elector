@@ -1,11 +1,19 @@
-import type { FC, ReactNode } from 'react';
+import type { FC, PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import type { ResolvedDevice } from '@/sim/model';
 import { mmToPx, terminalsForDevice, type DeviceBox } from './layout';
 import { TerminalView } from './TerminalView';
 
+export type TerminalHighlight = 'none' | 'source' | 'target' | 'reject';
+
+export interface TerminalInteractions {
+  highlightOf?: (ref: string) => TerminalHighlight;
+  onPointerDown?: (ref: string, e: ReactPointerEvent<SVGGElement>) => void;
+}
+
 interface Props {
   rd: ResolvedDevice;
   box: DeviceBox;
+  terminals?: TerminalInteractions | undefined;
 }
 
 const deviceSubtitle = (rd: ResolvedDevice): string => {
@@ -70,13 +78,27 @@ const DeviceShellRect: FC<{ box: DeviceBox; children?: ReactNode }> = ({ box, ch
   );
 };
 
-const TerminalBlock: FC<{ rd: ResolvedDevice; box: DeviceBox }> = ({ rd, box }) => {
+const TerminalBlock: FC<{
+  rd: ResolvedDevice;
+  box: DeviceBox;
+  terminals?: TerminalInteractions | undefined;
+}> = ({ rd, box, terminals }) => {
   const terms = terminalsForDevice(rd, box);
   return (
     <g>
-      {terms.map((t) => (
-        <TerminalView key={t.id} term={t} />
-      ))}
+      {terms.map((t, i) => {
+        const ref = rd.terminalRefs[i];
+        const highlight = ref && terminals?.highlightOf ? terminals.highlightOf(ref) : 'none';
+        return (
+          <TerminalView
+            key={t.id}
+            term={t}
+            terminalRef={ref}
+            highlight={highlight}
+            onPointerDown={terminals?.onPointerDown}
+          />
+        );
+      })}
     </g>
   );
 };
@@ -205,13 +227,13 @@ const PeBarDevice: FC<{ rd: ResolvedDevice; box: DeviceBox }> = ({ rd, box }) =>
 
 const DEV_SKIP_FALLBACK = new Set(['terminal', 'peBar']);
 
-export const DeviceView: FC<Props> = ({ rd, box }) => {
+export const DeviceView: FC<Props> = ({ rd, box, terminals }) => {
   const dataTag = { 'data-tag': rd.instance.tag, 'data-kind': rd.type.kind };
   if (rd.type.kind === 'terminal') {
     return (
       <g {...dataTag}>
         <TerminalBlockDevice rd={rd} box={box} />
-        <TerminalBlock rd={rd} box={box} />
+        <TerminalBlock rd={rd} box={box} terminals={terminals} />
       </g>
     );
   }
@@ -219,7 +241,7 @@ export const DeviceView: FC<Props> = ({ rd, box }) => {
     return (
       <g {...dataTag}>
         <PeBarDevice rd={rd} box={box} />
-        <TerminalBlock rd={rd} box={box} />
+        <TerminalBlock rd={rd} box={box} terminals={terminals} />
       </g>
     );
   }
@@ -230,7 +252,7 @@ export const DeviceView: FC<Props> = ({ rd, box }) => {
       <DeviceShellRect box={box}>
         <LabelAndMeta rd={rd} box={box} />
       </DeviceShellRect>
-      <TerminalBlock rd={rd} box={box} />
+      <TerminalBlock rd={rd} box={box} terminals={terminals} />
     </g>
   );
 };

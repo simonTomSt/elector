@@ -3,6 +3,8 @@ import { mmToPx } from './layout';
 
 const CORNER_R_PX = tokens.wire.cornerRadius;
 
+export { buildOrthoRoute, type PointMm } from '@/domain/routing';
+
 export const roundedOrthogonalPath = (ptsMm: readonly [number, number][]): string => {
   if (ptsMm.length === 0) return '';
   const pts = ptsMm.map(([x, y]) => [mmToPx(x), mmToPx(y)] as const);
