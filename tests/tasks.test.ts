@@ -14,12 +14,12 @@ const readRaw = (name: string): unknown =>
 describe('Ładowanie zadań', () => {
   const devices = loadDeviceLibrary();
 
-  it('wszystkie 4 przykłady ładują się bez błędów', () => {
+  it('wszystkie przykłady ładują się bez błędów', () => {
     const files = readdirSync(examplesDir).filter((f) => f.endsWith('.json'));
-    expect(files.length).toBe(4);
+    expect(files.length).toBeGreaterThanOrEqual(4);
     const raws = files.map(readRaw);
     const { byId, tasks } = loadTaskRepo(raws, devices);
-    expect(tasks.length).toBe(4);
+    expect(tasks.length).toBe(files.length);
     expect(byId.has('dol-4kw')).toBe(true);
     expect(byId.has('dol-schematic')).toBe(true);
     expect(byId.has('dol-mixed')).toBe(true);

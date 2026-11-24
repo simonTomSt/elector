@@ -3,6 +3,7 @@ import dol4kwRaw from '../../../tasks/examples/dol-4kw.json';
 import diagNoStartRaw from '../../../tasks/examples/diag-no-start.json';
 import dolMixedRaw from '../../../tasks/examples/dol-mixed.json';
 import dolSchematicRaw from '../../../tasks/examples/dol-schematic.json';
+import diagContactStuckRaw from '../../../tasks/examples/diag-contact-stuck.json';
 import { loadDeviceLibrary } from '@/tasks/devices';
 import { loadTaskRepo } from '@/tasks/loader';
 import { resolveState, useProjectStore } from '@/store/project';
@@ -42,7 +43,7 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
     const lib = loadDeviceLibrary();
     // Użyj repo, bo zadania mogą dziedziczyć (np. diag-no-start extends dol-4kw)
     const { byId } = loadTaskRepo(
-      [dol4kwRaw, diagNoStartRaw, dolMixedRaw, dolSchematicRaw],
+      [dol4kwRaw, diagNoStartRaw, diagContactStuckRaw, dolMixedRaw, dolSchematicRaw],
       lib,
     );
     const t = byId.get(id) ?? byId.get('dol-4kw');

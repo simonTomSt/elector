@@ -158,3 +158,11 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `useDiagnosticStore.deviceFaultStates(task)` mapuje typy `contactWelded`/`contactOpen` z `Fault.apply.deviceFault` na odpowiednie flagi; wcześniej te warianty były cicho ignorowane.
 
 **Akceptacja:** 3 testy `contact-faults.test.ts` potwierdzają że welded łączy pin 1-2 nawet bez cewki, a open rozłącza mimo closed=true. Diagnostyka przez `deviceFaultStates` emituje właściwe pola.
+
+## M25 – Ikony i etykiety typu zadania
+- Kafelki `TasksScreen` pokazują 📋 Szafa / 📐 Schemat / 🔗 Mieszane / 🔍 Diagnostyka zamiast surowej nazwy enum. Czytelniej dla kursanta.
+
+## M26 – Nowe zadanie: diag-contact-stuck
+- `tasks/examples/diag-contact-stuck.json` — diagnostyka z 3 usterkami typu `contactWelded` / `coilOpen` demonstrująca nowe wsparcie z M24.
+- Dodany do listy `RAW` w `TasksScreen` i do `loadTaskRepo` w `EditorScreen`.
+- Zaktualizowany test `tasks.test.ts` — teraz liczy wszystkie pliki w katalogu zamiast hardcoded 4.

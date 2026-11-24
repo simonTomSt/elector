@@ -1,0 +1,30 @@
+{
+  "id": "diag-contact-stuck",
+  "extends": "dol-4kw",
+  "type": "diagnostic",
+  "title": "Silnik nie zatrzymuje się po STOP",
+  "level": "średni",
+  "durationMin": 15,
+  "statement": "Operator naciska STOP, ale silnik dalej pracuje. Znajdź usterkę mechaniczną aparatu, przestrzegając LOTO przed dotknięciem.",
+  "symptom": "„Po naciśnięciu -S1 STOP styki głównego stycznika -K1 nadal zasilają silnik. Lampka -H1 też się nie gasi.”",
+  "scene": { "start": "wired", "supply": "-Q0" },
+  "faults": [
+    { "id": "f-k1-welded", "label": "Zgrzane styki główne -K1 (NO blokują się zamknięte)", "apply": { "device": "-K1", "deviceFault": "contactWelded" } },
+    { "id": "f-s1-welded", "label": "Zablokowany przycisk STOP -S1 (styki NC blokują się zamknięte)", "apply": { "device": "-S1", "deviceFault": "contactWelded" } },
+    { "id": "f-k1-coilopen", "label": "Przerwa cewki -K1 (coil się nie wyłącza bo się nie włączyła)", "apply": { "device": "-K1", "deviceFault": "coilOpen" } }
+  ],
+  "pickFaults": 1,
+  "requirements": [
+    { "id": "d1", "text": "LOTO przed pracą na okablowaniu", "check": "scenario", "args": { "id": "loto-order" } }
+  ],
+  "testScenarios": [],
+  "hints": [
+    { "id": "h1", "text": "Włącz układ, uruchom silnik -S2 START, a potem spróbuj zatrzymać -S1 STOP — co działa, co nie?", "level": "subtelna" },
+    { "id": "h2", "text": "Jeśli silnik dalej pracuje po STOP, sprawdź czy styk główny -K1 faktycznie się otwiera (mechanicznie).", "level": "bezpośrednia" },
+    { "id": "h3", "text": "Styki mogą być zgrzane po zwarciu — wymaga wymiany stycznika. Styk NC przycisku również może się zablokować.", "level": "rozwiązanie" }
+  ],
+  "scoring": {
+    "lotoPenalty": 20,
+    "hintLevels": { "subtelna": 3, "bezpośrednia": 8, "rozwiązanie": 20 }
+  }
+}

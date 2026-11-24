@@ -3,6 +3,7 @@ import dol4kw from '../../../tasks/examples/dol-4kw.json';
 import diagNoStart from '../../../tasks/examples/diag-no-start.json';
 import dolMixed from '../../../tasks/examples/dol-mixed.json';
 import dolSchematic from '../../../tasks/examples/dol-schematic.json';
+import diagContactStuck from '../../../tasks/examples/diag-contact-stuck.json';
 import { useUiStore } from '@/store/ui';
 import {
   clearProject,
@@ -27,7 +28,13 @@ interface TaskMeta {
   hintsTotal: number;
 }
 
-const RAW: readonly unknown[] = [dol4kw, diagNoStart, dolMixed, dolSchematic];
+const RAW: readonly unknown[] = [
+  dol4kw,
+  diagNoStart,
+  diagContactStuck,
+  dolMixed,
+  dolSchematic,
+];
 
 const toMeta = (raw: unknown): TaskMeta | null => {
   if (!raw || typeof raw !== 'object') return null;
