@@ -18,6 +18,7 @@ export interface PersistedProject {
   assignedFaultIds?: string[];
   reportedFaultIds?: string[];
   reportedAt?: number | null;
+  repairedFaultIds?: string[];
 }
 
 export interface PersistedUi {
@@ -73,11 +74,13 @@ const isProject = (p: unknown): p is PersistedProject => {
     assignedFaultIds?: unknown;
     reportedFaultIds?: unknown;
     reportedAt?: unknown;
+    repairedFaultIds?: unknown;
   };
   if (!Array.isArray(o.devices) || !Array.isArray(o.wires)) return false;
   if (o.revealedHintIds !== undefined && !Array.isArray(o.revealedHintIds)) return false;
   if (o.assignedFaultIds !== undefined && !Array.isArray(o.assignedFaultIds)) return false;
   if (o.reportedFaultIds !== undefined && !Array.isArray(o.reportedFaultIds)) return false;
+  if (o.repairedFaultIds !== undefined && !Array.isArray(o.repairedFaultIds)) return false;
   if (
     o.reportedAt !== undefined &&
     o.reportedAt !== null &&

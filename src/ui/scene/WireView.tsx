@@ -1,8 +1,41 @@
 import type { FC, PointerEvent as ReactPointerEvent } from 'react';
-import type { Wire, WireColor } from '@/domain/types';
+import type { Wire, WireColor, WireFault } from '@/domain/types';
 import { tokens } from '@/ui/theme/tokens';
 import { mmToPx } from './layout';
 import { roundedOrthogonalPath } from './routing';
+
+/** Punkt na trasie wybrany jako najbardziej "środkowy" — do oznaczenia faultu. */
+const midpointOfRoute = (route: readonly [number, number][]): { x: number; y: number } | null => {
+  if (route.length < 2) return null;
+  const segs: { a: [number, number]; b: [number, number]; len: number }[] = [];
+  let total = 0;
+  for (let i = 0; i < route.length - 1; i += 1) {
+    const a = route[i]!;
+    const b = route[i + 1]!;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const len = Math.hypot(dx, dy);
+    segs.push({ a, b, len });
+    total += len;
+  }
+  if (total === 0) {
+    const a = route[0]!;
+    return { x: mmToPx(a[0]), y: mmToPx(a[1]) };
+  }
+  let target = total / 2;
+  for (const s of segs) {
+    if (target <= s.len) {
+      const t = s.len === 0 ? 0 : target / s.len;
+      return {
+        x: mmToPx(s.a[0] + (s.b[0] - s.a[0]) * t),
+        y: mmToPx(s.a[1] + (s.b[1] - s.a[1]) * t),
+      };
+    }
+    target -= s.len;
+  }
+  const last = segs[segs.length - 1]!;
+  return { x: mmToPx(last.b[0]), y: mmToPx(last.b[1]) };
+};
 
 const WIRE_CSS_VAR: Record<WireColor, string> = {
   brown: 'var(--wire-brown-color)',
@@ -147,6 +180,13 @@ export const WireView: FC<Props> = ({
           className="wire__flow"
         />
       )}
+      {wire.fault && wire.route && (
+        <FaultMarker
+          fault={wire.fault}
+          point={midpointOfRoute(wire.route)}
+          wireId={wire.id}
+        />
+      )}
       {onPointerDown && (
         <path
           d={d}
@@ -156,6 +196,85 @@ export const WireView: FC<Props> = ({
           strokeLinecap="round"
         />
       )}
+    </g>
+  );
+};
+
+interface FaultMarkerProps {
+  fault: WireFault;
+  point: { x: number; y: number } | null;
+  wireId: string;
+}
+
+const FaultMarker: FC<FaultMarkerProps> = ({ fault, point, wireId }) => {
+  if (!point) return null;
+  const label = fault === 'open' ? 'przerwa' : 'luźny';
+  if (fault === 'open') {
+    const r = 9;
+    return (
+      <g
+        data-fault="open"
+        data-wire-fault={wireId}
+        aria-label={`Przewód ${wireId}: ${label}`}
+      >
+        <circle
+          cx={point.x}
+          cy={point.y}
+          r={r}
+          fill="var(--state-err-color)"
+          opacity={0.18}
+        />
+        <circle
+          cx={point.x}
+          cy={point.y}
+          r={r - 2}
+          fill="none"
+          stroke="var(--state-err-color)"
+          strokeWidth={1.5}
+        />
+        <path
+          d={`M${point.x - 5} ${point.y - 5} L${point.x + 5} ${point.y + 5} M${point.x + 5} ${point.y - 5} L${point.x - 5} ${point.y + 5}`}
+          stroke="var(--state-err-color)"
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+      </g>
+    );
+  }
+  // loose
+  const r = 9;
+  return (
+    <g
+      data-fault="loose"
+      data-wire-fault={wireId}
+      aria-label={`Przewód ${wireId}: ${label}`}
+    >
+      <circle
+        cx={point.x}
+        cy={point.y}
+        r={r}
+        fill="var(--state-warn-color, #E6A23C)"
+        opacity={0.18}
+      />
+      <circle
+        cx={point.x}
+        cy={point.y}
+        r={r - 2}
+        fill="none"
+        stroke="var(--state-warn-color, #E6A23C)"
+        strokeWidth={1.5}
+        strokeDasharray="3 2"
+      />
+      <text
+        x={point.x}
+        y={point.y + 3}
+        textAnchor="middle"
+        fontSize={9}
+        fontWeight={700}
+        fill="var(--state-warn-color, #E6A23C)"
+      >
+        !
+      </text>
     </g>
   );
 };

@@ -41,3 +41,34 @@
   border-radius: calc(var(--radius-lg) * 1px);
   padding: calc(var(--space-4) * 1px);
 }
+
+/* Pusty panel (widok 'tasks' nie ma palety/inspektora) — chowamy zawsze,
+   niezależnie od rozmiaru. aria-label zostaje dla testów. */
+.shell__left[data-empty='1'],
+.shell__right[data-empty='1'] {
+  display: none;
+}
+
+/* Wąski ekran: panele składają się do „szuflad" nad/pod sceną.
+   Decyzja D7 (tablet 1024+ w poziomie w pełni interaktywny, telefon = podgląd).
+   Granica 900 px = tablet w pionie i mniejsze. */
+@media (max-width: 899px) {
+  .shell__body {
+    padding: calc(var(--space-2) * 1px);
+    gap: calc(var(--space-2) * 1px);
+  }
+  .shell__left,
+  .shell__right {
+    flex: 1 1 100%;
+    padding: calc(var(--space-3) * 1px);
+  }
+  .shell__stage {
+    flex: 1 1 100%;
+    padding: calc(var(--space-3) * 1px);
+    min-height: 360px;
+  }
+  .shell[data-left-open='0'] .shell__left,
+  .shell[data-right-open='0'] .shell__right {
+    display: none;
+  }
+}

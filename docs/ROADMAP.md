@@ -170,6 +170,31 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 ## M27 – Eksport raportu wyniku
 - `ResultModal` dostał przycisk „⬇ Raport" pobierający JSON z taskId, title, timestamp, score, karami i listą items. Przydatne dla instruktora bez backendu.
 
+## M31 – E2e dla diag-contact-stuck + rozszerzony bridge
+- `e2eBridge` dostał `getDiagnostic()`, `repairFault(id)` i `assignFaults(ids)` — deterministyczny setup testów bez klikania w SVG. `resetStores` dodatkowo resetuje `useDiagnosticStore`.
+- Nowy `e2e/diag-contact-stuck.spec.ts` (4 scenariusze): otwarcie pokazuje `Zgłoś usterkę` i losuje usterkę; trafna diagnoza `f-k1-welded` → 100/100 i `ukonczone`; `repairFault` oznacza usterkę jako naprawioną i perystuje `repairedFaultIds` w `elector:project:diag-contact-stuck`; pudło (`f-k1-coilopen`) → 0 pkt, `w-toku`.
+- Całość 14 testów Playwright (10 istniejących + 4 nowe) przechodzi w ~5 s.
+
+**Akceptacja:** `npm run test:e2e` zielone; bridge metody działają tylko w `import.meta.env.DEV`.
+
+## M30 – Responsywność: składane panele
+- `useUiStore` dostał `leftOpen`/`rightOpen` z akcjami `toggleLeft`, `toggleRight`, `setLeftOpen`, `setRightOpen`. Wartość początkowa = `!isNarrowViewport()` (matchMedia 900 px), więc na szerokim ekranie panele są otwarte od razu, a na wąskim — schowane.
+- `Shell` renderuje dwa `aside` z `data-left-open`/`data-right-open` na kontenerze i `aria-hidden` na aside. Pusty slot (np. widok `tasks`) dostaje `data-empty="1"` i jest chowany CSS-em niezależnie od szerokości — aria-label zostaje, żeby stare testy znajdowały panele.
+- `Shell.css`: media `max-width: 899px` rozciąga wszystkie trzy kolumny do 100% i chowa panele z zamkniętym stanem. Na szerokich ekranach layout trzykolumnowy bez zmian.
+- `TopBar` dostał grupę `.topbar__panels` z dwoma przyciskami (◧ / ◨), widoczną tylko gdy `view !== 'tasks'`. Media 899 px chowa `.topbar__steps` i `.topbar__scene-tabs`, zawija prawą stronę.
+- 7 nowych testów `responsive.test.tsx`: toggle/set actions, obecność przycisków, stan data-attr na `.shell`, aria-hidden na aside w zależności od `leftOpen`/`rightOpen`.
+
+**Akceptacja:** na < 900 px paleta i inspektor są schowane domyślnie i chowane/pokazywane z TopBara; stage zajmuje 100% szerokości. Na ≥ 900 px bez zmian wizualnych.
+
+## M29 – Fizyczna naprawa usterki w cabinet
+- `useDiagnosticStore` dostał `repairedFaultIds[]` z akcją `repair(id)` i `isRepaired(id)`. `deviceFaultStates` i `applyAssignedFaults` pomijają naprawione usterki, a `reset`/`assignForTask` czyszczą listę. Pole perystowane w `PersistedProject.repairedFaultIds`.
+- `useProjectStore.repairFault(id)`: oznacza usterkę jako naprawioną i od razu usuwa `wire.fault` z odpowiedniego przewodu (dla device faultów wystarczy filtr — sim bierze fault'y z `deviceFaultStates` przy kolejnym `turnOn`).
+- `Inspector`: dla wybranego przewodu z aktywną usterką pokazuje czerwony blok „Usterka" z etykietą i przyciskiem „🔧 Napraw przewód"; dla wybranego aparatu z aktywną usterką — analogiczny blok z „🔧 Napraw / Wymień". Lista aktywnych usterek pochodzi z `assignedFaultIds \ repairedFaultIds`.
+- `WireView` renderuje marker usterki w środku trasy: czerwone „×" dla `open`, żółty „!" dla `loose`.
+- Zgłaszanie usterki („🔍 Zgłoś usterkę") dalej odpowiada za scoring; naprawa jest fizycznym wzmocnieniem flow'u i nie zmienia wyniku.
+
+**Akceptacja:** 10 nowych testów `repair.test.ts` pokrywa: usunięcie faultu z wire po `repairFault`, idempotencję, no-op dla nieznanych id, filtrowanie w `deviceFaultStates`, persystencję do localStorage i odtworzenie `repairedFaultIds` po symulowanym reloadzie.
+
 ## M28 – Wskaźnik „Zapisano" w TopBar
 - `useProjectStore` dostał pole `savedAt`, ustawiane w `flushAutosave` (zmiany devices/wires + hints + diagnostic). W TopBar `aria-live="polite"` pokazuje „Zapisano" z tooltipem pełnej daty.
 - Nowy pattern w `flushAutosave`: zapisuje poprzednie `historySuspended` do lokalnej zmiennej i przywraca po setState — wcześniej `historySuspended = false` po zakończeniu nadpisywał flagę ustawioną przez `init`, przez co historia widziała `init` jako zmianę do zapisania.

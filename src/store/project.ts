@@ -91,6 +91,7 @@ interface ProjectState {
   canRedo(): boolean;
   init(task: Task, library: DeviceLibrary): void;
   applyAssignedFaults(): void;
+  repairFault(faultId: string): void;
   addDeviceOnRail(typeId: string, rail: RailIndex, xMm: number): string | null;
   moveDevice(tag: string, xMm: number): void;
   removeDevice(tag: string): void;
@@ -297,6 +298,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         assignedFaultIds: saved.assignedFaultIds,
         reportedFaultIds: saved.reportedFaultIds ?? [],
         reportedAt: saved.reportedAt ?? null,
+        repairedFaultIds: saved.repairedFaultIds ?? [],
       });
     } else if (task.type === 'diagnostic' && existingAssigned.length === 0) {
       diag.reset();
@@ -328,11 +330,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   applyAssignedFaults() {
     const { task, wires } = get();
     if (!task || task.type !== 'diagnostic') return;
-    const assigned = useDiagnosticStore.getState().assignedFaultIds;
+    const { assignedFaultIds: assigned, repairedFaultIds: repaired } =
+      useDiagnosticStore.getState();
     if (assigned.length === 0) return;
     const nextWires = wires.map((w) => ({ ...w }));
     let changed = false;
     for (const id of assigned) {
+      if (repaired.includes(id)) continue;
       const f = task.faults?.find((x) => x.id === id);
       if (!f || !f.apply.wire || !f.apply.wireFault) continue;
       const w = nextWires.find((x) => x.id === f.apply.wire);
@@ -342,6 +346,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       }
     }
     if (changed) set({ wires: nextWires });
+  },
+
+  repairFault(faultId) {
+    const { task, wires } = get();
+    if (!task || task.type !== 'diagnostic' || !faultId) return;
+    const diag = useDiagnosticStore.getState();
+    if (!diag.assignedFaultIds.includes(faultId)) return;
+    if (diag.repairedFaultIds.includes(faultId)) return;
+    const f = task.faults?.find((x) => x.id === faultId);
+    if (!f) return;
+    diag.repair(faultId);
+    if (f.apply.wire) {
+      const idx = wires.findIndex((w) => w.id === f.apply.wire);
+      if (idx >= 0 && wires[idx]?.fault !== undefined) {
+        const next = wires.slice();
+        const { fault: _dropped, ...rest } = next[idx]!;
+        void _dropped;
+        next[idx] = rest as Wire;
+        set({ wires: next });
+      }
+    }
   },
 
   addDeviceOnRail(typeId, rail, xMm) {
@@ -510,6 +535,9 @@ const flushAutosave = (taskId: string, devices: readonly DeviceInstance[], wires
       ? { reportedFaultIds: [...diag.reportedFaultIds] }
       : {}),
     ...(diag.reportedAt !== null ? { reportedAt: diag.reportedAt } : {}),
+    ...(diag.repairedFaultIds.length > 0
+      ? { repairedFaultIds: [...diag.repairedFaultIds] }
+      : {}),
   });
   const wasSuspended = historySuspended;
   historySuspended = true;
@@ -521,7 +549,8 @@ useDiagnosticStore.subscribe((state, prev) => {
   if (
     state.assignedFaultIds === prev.assignedFaultIds &&
     state.reportedFaultIds === prev.reportedFaultIds &&
-    state.reportedAt === prev.reportedAt
+    state.reportedAt === prev.reportedAt &&
+    state.repairedFaultIds === prev.repairedFaultIds
   ) {
     return;
   }

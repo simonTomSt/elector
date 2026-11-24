@@ -266,3 +266,38 @@
   min-width: 10ch;
   text-align: right;
 }
+
+.topbar__panels {
+  display: none;
+  gap: calc(var(--space-2) * 1px);
+}
+
+/* Na wąskim ekranie: pokaż toggle paneli, schowaj kroki postępu
+   i kafelki widoku sceny (dostępne z poziomu paneli). Topbar zawija się
+   w razie potrzeby. */
+@media (max-width: 899px) {
+  .topbar {
+    flex-wrap: wrap;
+    padding: calc(var(--space-2) * 1px) calc(var(--space-3) * 1px);
+    gap: calc(var(--space-2) * 1px);
+  }
+  .topbar__steps,
+  .topbar__scene-tabs {
+    display: none;
+  }
+  .topbar__panels {
+    display: inline-flex;
+    order: 5;
+  }
+  .topbar__right {
+    flex-wrap: wrap;
+    row-gap: calc(var(--space-2) * 1px);
+  }
+  .topbar__views button {
+    padding: 0 calc(var(--space-2) * 1px);
+    font-size: calc(var(--font-size-sm) * 1px);
+  }
+  .topbar__meta {
+    display: none;
+  }
+}

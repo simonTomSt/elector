@@ -10,19 +10,42 @@ interface UiState {
   view: MainView;
   theme: ThemeName;
   currentTaskId: string | null;
+  /** Czy panel lewy (paleta) jest widoczny. Na wąskim ekranie domyślnie false. */
+  leftOpen: boolean;
+  /** Czy panel prawy (inspektor) jest widoczny. Na wąskim ekranie domyślnie false. */
+  rightOpen: boolean;
   setSceneTab(tab: SceneTab): void;
   setView(view: MainView): void;
   setTheme(theme: ThemeName): void;
   setCurrentTaskId(id: string | null): void;
+  toggleLeft(): void;
+  toggleRight(): void;
+  setLeftOpen(open: boolean): void;
+  setRightOpen(open: boolean): void;
 }
 
+const NARROW_PX = 900;
+
+/** Czy viewport jest wąski (< 900 px) — mobile/tablet w pionie. Bezpieczny w SSR/jsdom. */
+const isNarrowViewport = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  if (typeof window.matchMedia !== 'function') {
+    const w = window.innerWidth;
+    return typeof w === 'number' ? w < NARROW_PX : false;
+  }
+  return window.matchMedia(`(max-width: ${NARROW_PX - 1}px)`).matches;
+};
+
 const initial = loadUi();
+const defaultPanelOpen = !isNarrowViewport();
 
 export const useUiStore = create<UiState>((set) => ({
   sceneTab: 'plate',
   view: initial?.view ?? 'tasks',
   theme: initial?.theme ?? 'dark',
   currentTaskId: initial?.currentTaskId ?? null,
+  leftOpen: defaultPanelOpen,
+  rightOpen: defaultPanelOpen,
   setSceneTab(tab) {
     set({ sceneTab: tab });
   },
@@ -34,6 +57,18 @@ export const useUiStore = create<UiState>((set) => ({
   },
   setCurrentTaskId(id) {
     set({ currentTaskId: id });
+  },
+  toggleLeft() {
+    set((s) => ({ leftOpen: !s.leftOpen }));
+  },
+  toggleRight() {
+    set((s) => ({ rightOpen: !s.rightOpen }));
+  },
+  setLeftOpen(open) {
+    set({ leftOpen: open });
+  },
+  setRightOpen(open) {
+    set({ rightOpen: open });
   },
 }));
 

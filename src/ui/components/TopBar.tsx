@@ -55,6 +55,11 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const setSceneTab = useUiStore((s) => s.setSceneTab);
   const view = useUiStore((s) => s.view);
   const setView = useUiStore((s) => s.setView);
+  const leftOpen = useUiStore((s) => s.leftOpen);
+  const rightOpen = useUiStore((s) => s.rightOpen);
+  const toggleLeft = useUiStore((s) => s.toggleLeft);
+  const toggleRight = useUiStore((s) => s.toggleRight);
+  const showPanelToggles = view !== 'tasks';
   const meterOpen = useMeterStore((s) => s.open);
   const toggleMeter = useMeterStore((s) => s.togglePanel);
   const setResult = useResultStore((s) => s.setResult);
@@ -133,6 +138,30 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
           <li className={simOn ? 'is-active' : ''}>Test</li>
         </ol>
       </nav>
+      {showPanelToggles && (
+        <div className="topbar__panels" role="group" aria-label="Panele">
+          <button
+            type="button"
+            className={`topbar__theme ${leftOpen ? 'is-active' : ''}`}
+            onClick={toggleLeft}
+            aria-pressed={leftOpen}
+            aria-label={leftOpen ? 'Schowaj panel lewy' : 'Pokaż panel lewy'}
+            title="Panel lewy (paleta)"
+          >
+            ◧
+          </button>
+          <button
+            type="button"
+            className={`topbar__theme ${rightOpen ? 'is-active' : ''}`}
+            onClick={toggleRight}
+            aria-pressed={rightOpen}
+            aria-label={rightOpen ? 'Schowaj panel prawy' : 'Pokaż panel prawy'}
+            title="Panel prawy (inspektor)"
+          >
+            ◨
+          </button>
+        </div>
+      )}
       <nav className="topbar__scene-tabs" aria-label="Widok sceny">
         {SCENE_TABS.map((t) => (
           <button

@@ -31,10 +31,21 @@ interface DiagnosticState {
   reportedFaultIds: string[];
   /** Czy użytkownik już zgłosił usterkę w tej sesji — lockout po pierwszej próbie. */
   reportedAt: number | null;
+  /** Id usterek fizycznie naprawionych (po zdiagnozowaniu). */
+  repairedFaultIds: string[];
 
   assignForTask(task: Task, rnd?: () => number): void;
   report(faultIds: readonly string[]): ReportResult;
-  hydrate(partial: Partial<Pick<DiagnosticState, 'assignedFaultIds' | 'reportedFaultIds' | 'reportedAt'>>): void;
+  repair(faultId: string): void;
+  isRepaired(faultId: string): boolean;
+  hydrate(
+    partial: Partial<
+      Pick<
+        DiagnosticState,
+        'assignedFaultIds' | 'reportedFaultIds' | 'reportedAt' | 'repairedFaultIds'
+      >
+    >,
+  ): void;
   reset(): void;
   deviceFaultStates(
     task: Task,
@@ -55,6 +66,7 @@ export const useDiagnosticStore = create<DiagnosticState>((set, get) => ({
   assignedFaultIds: [],
   reportedFaultIds: [],
   reportedAt: null,
+  repairedFaultIds: [],
 
   assignForTask(task, rnd = Math.random) {
     if (task.type !== 'diagnostic') return;
@@ -66,6 +78,7 @@ export const useDiagnosticStore = create<DiagnosticState>((set, get) => ({
       assignedFaultIds: picked.map((f) => f.id),
       reportedFaultIds: [],
       reportedAt: null,
+      repairedFaultIds: [],
     });
   },
 
@@ -77,16 +90,34 @@ export const useDiagnosticStore = create<DiagnosticState>((set, get) => ({
     return { correct, assigned, reported };
   },
 
+  repair(faultId) {
+    if (!faultId) return;
+    const { assignedFaultIds, repairedFaultIds } = get();
+    if (!assignedFaultIds.includes(faultId)) return;
+    if (repairedFaultIds.includes(faultId)) return;
+    set({ repairedFaultIds: [...repairedFaultIds, faultId] });
+  },
+
+  isRepaired(faultId) {
+    return get().repairedFaultIds.includes(faultId);
+  },
+
   hydrate(partial) {
     set((s) => ({
       assignedFaultIds: partial.assignedFaultIds ? [...partial.assignedFaultIds] : s.assignedFaultIds,
       reportedFaultIds: partial.reportedFaultIds ? [...partial.reportedFaultIds] : s.reportedFaultIds,
       reportedAt: partial.reportedAt !== undefined ? partial.reportedAt : s.reportedAt,
+      repairedFaultIds: partial.repairedFaultIds ? [...partial.repairedFaultIds] : s.repairedFaultIds,
     }));
   },
 
   reset() {
-    set({ assignedFaultIds: [], reportedFaultIds: [], reportedAt: null });
+    set({
+      assignedFaultIds: [],
+      reportedFaultIds: [],
+      reportedAt: null,
+      repairedFaultIds: [],
+    });
   },
 
   deviceFaultStates(task) {
@@ -94,8 +125,9 @@ export const useDiagnosticStore = create<DiagnosticState>((set, get) => ({
       string,
       { tripped?: boolean; coilOpen?: boolean; contactsWelded?: boolean; contactsOpen?: boolean }
     > = {};
-    const assigned = get().assignedFaultIds;
+    const { assignedFaultIds: assigned, repairedFaultIds: repaired } = get();
     for (const id of assigned) {
+      if (repaired.includes(id)) continue;
       const f = (task.faults ?? []).find((x) => x.id === id);
       if (!f) continue;
       if (!f.apply.device || !f.apply.deviceFault) continue;
