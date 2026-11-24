@@ -41,7 +41,10 @@ interface SimStoreState {
   _project: ResolvedProject | null;
   _lastWallMs: number | null;
   attachProject(project: ResolvedProject): void;
-  turnOn(project: ResolvedProject): void;
+  turnOn(
+    project: ResolvedProject,
+    initialStates?: Record<string, Record<string, unknown>>,
+  ): void;
   turnOff(): void;
   togglePlay(): void;
   setSpeed(s: SimSpeed): void;
@@ -174,8 +177,13 @@ export const useSimStore = create<SimStoreState>((set, get) => ({
     }
   },
 
-  turnOn(project) {
+  turnOn(project, initialStates) {
     const sim = createSimState();
+    if (initialStates) {
+      for (const [tag, patch] of Object.entries(initialStates)) {
+        sim.states[tag] = { ...(sim.states[tag] ?? {}), ...patch };
+      }
+    }
     const view = refreshView(project, sim);
     set({
       on: true,

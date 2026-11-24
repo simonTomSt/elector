@@ -37,6 +37,8 @@ export default [
         Blob: 'readonly',
         URL: 'readonly',
         File: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
       },
     },
     plugins: {

@@ -4,7 +4,7 @@ import diagNoStartRaw from '../../../tasks/examples/diag-no-start.json';
 import dolMixedRaw from '../../../tasks/examples/dol-mixed.json';
 import dolSchematicRaw from '../../../tasks/examples/dol-schematic.json';
 import { loadDeviceLibrary } from '@/tasks/devices';
-import { loadTask } from '@/tasks/loader';
+import { loadTaskRepo } from '@/tasks/loader';
 import { resolveState, useProjectStore } from '@/store/project';
 import { SceneView, ZoomToolbar } from '@/ui/scene';
 import { SpoolToolbar } from '@/ui/scene/SpoolToolbar';
@@ -37,17 +37,16 @@ export const EditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   const openLotoPrompt = useLotoStore((s) => s.openPrompt);
 
   useEffect(() => {
-    const byId: Record<string, unknown> = {
-      'dol-4kw': dol4kwRaw,
-      'diag-no-start': diagNoStartRaw,
-      'dol-mixed': dolMixedRaw,
-      'dol-schematic': dolSchematicRaw,
-    };
     const id = currentTaskId ?? 'dol-4kw';
     if (task?.id === id && library) return;
     const lib = loadDeviceLibrary();
-    const raw = byId[id] ?? dol4kwRaw;
-    const t = loadTask(raw, { devices: lib });
+    // Użyj repo, bo zadania mogą dziedziczyć (np. diag-no-start extends dol-4kw)
+    const { byId } = loadTaskRepo(
+      [dol4kwRaw, diagNoStartRaw, dolMixedRaw, dolSchematicRaw],
+      lib,
+    );
+    const t = byId.get(id) ?? byId.get('dol-4kw');
+    if (!t) return;
     init(t, lib);
   }, [init, task, library, currentTaskId]);
 

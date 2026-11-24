@@ -110,3 +110,13 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `ResumeBanner` × ma teraz `aria-label="Schowaj komunikat"` zamiast duplikatu `"Zamknij"`; `ResultModal` zostaje przy `"Zamknij"`. Testy mogą jednoznacznie dotrzeć do konkretnego przycisku.
 
 **Akceptacja:** odkryte podpowiedzi widać w każdym widoku zadania; lista zadań pokazuje ile ich zużyto; dwa przyciski „×" w DOM nie dzielą tego samego accessible name.
+
+## M19 – Zadania diagnostyczne
+- Nowy `src/store/diagnostic.ts`: `assignedFaultIds` (wylosowane przy otwarciu zadania `type: diagnostic`), `reportedFaultIds`, `report(ids)` zwraca `correct` gdy zbiór zgłoszonych = wylosowanych. Perystowane w `PersistedProject` (assigned/reported/reportedAt).
+- `pickFaults(faults, n, rnd)` losuje N z listy bez powtórzeń; opcjonalny seed dla testów.
+- `useProjectStore.init` dla `type: diagnostic` + `scene.start: 'wired'` ładuje preset+solution (gotowa szafa), losuje usterki (lub hydratuje z zapisu), a `applyAssignedFaults()` wstrzykuje `wireFault` do `wires`. Device fault (`coilOpen`, `tripped`) trafia do sim przez nowy parametr `useSimStore.turnOn(project, initialStates)`.
+- `EditorScreen` używa `loadTaskRepo` zamiast `loadTask` — potrzebne by `diag-no-start` (extends `dol-4kw`) się załadował.
+- UI: przycisk „🔍 Zgłoś usterkę" w TopBar widoczny tylko dla diagnostic; modal `ReportFaultModal` z listą wszystkich `task.faults[]` i checkboxami. Trafna diagnoza → 100 pkt, `ukonczone`, `setResult` otwiera standardowy raport. Pudło → 0 pkt, `w-toku`, komunikat ze wskazaną poprawną usterką.
+- „Zacznij od nowa" resetuje też store diagnostyki.
+
+**Akceptacja:** otwarcie `diag-no-start` ukrywa jedną z 4 usterek; kursant widzi tylko objaw; po zgłoszeniu trafnej usterki dostaje 100/100, po pudle 0 pkt. 3 nowe testy e2e + 12 jednostkowych.

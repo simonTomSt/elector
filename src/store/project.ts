@@ -18,6 +18,7 @@ import {
   saveProject as savePersistedProject,
 } from '@/store/persist';
 import { useHintsStore } from '@/store/hints';
+import { useDiagnosticStore } from '@/store/diagnostic';
 
 export type RailIndex = 1 | 2;
 
@@ -77,6 +78,7 @@ interface ProjectState {
   draft: WireDraft | null;
   spool: SpoolState;
   init(task: Task, library: DeviceLibrary): void;
+  applyAssignedFaults(): void;
   addDeviceOnRail(typeId: string, rail: RailIndex, xMm: number): string | null;
   moveDevice(tag: string, xMm: number): void;
   removeDevice(tag: string): void;
@@ -219,9 +221,35 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   init(task, library) {
     const saved = loadPersistedProject(task.id);
     const base = buildInitialProjectForEditor(task);
-    const devices = saved ? cloneDevices(saved.devices) : cloneDevices(base.devices);
-    const wires = saved ? [...saved.wires] : [...base.wires];
+    // Scena diagnostyczna startuje z gotową szafą (preset + solution),
+    // bo kursant diagnozuje działający układ z wstrzykniętą usterką.
+    const diagnosticWired =
+      task.type === 'diagnostic' && task.scene.start === 'wired' && task.solution;
+    const devices = saved
+      ? cloneDevices(saved.devices)
+      : diagnosticWired
+        ? [...cloneDevices(base.devices), ...cloneDevices(task.solution!.devices)]
+        : cloneDevices(base.devices);
+    const wires = saved
+      ? [...saved.wires]
+      : diagnosticWired
+        ? [...base.wires, ...task.solution!.wires]
+        : [...base.wires];
     useHintsStore.getState().hydrate(saved?.revealedHintIds ?? []);
+    // Hydratacja stanu diagnostyki (jeśli był zapis) albo losowanie od nowa
+    const diag = useDiagnosticStore.getState();
+    if (saved?.assignedFaultIds && saved.assignedFaultIds.length > 0) {
+      diag.hydrate({
+        assignedFaultIds: saved.assignedFaultIds,
+        reportedFaultIds: saved.reportedFaultIds ?? [],
+        reportedAt: saved.reportedAt ?? null,
+      });
+    } else if (task.type === 'diagnostic') {
+      diag.reset();
+      diag.assignForTask(task);
+    } else {
+      diag.reset();
+    }
     set({
       task,
       library,
@@ -233,6 +261,29 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       draft: null,
       spool: { ...DEFAULT_SPOOL },
     });
+    // Zaaplikuj wireFault od razu po ustawieniu wires
+    if (task.type === 'diagnostic') {
+      get().applyAssignedFaults();
+    }
+  },
+
+  applyAssignedFaults() {
+    const { task, wires } = get();
+    if (!task || task.type !== 'diagnostic') return;
+    const assigned = useDiagnosticStore.getState().assignedFaultIds;
+    if (assigned.length === 0) return;
+    const nextWires = wires.map((w) => ({ ...w }));
+    let changed = false;
+    for (const id of assigned) {
+      const f = task.faults?.find((x) => x.id === id);
+      if (!f || !f.apply.wire || !f.apply.wireFault) continue;
+      const w = nextWires.find((x) => x.id === f.apply.wire);
+      if (w) {
+        w.fault = f.apply.wireFault;
+        changed = true;
+      }
+    }
+    if (changed) set({ wires: nextWires });
   },
 
   addDeviceOnRail(typeId, rail, xMm) {
@@ -374,12 +425,33 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 let lastAutosaveKey: string | null = null;
 const flushAutosave = (taskId: string, devices: readonly DeviceInstance[], wires: readonly Wire[]): void => {
   const revealedHintIds = useHintsStore.getState().revealedIds;
+  const diag = useDiagnosticStore.getState();
   savePersistedProject(taskId, {
     devices: [...devices],
     wires: [...wires],
     ...(revealedHintIds.length > 0 ? { revealedHintIds: [...revealedHintIds] } : {}),
+    ...(diag.assignedFaultIds.length > 0
+      ? { assignedFaultIds: [...diag.assignedFaultIds] }
+      : {}),
+    ...(diag.reportedFaultIds.length > 0
+      ? { reportedFaultIds: [...diag.reportedFaultIds] }
+      : {}),
+    ...(diag.reportedAt !== null ? { reportedAt: diag.reportedAt } : {}),
   });
 };
+
+useDiagnosticStore.subscribe((state, prev) => {
+  if (
+    state.assignedFaultIds === prev.assignedFaultIds &&
+    state.reportedFaultIds === prev.reportedFaultIds &&
+    state.reportedAt === prev.reportedAt
+  ) {
+    return;
+  }
+  const proj = useProjectStore.getState();
+  if (!proj.task) return;
+  flushAutosave(proj.task.id, proj.devices, proj.wires);
+});
 
 useHintsStore.subscribe((state, prev) => {
   if (state.revealedIds === prev.revealedIds) return;

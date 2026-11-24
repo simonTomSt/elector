@@ -1,4 +1,4 @@
-import { useMemo, useRef, type FC } from 'react';
+import { useMemo, useRef, useState, type FC } from 'react';
 import type { ThemeName } from '@/ui/theme/tokens';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore, SPEEDS, type SimSpeed } from '@/store/sim';
@@ -15,6 +15,8 @@ import { computeScore } from '@/validation/scoring';
 import { useResultStore } from '@/store/result';
 import { useLotoStore } from '@/store/loto';
 import { useHintsStore } from '@/store/hints';
+import { useDiagnosticStore } from '@/store/diagnostic';
+import { ReportFaultModal } from './ReportFaultModal';
 import './TopBar.css';
 
 type Props = {
@@ -57,6 +59,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const toggleMeter = useMeterStore((s) => s.togglePanel);
   const setResult = useResultStore((s) => s.setResult);
   const lotoIncidents = useLotoStore((s) => s.incidentCount);
+  const [reportOpen, setReportOpen] = useState(false);
   const revealedHintIds = useHintsStore((s) => s.revealedIds);
   const revealHint = useHintsStore((s) => s.reveal);
   const totalHints = task?.hints?.length ?? 0;
@@ -71,7 +74,11 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
     if (simOn) {
       turnOff();
     } else if (project) {
-      turnOn(project);
+      const initial =
+        task?.type === 'diagnostic'
+          ? useDiagnosticStore.getState().deviceFaultStates(task)
+          : undefined;
+      turnOn(project, initial);
     }
   };
 
@@ -110,6 +117,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const timeLabel = `${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
 
   return (
+    <>
     <header className="topbar" role="banner">
       <div className="topbar__left">
         <span className="topbar__logo" aria-hidden="true">⚡</span>
@@ -241,6 +249,16 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
         >
           {theme === 'dark' ? '☾' : '☀'}
         </button>
+        {task?.type === 'diagnostic' && (
+          <button
+            type="button"
+            className="topbar__theme"
+            onClick={() => setReportOpen(true)}
+            title="Zgłoś znalezioną usterkę"
+          >
+            🔍 Zgłoś usterkę
+          </button>
+        )}
         {totalHints > 0 && (
           <button
             type="button"
@@ -268,6 +286,8 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
         </button>
       </div>
     </header>
+    <ReportFaultModal open={reportOpen} onClose={() => setReportOpen(false)} />
+    </>
   );
 };
 

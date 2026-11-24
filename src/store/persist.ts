@@ -15,6 +15,9 @@ export interface PersistedProject {
   devices: DeviceInstance[];
   wires: Wire[];
   revealedHintIds?: string[];
+  assignedFaultIds?: string[];
+  reportedFaultIds?: string[];
+  reportedAt?: number | null;
 }
 
 export interface PersistedUi {
@@ -63,9 +66,25 @@ const writeEnvelope = <T>(key: string, payload: T): void => {
 
 const isProject = (p: unknown): p is PersistedProject => {
   if (!p || typeof p !== 'object') return false;
-  const o = p as { devices?: unknown; wires?: unknown; revealedHintIds?: unknown };
+  const o = p as {
+    devices?: unknown;
+    wires?: unknown;
+    revealedHintIds?: unknown;
+    assignedFaultIds?: unknown;
+    reportedFaultIds?: unknown;
+    reportedAt?: unknown;
+  };
   if (!Array.isArray(o.devices) || !Array.isArray(o.wires)) return false;
   if (o.revealedHintIds !== undefined && !Array.isArray(o.revealedHintIds)) return false;
+  if (o.assignedFaultIds !== undefined && !Array.isArray(o.assignedFaultIds)) return false;
+  if (o.reportedFaultIds !== undefined && !Array.isArray(o.reportedFaultIds)) return false;
+  if (
+    o.reportedAt !== undefined &&
+    o.reportedAt !== null &&
+    typeof o.reportedAt !== 'number'
+  ) {
+    return false;
+  }
   return true;
 };
 

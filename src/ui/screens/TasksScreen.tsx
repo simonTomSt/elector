@@ -13,6 +13,7 @@ import {
   type TaskProgressStatus,
 } from '@/store/persist';
 import { useHintsStore } from '@/store/hints';
+import { useDiagnosticStore } from '@/store/diagnostic';
 
 interface Props {
   slot?: 'palette' | 'stage' | 'right';
@@ -85,6 +86,7 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
     delete rest[id];
     saveProgress(rest);
     useHintsStore.getState().reset();
+    useDiagnosticStore.getState().reset();
     setRefresh((n) => n + 1);
   };
 
