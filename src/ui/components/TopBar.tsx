@@ -248,6 +248,18 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
         <button
           type="button"
           className="topbar__theme"
+          onClick={() => {
+            const ev = new KeyboardEvent('keydown', { key: '?' });
+            window.dispatchEvent(ev);
+          }}
+          aria-label="Skróty klawiaturowe"
+          title="Skróty klawiaturowe (?)"
+        >
+          ?
+        </button>
+        <button
+          type="button"
+          className="topbar__theme"
           onClick={onToggleTheme}
           aria-label={`Przełącz motyw (obecny: ${theme === 'dark' ? 'ciemny' : 'jasny'})`}
         >

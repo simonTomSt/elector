@@ -138,3 +138,9 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `init(task, library)` czyści historię.
 
 **Akceptacja:** 10 testów jednostkowych + 2 skrótowe pokrywają dodanie/usunięcie urządzenia, przesunięcie, limit historii, czyszczenie przy init.
+
+## M22 – Pomoc klawiszowa
+- Modal `ShortcutsModal` (lista wszystkich skrótów z `<kbd>` + opis) otwierany klawiszem `?` lub przyciskiem `?` w TopBar; zamykany `Esc` lub `Zamknij`.
+- Przycisk `?` w TopBar dla myszkowych userów — dispatchuje syntetyczny `KeyboardEvent('?')`, więc jeden punkt prawdy.
+
+**Akceptacja:** klawisz `?` otwiera modal z listą 10 skrótów.

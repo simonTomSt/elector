@@ -103,6 +103,14 @@ describe('M20 – skróty klawiaturowe 1..5', () => {
     expect(useProjectStore.getState().devices.length).toBe(before + 1);
   });
 
+  it('? otwiera modal „Skróty klawiaturowe"', async () => {
+    render(<App />);
+    fireEvent.keyDown(window, { key: '?' });
+    await waitFor(() => {
+      expect(document.querySelector('[aria-label="Skróty klawiaturowe"]')).toBeTruthy();
+    });
+  });
+
   it('ignoruje gdy otwarty modal (role=dialog)', async () => {
     render(<App />);
     useUiStore.setState({ view: 'cabinet' });

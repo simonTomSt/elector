@@ -13,6 +13,7 @@ import { ShortToast } from '@/ui/components/ShortToast';
 import { Meter } from '@/ui/components/Meter';
 import { LotoModal } from '@/ui/components/LotoModal';
 import { ResultModal } from '@/ui/components/ResultModal';
+import { ShortcutsModal } from '@/ui/components/ShortcutsModal';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore } from '@/store/sim';
 import { useSimTicker } from '@/store/useSimTicker';
@@ -91,6 +92,7 @@ export const App: FC = () => {
           <ShortToast />
           <LotoModal />
           <ResultModal />
+          <ShortcutsModal />
         </>
       }
       right={right}
