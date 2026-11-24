@@ -1,10 +1,35 @@
 import { useEffect, type FC } from 'react';
 import { useResultStore } from '@/store/result';
+import { useProjectStore } from '@/store/project';
 
 export const ResultModal: FC = () => {
   const open = useResultStore((s) => s.open);
   const result = useResultStore((s) => s.result);
   const hide = useResultStore((s) => s.hide);
+  const task = useProjectStore((s) => s.task);
+
+  const onExportReport = (): void => {
+    if (!result) return;
+    const report = {
+      taskId: task?.id ?? 'unknown',
+      taskTitle: task?.title ?? '',
+      generatedAt: new Date().toISOString(),
+      score: { value: result.value, max: result.max, passed: result.passed },
+      penalties: result.penalties,
+      items: result.items,
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `elector-raport-${task?.id ?? 'task'}-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -64,6 +89,22 @@ export const ResultModal: FC = () => {
               {result.value} / {result.max}
             </div>
           </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            type="button"
+            onClick={onExportReport}
+            style={{
+              background: 'transparent',
+              border: '1px solid var(--theme-border)',
+              color: 'var(--theme-fg)',
+              borderRadius: 4,
+              padding: '6px 10px',
+              cursor: 'pointer',
+            }}
+            title="Pobierz raport wyniku jako JSON"
+          >
+            ⬇ Raport
+          </button>
           <button
             type="button"
             onClick={hide}
@@ -79,6 +120,7 @@ export const ResultModal: FC = () => {
           >
             Zamknij
           </button>
+          </div>
         </header>
         <div style={{ padding: '12px 20px', overflow: 'auto' }}>
           {(result.penalties.loto > 0 || result.penalties.hints > 0) && (
