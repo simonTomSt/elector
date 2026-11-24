@@ -17,6 +17,7 @@ import type { Schematic, TerminalRef } from '@/domain/types';
 import { SceneView, ZoomToolbar } from '@/ui/scene';
 import { SpoolToolbar } from '@/ui/scene/SpoolToolbar';
 import { SchematicScene } from '@/ui/schematic/SchematicScene';
+import { HintsPanel } from '@/ui/components/HintsPanel';
 
 interface Props {
   slot?: 'palette' | 'stage' | 'right';
@@ -288,6 +289,7 @@ export const MixedScreen: FC<Props> = ({ slot = 'stage' }) => {
             </ul>
           )}
         </section>
+        <HintsPanel variant="sidebar" />
       </div>
     );
   }

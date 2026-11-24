@@ -3,6 +3,7 @@ import { SymbolPalette } from '@/ui/schematic/SymbolPalette';
 import { SchematicScene } from '@/ui/schematic/SchematicScene';
 import { SchematicToolbar } from '@/ui/schematic/SchematicToolbar';
 import { ErcPanel } from '@/ui/schematic/ErcPanel';
+import { HintsPanel } from '@/ui/components/HintsPanel';
 import { useSchematicStore } from '@/store/schematic';
 import { buildSchematicNetlist, runErc } from '@/sim/schematic';
 import { useProjectStore } from '@/store/project';
@@ -135,6 +136,7 @@ export const SchematicScreen: FC<Props> = ({ slot = 'stage' }) => {
           <p style={{ margin: 0, fontSize: 14 }}>{task?.statement ?? ''}</p>
         </section>
         <ErcPanel />
+        <HintsPanel variant="sidebar" />
       </div>
     );
   }

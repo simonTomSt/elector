@@ -8,6 +8,7 @@ import {
   clearProject,
   listProjectTaskIds,
   loadProgress,
+  loadProject,
   saveProgress,
   type TaskProgressStatus,
 } from '@/store/persist';
@@ -22,17 +23,25 @@ interface TaskMeta {
   title: string;
   type: string;
   level?: string;
+  hintsTotal: number;
 }
 
 const RAW: readonly unknown[] = [dol4kw, diagNoStart, dolMixed, dolSchematic];
 
 const toMeta = (raw: unknown): TaskMeta | null => {
   if (!raw || typeof raw !== 'object') return null;
-  const o = raw as { id?: unknown; title?: unknown; type?: unknown; level?: unknown };
+  const o = raw as {
+    id?: unknown;
+    title?: unknown;
+    type?: unknown;
+    level?: unknown;
+    hints?: unknown;
+  };
   if (typeof o.id !== 'string' || typeof o.title !== 'string' || typeof o.type !== 'string') {
     return null;
   }
-  const meta: TaskMeta = { id: o.id, title: o.title, type: o.type };
+  const hintsTotal = Array.isArray(o.hints) ? o.hints.length : 0;
+  const meta: TaskMeta = { id: o.id, title: o.title, type: o.type, hintsTotal };
   if (typeof o.level === 'string') meta.level = o.level;
   return meta;
 };
@@ -105,6 +114,9 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
         {tasks.map((t) => {
           const entry = progress[t.id];
           const status: TaskProgressStatus = entry?.status ?? 'nie-zaczete';
+          const revealedHints = savedIds.has(t.id)
+            ? (loadProject(t.id)?.revealedHintIds?.length ?? 0)
+            : 0;
           return (
             <li
               key={t.id}
@@ -148,6 +160,9 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
                 <span style={{ color: 'var(--theme-muted)', fontSize: 12 }}>
                   {STATUS_LABEL[status]}
                   {typeof entry?.score === 'number' ? ` · ${entry.score}/100` : ''}
+                  {revealedHints > 0 && t.hintsTotal > 0
+                    ? ` · podpowiedzi: ${revealedHints}/${t.hintsTotal}`
+                    : ''}
                 </span>
                 {entry || savedIds.has(t.id) ? (
                   <button

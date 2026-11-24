@@ -194,7 +194,7 @@ const ResumeBanner: FC<{ taskId: string }> = ({ taskId }) => {
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        aria-label="Zamknij"
+        aria-label="Schowaj komunikat"
         style={{
           marginLeft: 'auto',
           background: 'transparent',

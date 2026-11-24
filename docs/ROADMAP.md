@@ -103,3 +103,10 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `toJson()` serializuje `draft.hints` automatycznie (był przezroczysty) — eksport działa od razu, bez dodatkowej logiki.
 
 **Akceptacja:** autor może przez UI dodawać/edytować/usuwać podpowiedzi; eksport JSON zawiera `hints` zgodne ze schematem; podpowiedzi dodane w edytorze są widoczne dla kursanta po załadowaniu zadania.
+
+## M18 – Polerka UX
+- `HintsPanel` wyekstrahowany z `Inspector` do samodzielnego komponentu z wariantami `inspector` i `sidebar`. Podpięty w prawym panelu widoków `mixed` i `schematic` (wcześniej odkryte podpowiedzi widać było tylko w cabinet).
+- Kafelek w `TasksScreen` pokazuje dodatkowo `podpowiedzi: N/M` gdy kursant coś odkrył; `hintsTotal` czytane z surowych JSON-ów zadań, `revealedHints` z `PersistedProject.revealedHintIds`.
+- `ResumeBanner` × ma teraz `aria-label="Schowaj komunikat"` zamiast duplikatu `"Zamknij"`; `ResultModal` zostaje przy `"Zamknij"`. Testy mogą jednoznacznie dotrzeć do konkretnego przycisku.
+
+**Akceptacja:** odkryte podpowiedzi widać w każdym widoku zadania; lista zadań pokazuje ile ich zużyto; dwa przyciski „×" w DOM nie dzielą tego samego accessible name.
