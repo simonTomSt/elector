@@ -22,6 +22,7 @@ export default [
         HTMLDivElement: 'readonly',
         HTMLInputElement: 'readonly',
         HTMLButtonElement: 'readonly',
+        EventTarget: 'readonly',
         SVGElement: 'readonly',
         SVGSVGElement: 'readonly',
         SVGGElement: 'readonly',

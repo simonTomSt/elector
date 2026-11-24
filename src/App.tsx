@@ -8,6 +8,7 @@ import { MixedScreen } from '@/ui/screens/MixedScreen';
 import { TaskEditorScreen } from '@/ui/screens/TaskEditorScreen';
 import { TasksScreen } from '@/ui/screens/TasksScreen';
 import { useTheme } from '@/ui/theme/useTheme';
+import { useGlobalShortcuts } from '@/store/keyboard';
 import { ShortToast } from '@/ui/components/ShortToast';
 import { Meter } from '@/ui/components/Meter';
 import { LotoModal } from '@/ui/components/LotoModal';
@@ -38,6 +39,7 @@ const SimProjectSync: FC = () => {
 
 export const App: FC = () => {
   const { theme, toggle } = useTheme();
+  useGlobalShortcuts();
   const view = useUiStore((s) => s.view);
 
   const left =

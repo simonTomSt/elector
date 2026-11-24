@@ -151,6 +151,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             type="button"
             className={view === 'cabinet' ? 'is-active' : ''}
             onClick={() => setView('cabinet')}
+            title="Szafa (skrót: 2)"
           >
             Szafa
           </button>
@@ -158,6 +159,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             type="button"
             className={view === 'schematic' ? 'is-active' : ''}
             onClick={() => setView('schematic')}
+            title="Schemat (skrót: 3)"
           >
             Schemat
           </button>
@@ -165,6 +167,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             type="button"
             className={view === 'mixed' ? 'is-active' : ''}
             onClick={() => setView('mixed')}
+            title="Szafa + schemat (skrót: 4)"
           >
             Szafa + schemat
           </button>
@@ -172,6 +175,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             type="button"
             className={view === 'editor' ? 'is-active' : ''}
             onClick={() => setView('editor')}
+            title="Edytor zadań (skrót: 5)"
           >
             Edytor zadań
           </button>
@@ -179,7 +183,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             type="button"
             className={view === 'tasks' ? 'is-active' : ''}
             onClick={() => setView('tasks')}
-            title="Wybór zadania"
+            title="Wybór zadania (skrót: 1)"
           >
             Zadania
           </button>

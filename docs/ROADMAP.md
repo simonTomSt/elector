@@ -120,3 +120,12 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - „Zacznij od nowa" resetuje też store diagnostyki.
 
 **Akceptacja:** otwarcie `diag-no-start` ukrywa jedną z 4 usterek; kursant widzi tylko objaw; po zgłoszeniu trafnej usterki dostaje 100/100, po pudle 0 pkt. 3 nowe testy e2e + 12 jednostkowych.
+
+## M20 – Skróty klawiaturowe
+- Globalny hook `useGlobalShortcuts` w App: cyfry `1`..`5` przełączają widoki (`1` → zadania, `2` → szafa, `3` → schemat, `4` → mieszany, `5` → edytor).
+- Ignorowane gdy fokus w `input`/`textarea`/`select`/`contenteditable` oraz gdy jest otwarty modal (`[role="dialog"][aria-modal]`).
+- Modyfikatory (Ctrl/Alt/Meta/Shift) przepuszczają skrót do przeglądarki.
+- `Esc` zamyka `ResultModal` i `ReportFaultModal`.
+- Przyciski widoków w TopBar mają tooltipy z numerem skrótu.
+
+**Akceptacja:** 8 testów jsdom pokrywa wszystkie przypadki brzegowe.

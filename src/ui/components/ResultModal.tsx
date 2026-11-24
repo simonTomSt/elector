@@ -1,10 +1,19 @@
-import type { FC } from 'react';
+import { useEffect, type FC } from 'react';
 import { useResultStore } from '@/store/result';
 
 export const ResultModal: FC = () => {
   const open = useResultStore((s) => s.open);
   const result = useResultStore((s) => s.result);
   const hide = useResultStore((s) => s.hide);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') hide();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, hide]);
 
   if (!open || !result) return null;
 

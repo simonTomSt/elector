@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { useProjectStore } from '@/store/project';
 import { useDiagnosticStore } from '@/store/diagnostic';
 import { useResultStore } from '@/store/result';
@@ -19,6 +19,15 @@ export const ReportFaultModal: FC<Props> = ({ open, onClose }) => {
     | { kind: 'err'; text: string; assigned: readonly string[] }
     | null
   >(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
 
   if (!open || !task || task.type !== 'diagnostic') return null;
   const faults = task.faults ?? [];
