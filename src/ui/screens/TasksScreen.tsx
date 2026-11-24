@@ -53,6 +53,36 @@ const STATUS_LABEL: Record<TaskProgressStatus, string> = {
   ukonczone: 'Ukończone',
 };
 
+const typeIcon = (t: string): string => {
+  switch (t) {
+    case 'cabinet':
+      return '📋';
+    case 'schematic':
+      return '📐';
+    case 'mixed':
+      return '🔗';
+    case 'diagnostic':
+      return '🔍';
+    default:
+      return '📄';
+  }
+};
+
+const typeLabel = (t: string): string => {
+  switch (t) {
+    case 'cabinet':
+      return 'Szafa';
+    case 'schematic':
+      return 'Schemat';
+    case 'mixed':
+      return 'Mieszane';
+    case 'diagnostic':
+      return 'Diagnostyka';
+    default:
+      return t;
+  }
+};
+
 export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
   const setView = useUiStore((s) => s.setView);
   const setCurrentTaskId = useUiStore((s) => s.setCurrentTaskId);
@@ -147,7 +177,7 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
                 }}
               >
                 <div className="mono" style={{ color: 'var(--theme-muted)', fontSize: 12 }}>
-                  {t.id} · {t.type}
+                  {t.id} · {typeIcon(t.type)} {typeLabel(t.type)}
                   {t.level ? ` · ${t.level}` : ''}
                 </div>
                 <div style={{ fontWeight: 600, marginTop: 4 }}>{t.title}</div>
