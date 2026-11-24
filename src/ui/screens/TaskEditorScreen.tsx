@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, type FC, type ReactNode } from 'react';
 import {
   CONTROL_VOLTAGES,
+  HINT_LEVELS,
   POWER_CATALOG,
   VARIABLE_TOKENS,
   selectPowerKeys,
@@ -8,7 +9,7 @@ import {
   useTaskEditorStore,
   type VariableToken,
 } from '@/store/taskEditor';
-import type { SceneStart, TaskLevel } from '@/domain/types';
+import type { HintLevel, SceneStart, TaskLevel } from '@/domain/types';
 import { loadDeviceLibrary } from '@/tasks/devices';
 import { runScenario } from '@/sim/scenario';
 
@@ -35,6 +36,7 @@ const NAV_ITEMS: { id: string; label: string }[] = [
   { id: 'parametry', label: 'Parametry' },
   { id: 'scenariusze', label: 'Scenariusze testowe' },
   { id: 'usterki', label: 'Usterki' },
+  { id: 'podpowiedzi', label: 'Podpowiedzi' },
   { id: 'publikacja', label: 'Publikacja' },
 ];
 
@@ -212,6 +214,9 @@ export const TaskEditorScreen: FC<Props> = ({ slot = 'stage' }) => {
   const addFault = useTaskEditorStore((s) => s.addFault);
   const toggleFault = useTaskEditorStore((s) => s.toggleFault);
   const setPickFaults = useTaskEditorStore((s) => s.setPickFaults);
+  const addHint = useTaskEditorStore((s) => s.addHint);
+  const updateHint = useTaskEditorStore((s) => s.updateHint);
+  const removeHint = useTaskEditorStore((s) => s.removeHint);
   const setRecording = useTaskEditorStore((s) => s.setRecording);
   const loadFromJson = useTaskEditorStore((s) => s.loadFromJson);
   const toJson = useTaskEditorStore((s) => s.toJson);
@@ -877,6 +882,118 @@ export const TaskEditorScreen: FC<Props> = ({ slot = 'stage' }) => {
           />
           <span>usterek dla każdego kursanta</span>
         </label>
+      </Section>
+
+      <Section id="podpowiedzi" title="7. Podpowiedzi">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button
+              type="button"
+              onClick={addHint}
+              style={{
+                height: 36,
+                padding: '0 12px',
+                borderRadius: 6,
+                border: '1px solid var(--theme-line2)',
+                background: 'var(--theme-surface)',
+                color: 'var(--theme-text)',
+                cursor: 'pointer',
+                font: 'inherit',
+              }}
+            >
+              + Dodaj podpowiedź
+            </button>
+            <span style={{ color: 'var(--theme-muted)', fontSize: 13 }}>
+              Kary punktowe ustawia pole <code>scoring.hintLevels</code> w JSON.
+            </span>
+          </div>
+          <ul
+            role="list"
+            style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}
+          >
+            {(draft.hints ?? []).map((h) => (
+              <li
+                key={h.id}
+                style={{
+                  border: '1px solid var(--theme-line2)',
+                  borderRadius: 10,
+                  padding: '10px 12px',
+                  background: 'var(--theme-surface)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span className="mono" style={{ color: 'var(--theme-muted)', fontSize: 12, minWidth: 32 }}>
+                    {h.id}
+                  </span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 12, color: 'var(--theme-muted)' }}>Poziom</span>
+                    <select
+                      aria-label={`Poziom podpowiedzi ${h.id}`}
+                      value={h.level ?? 'subtelna'}
+                      onChange={(e) => updateHint(h.id, { level: e.target.value as HintLevel })}
+                      style={{
+                        height: 32,
+                        padding: '0 8px',
+                        borderRadius: 6,
+                        border: '1px solid var(--theme-line2)',
+                        background: 'var(--theme-stage)',
+                        color: 'var(--theme-text)',
+                        font: 'inherit',
+                      }}
+                    >
+                      {HINT_LEVELS.map((lv) => (
+                        <option key={lv.value} value={lv.value}>
+                          {lv.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => removeHint(h.id)}
+                    aria-label={`Usuń podpowiedź ${h.id}`}
+                    style={{
+                      marginLeft: 'auto',
+                      height: 32,
+                      padding: '0 10px',
+                      borderRadius: 6,
+                      border: '1px solid var(--theme-line2)',
+                      background: 'transparent',
+                      color: 'var(--theme-text)',
+                      cursor: 'pointer',
+                      font: 'inherit',
+                    }}
+                  >
+                    Usuń
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={h.text}
+                  placeholder="Tekst podpowiedzi"
+                  onChange={(e) => updateHint(h.id, { text: e.target.value })}
+                  style={{
+                    height: 36,
+                    padding: '0 10px',
+                    borderRadius: 6,
+                    border: '1px solid var(--theme-line2)',
+                    background: 'var(--theme-stage)',
+                    color: 'var(--theme-text)',
+                    font: 'inherit',
+                  }}
+                />
+              </li>
+            ))}
+            {(draft.hints ?? []).length === 0 && (
+              <li style={{ color: 'var(--theme-muted)', fontSize: 13 }}>
+                Brak podpowiedzi. Kliknij „+ Dodaj podpowiedź”, aby dodać pierwszą.
+              </li>
+            )}
+          </ul>
+        </div>
       </Section>
     </div>
   );

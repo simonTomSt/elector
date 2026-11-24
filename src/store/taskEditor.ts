@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type {
   Fault,
+  Hint,
+  HintLevel,
   SceneStart,
   Task,
   TaskLevel,
@@ -23,6 +25,12 @@ export const POWER_CATALOG: readonly { key: string; label: string; In: number }[
 ];
 
 export const CONTROL_VOLTAGES: readonly string[] = ['24 V DC', '230 V AC', 'losowo'];
+
+export const HINT_LEVELS: readonly { value: HintLevel; label: string }[] = [
+  { value: 'subtelna', label: 'subtelna' },
+  { value: 'bezpośrednia', label: 'bezpośrednia' },
+  { value: 'rozwiązanie', label: 'rozwiązanie' },
+];
 
 export type ImportResult =
   | { ok: true }
@@ -64,6 +72,10 @@ interface TaskEditorState {
   addFault(fault: Fault): void;
   removeFault(id: string): void;
   setPickFaults(n: number | null): void;
+
+  addHint(): void;
+  updateHint(id: string, patch: Partial<Omit<Hint, 'id'>>): void;
+  removeHint(id: string): void;
 
   setRecording(on: boolean): void;
 }
@@ -328,6 +340,44 @@ export const useTaskEditorStore = create<TaskEditorState>((set, get) => ({
       else delete next.pickFaults;
       return { draft: next, savedAt: Date.now() };
     });
+  },
+
+  addHint() {
+    set((s) => {
+      const existing = s.draft.hints ?? [];
+      const used = new Set(existing.map((h) => h.id));
+      let n = existing.length + 1;
+      let id = `h${n}`;
+      while (used.has(id)) {
+        n += 1;
+        id = `h${n}`;
+      }
+      const hint: Hint = { id, text: '', level: 'subtelna' };
+      return {
+        draft: { ...s.draft, hints: [...existing, hint] },
+        savedAt: Date.now(),
+      };
+    });
+  },
+
+  updateHint(id, patch) {
+    set((s) => ({
+      draft: {
+        ...s.draft,
+        hints: (s.draft.hints ?? []).map((h) => (h.id === id ? { ...h, ...patch } : h)),
+      },
+      savedAt: Date.now(),
+    }));
+  },
+
+  removeHint(id) {
+    set((s) => ({
+      draft: {
+        ...s.draft,
+        hints: (s.draft.hints ?? []).filter((h) => h.id !== id),
+      },
+      savedAt: Date.now(),
+    }));
   },
 
   setRecording(on) {

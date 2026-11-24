@@ -94,3 +94,12 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `TasksScreen` force-refresh po `reset()` (zmiana z `loadProgress()` raz-na-render na `useState` trigger).
 
 **Akceptacja:** 6 testów e2e przechodzi w ≤10 s, trace/video zapisywane tylko przy failure, dev bridge jest wyłączony w produkcyjnym bundle.
+
+## M17 – Edytor zadań: podpowiedzi
+- Nowa sekcja „7. Podpowiedzi" w `TaskEditorScreen` z listą kart (id, select poziomu, input tekstu, przycisk usuń) i przyciskiem „+ Dodaj podpowiedź".
+- Akcje `addHint`, `updateHint(id, patch)`, `removeHint(id)` w `useTaskEditorStore`; `addHint` generuje unikalne `h1, h2, …` bez kolizji z istniejącymi id.
+- `HINT_LEVELS` eksportowane ze store'a dla selecta.
+- Pozycja w nawigacji bocznej (Nav) między „Usterki" a „Publikacja".
+- `toJson()` serializuje `draft.hints` automatycznie (był przezroczysty) — eksport działa od razu, bez dodatkowej logiki.
+
+**Akceptacja:** autor może przez UI dodawać/edytować/usuwać podpowiedzi; eksport JSON zawiera `hints` zgodne ze schematem; podpowiedzi dodane w edytorze są widoczne dla kursanta po załadowaniu zadania.

@@ -134,3 +134,66 @@ describe('M11 – Edytor zadań', () => {
     expect(keys).toEqual(['2,2', '3', '4', '5,5', '7,5']);
   });
 });
+
+describe('M17 – Edytor zadań: podpowiedzi', () => {
+  it('renderuje sekcję 7. Podpowiedzi', () => {
+    render(<App />);
+    switchToEditor();
+    expect(screen.getByRole('region', { name: /7\. Podpowiedzi/ })).toBeInTheDocument();
+  });
+
+  it('dodaje nową podpowiedź i inkrementuje listę', () => {
+    render(<App />);
+    switchToEditor();
+    const before = useTaskEditorStore.getState().draft.hints?.length ?? 0;
+    fireEvent.click(screen.getByRole('button', { name: /Dodaj podpowiedź/ }));
+    const after = useTaskEditorStore.getState().draft.hints?.length ?? 0;
+    expect(after).toBe(before + 1);
+  });
+
+  it('zmienia tekst podpowiedzi przez input', () => {
+    render(<App />);
+    switchToEditor();
+    const existing = useTaskEditorStore.getState().draft.hints?.[0];
+    expect(existing).toBeDefined();
+    const inputs = screen.getAllByPlaceholderText(/Tekst podpowiedzi/i);
+    act(() => {
+      fireEvent.change(inputs[0]!, { target: { value: 'Nowy tekst podpowiedzi' } });
+    });
+    const after = useTaskEditorStore.getState().draft.hints?.[0];
+    expect(after?.text).toBe('Nowy tekst podpowiedzi');
+  });
+
+  it('zmienia poziom podpowiedzi przez select', () => {
+    render(<App />);
+    switchToEditor();
+    const selects = screen.getAllByLabelText(/Poziom podpowiedzi/i);
+    act(() => {
+      fireEvent.change(selects[0]!, { target: { value: 'rozwiązanie' } });
+    });
+    const after = useTaskEditorStore.getState().draft.hints?.[0];
+    expect(after?.level).toBe('rozwiązanie');
+  });
+
+  it('usuwa podpowiedź z listy', () => {
+    render(<App />);
+    switchToEditor();
+    const before = useTaskEditorStore.getState().draft.hints?.length ?? 0;
+    expect(before).toBeGreaterThan(0);
+    const firstId = useTaskEditorStore.getState().draft.hints?.[0]?.id;
+    expect(firstId).toBeDefined();
+    const removeButtons = screen.getAllByRole('button', { name: /Usuń podpowiedź/i });
+    fireEvent.click(removeButtons[0]!);
+    const after = useTaskEditorStore.getState().draft.hints;
+    expect(after?.length).toBe(before - 1);
+    expect(after?.some((h) => h.id === firstId)).toBe(false);
+  });
+
+  it('eksport JSON zawiera dodane podpowiedzi', () => {
+    useTaskEditorStore.getState().reset();
+    useTaskEditorStore.getState().addHint();
+    const json = useTaskEditorStore.getState().toJson();
+    const parsed = JSON.parse(json) as { hints?: unknown[] };
+    expect(parsed.hints?.length).toBeGreaterThan(0);
+  });
+});
