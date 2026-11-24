@@ -286,18 +286,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         ? [...base.wires, ...task.solution!.wires]
         : [...base.wires];
     useHintsStore.getState().hydrate(saved?.revealedHintIds ?? []);
-    // Hydratacja stanu diagnostyki (jeśli był zapis) albo losowanie od nowa
+    // Hydratacja stanu diagnostyki (jeśli był zapis) albo losowanie od nowa.
+    // Jeśli test/bridge wcześniej ustawił assignedFaultIds, nie nadpisuj ich.
     const diag = useDiagnosticStore.getState();
+    const existingAssigned = diag.assignedFaultIds;
     if (saved?.assignedFaultIds && saved.assignedFaultIds.length > 0) {
       diag.hydrate({
         assignedFaultIds: saved.assignedFaultIds,
         reportedFaultIds: saved.reportedFaultIds ?? [],
         reportedAt: saved.reportedAt ?? null,
       });
-    } else if (task.type === 'diagnostic') {
+    } else if (task.type === 'diagnostic' && existingAssigned.length === 0) {
       diag.reset();
       diag.assignForTask(task);
-    } else {
+    } else if (task.type !== 'diagnostic') {
       diag.reset();
     }
     set({

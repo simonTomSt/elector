@@ -292,14 +292,16 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
             💡 Podpowiedź ({revealedHintIds.length}/{totalHints})
           </button>
         )}
-        <button
-          type="button"
-          className="topbar__cta"
-          onClick={onCheckSolution}
-          disabled={!project}
-        >
-          Sprawdź rozwiązanie
-        </button>
+        {task?.type !== 'diagnostic' && (
+          <button
+            type="button"
+            className="topbar__cta"
+            onClick={onCheckSolution}
+            disabled={!project}
+          >
+            Sprawdź rozwiązanie
+          </button>
+        )}
       </div>
     </header>
     <ReportFaultModal open={reportOpen} onClose={() => setReportOpen(false)} />

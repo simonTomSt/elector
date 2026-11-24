@@ -144,3 +144,10 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - Przycisk `?` w TopBar dla myszkowych userów — dispatchuje syntetyczny `KeyboardEvent('?')`, więc jeden punkt prawdy.
 
 **Akceptacja:** klawisz `?` otwiera modal z listą 10 skrótów.
+
+## M23 – Diagnostyka × silnik: integracja faultów
+- `init(task, library)` dla diagnostic nie nadpisuje już istniejącego `assignedFaultIds` (poprzednio reset + losowanie kasowało ręczny hydrate w testach i w `window.__elector.openTask`).
+- Przycisk „Sprawdź rozwiązanie" ukryty dla `task.type === 'diagnostic'` — scoring dla diagnostic odbywa się wyłącznie przez „Zgłoś usterkę". Wcześniej scoring przez `validateLive` fałszywie zaliczał diagnostic bo `runScenario` buduje własny projekt z `solution`, ignorując aktywny `wire.fault` w store'rze.
+- 3 testy integracyjne potwierdzają: po `init` z assigned `f-open-c4` wire C4 ma `fault="open"`, graf symulacji nie łączy sieci przerwanego wire'a, a bez assigned fault nie ma.
+
+**Akceptacja:** fault wstrzyknięty do store'a realnie wpływa na symulację (`buildGraph` go szanuje); UI diagnostic nie daje możliwości obejść scoringu przez „Sprawdź rozwiązanie".
