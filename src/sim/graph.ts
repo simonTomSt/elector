@@ -28,6 +28,9 @@ export interface Graph {
 }
 
 const isContactClosed = (c: Contact, state: DeviceRuntimeState): boolean => {
+  // Fault'y symulujące mechaniczne uszkodzenia styków — nadpisują normalną logikę.
+  if (state.contactsWelded) return true;
+  if (state.contactsOpen) return false;
   const active = (() => {
     switch (c.actuator) {
       case 'coil':

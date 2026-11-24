@@ -36,7 +36,12 @@ interface DiagnosticState {
   report(faultIds: readonly string[]): ReportResult;
   hydrate(partial: Partial<Pick<DiagnosticState, 'assignedFaultIds' | 'reportedFaultIds' | 'reportedAt'>>): void;
   reset(): void;
-  deviceFaultStates(task: Task): Record<string, { tripped?: boolean; coilOpen?: boolean }>;
+  deviceFaultStates(
+    task: Task,
+  ): Record<
+    string,
+    { tripped?: boolean; coilOpen?: boolean; contactsWelded?: boolean; contactsOpen?: boolean }
+  >;
 }
 
 const sameSet = (a: readonly string[], b: readonly string[]): boolean => {
@@ -85,7 +90,10 @@ export const useDiagnosticStore = create<DiagnosticState>((set, get) => ({
   },
 
   deviceFaultStates(task) {
-    const out: Record<string, { tripped?: boolean; coilOpen?: boolean }> = {};
+    const out: Record<
+      string,
+      { tripped?: boolean; coilOpen?: boolean; contactsWelded?: boolean; contactsOpen?: boolean }
+    > = {};
     const assigned = get().assignedFaultIds;
     for (const id of assigned) {
       const f = (task.faults ?? []).find((x) => x.id === id);
@@ -96,6 +104,8 @@ export const useDiagnosticStore = create<DiagnosticState>((set, get) => ({
       const curr = out[tag] ?? {};
       if (kind === 'tripped') curr.tripped = true;
       if (kind === 'coilOpen') curr.coilOpen = true;
+      if (kind === 'contactWelded') curr.contactsWelded = true;
+      if (kind === 'contactOpen') curr.contactsOpen = true;
       out[tag] = curr;
     }
     return out;

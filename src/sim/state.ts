@@ -21,6 +21,10 @@ export interface DeviceRuntimeState {
   runMs?: number;
   overloadMs?: number;
   coilOpen?: boolean;
+  /** Fault: wszystkie styki tego aparatu stale zamknięte (zgrzały się). */
+  contactsWelded?: boolean;
+  /** Fault: wszystkie styki tego aparatu stale otwarte (przerwane mechanicznie). */
+  contactsOpen?: boolean;
 }
 
 export type DeviceStates = Record<string, DeviceRuntimeState>;

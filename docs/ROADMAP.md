@@ -151,3 +151,10 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - 3 testy integracyjne potwierdzają: po `init` z assigned `f-open-c4` wire C4 ma `fault="open"`, graf symulacji nie łączy sieci przerwanego wire'a, a bez assigned fault nie ma.
 
 **Akceptacja:** fault wstrzyknięty do store'a realnie wpływa na symulację (`buildGraph` go szanuje); UI diagnostic nie daje możliwości obejść scoringu przez „Sprawdź rozwiązanie".
+
+## M24 – Wsparcie contactWelded i contactOpen w silniku
+- Dwa nowe pola w `DeviceRuntimeState`: `contactsWelded` (wszystkie styki zawsze zamknięte) i `contactsOpen` (wszystkie styki zawsze otwarte).
+- `isContactClosed` w `src/sim/graph.ts` najpierw sprawdza te fault'y i nadpisuje normalną logikę styków.
+- `useDiagnosticStore.deviceFaultStates(task)` mapuje typy `contactWelded`/`contactOpen` z `Fault.apply.deviceFault` na odpowiednie flagi; wcześniej te warianty były cicho ignorowane.
+
+**Akceptacja:** 3 testy `contact-faults.test.ts` potwierdzają że welded łączy pin 1-2 nawet bez cewki, a open rozłącza mimo closed=true. Diagnostyka przez `deviceFaultStates` emituje właściwe pola.

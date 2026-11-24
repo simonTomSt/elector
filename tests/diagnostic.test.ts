@@ -155,4 +155,31 @@ describe('M19 – diagnostyka: applyAssignedFaults na useProjectStore', () => {
     const states = useDiagnosticStore.getState().deviceFaultStates(task);
     expect(states['-K1']?.coilOpen).toBe(true);
   });
+
+  it('deviceFaultStates mapuje contactWelded i contactOpen', () => {
+    const { task } = loadDiag();
+    // Zbuduj syntetyczne faulty w task
+    const fakeTask = {
+      ...task,
+      faults: [
+        ...(task.faults ?? []),
+        {
+          id: 'f-welded',
+          label: 'Styki -K1 zgrzane',
+          apply: { device: '-K1', deviceFault: 'contactWelded' as const },
+        },
+        {
+          id: 'f-open-contact',
+          label: 'Styki -K1 przerwane',
+          apply: { device: '-K1', deviceFault: 'contactOpen' as const },
+        },
+      ],
+    };
+    useDiagnosticStore.getState().hydrate({ assignedFaultIds: ['f-welded'] });
+    const s1 = useDiagnosticStore.getState().deviceFaultStates(fakeTask);
+    expect(s1['-K1']?.contactsWelded).toBe(true);
+    useDiagnosticStore.getState().hydrate({ assignedFaultIds: ['f-open-contact'] });
+    const s2 = useDiagnosticStore.getState().deviceFaultStates(fakeTask);
+    expect(s2['-K1']?.contactsOpen).toBe(true);
+  });
 });
