@@ -142,6 +142,7 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
               >
                 <span style={{ color: 'var(--theme-muted)', fontSize: 12 }}>
                   {STATUS_LABEL[status]}
+                  {typeof entry?.score === 'number' ? ` · ${entry.score}/100` : ''}
                 </span>
                 {entry || savedIds.has(t.id) ? (
                   <button

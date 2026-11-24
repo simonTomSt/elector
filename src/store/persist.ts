@@ -25,6 +25,8 @@ export interface PersistedUi {
 export interface TaskProgressEntry {
   status: TaskProgressStatus;
   updatedAt: number;
+  score?: number;
+  completedAt?: number;
 }
 
 export type Progress = Record<string, TaskProgressEntry>;
@@ -85,6 +87,9 @@ const isProgress = (p: unknown): p is Progress => {
     const e = v as { status?: unknown; updatedAt?: unknown };
     const statusOk = e.status === 'nie-zaczete' || e.status === 'w-toku' || e.status === 'ukonczone';
     if (!statusOk || typeof e.updatedAt !== 'number') return false;
+    const ev = v as { score?: unknown; completedAt?: unknown };
+    if (ev.score !== undefined && typeof ev.score !== 'number') return false;
+    if (ev.completedAt !== undefined && typeof ev.completedAt !== 'number') return false;
   }
   return true;
 };

@@ -66,3 +66,12 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - Eksport/import pełnego snapshotu (wszystkie zapisy zadań + ustawienia + postęp) jako jeden JSON, walidowany przy wczytaniu.
 
 **Akceptacja:** po reloadzie przeglądarki stan sceny, motyw i widok są przywrócone; uszkodzony zapis nie wywala apki; eksport→import round-trip daje identyczny stan.
+
+## M13 – Scoring i raport
+- Interpreter `Requirement.check` obejmuje wszystkie 9 typów: `deviceExists`, `connected`, `inSeries`, `parallel`, `wireColors`, `setting`, `scenario`, `schematicMatchesCabinet`, `schematicConnected`, `noErc` (reużywa `validateLive` z M6, dodaje obsługę `scenario` przez `runScenario`).
+- `computeScore(task, validation, inputs)` liczy wynik (0–100) proporcjonalnie do zdanych wymagań, odejmuje `lotoPenalty × incydenty` i `hintPenalty × podpowiedzi` z `task.scoring`, klamruje do zera.
+- Licznik incydentów LOTO w `useLotoStore.incidentCount` (inkrementowany przy `openPrompt`).
+- Przycisk „Sprawdź rozwiązanie" w TopBar otwiera modal z listą kryteriów (✓/✗ + detal), wynikiem i karami; zapisuje `score`, `status` (`ukonczone` jeśli 100/100) i `completedAt` do `elector:progress`.
+- Kafelek zadania w widoku `tasks` pokazuje wynik przy ukończonym zadaniu.
+
+**Akceptacja:** wzorcowe rozwiązanie `dol-4kw` daje 100/100 i `ukonczone`; sam preset (bez solution) daje <100 i `w-toku`; kary skalują się z incydentami.

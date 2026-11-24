@@ -20,19 +20,22 @@ export interface LotoPrompt {
 interface LotoState {
   prompt: LotoPrompt | null;
   completedSteps: Set<LotoStep>;
+  incidentCount: number;
   openPrompt(p: LotoPrompt): void;
   closePrompt(): void;
   markStep(step: LotoStep): void;
   resetProcedure(): void;
+  resetIncidents(): void;
   isComplete(): boolean;
 }
 
 export const useLotoStore = create<LotoState>((set, get) => ({
   prompt: null,
   completedSteps: new Set(),
+  incidentCount: 0,
 
   openPrompt(p) {
-    set({ prompt: p });
+    set((s) => ({ prompt: p, incidentCount: s.incidentCount + 1 }));
   },
   closePrompt() {
     set({ prompt: null });
@@ -46,6 +49,9 @@ export const useLotoStore = create<LotoState>((set, get) => ({
   },
   resetProcedure() {
     set({ completedSteps: new Set() });
+  },
+  resetIncidents() {
+    set({ incidentCount: 0 });
   },
   isComplete() {
     const c = get().completedSteps;

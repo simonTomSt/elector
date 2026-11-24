@@ -1,12 +1,15 @@
 import type {
   Requirement,
   Schematic,
+  Task,
   TerminalRef,
   Wire,
   WireColor,
 } from '@/domain/types';
 import type { ResolvedProject } from '@/sim/model';
+import type { DeviceLibrary } from '@/tasks/devices';
 import { buildSchematicNetlist, compareSchematicWithCabinet, runErc } from '@/sim/schematic';
+import { runScenario } from '@/sim/scenario';
 
 export type IssueSeverity = 'error' | 'warning';
 
@@ -352,10 +355,43 @@ const checkSchematicMatchesCabinet = (
   };
 };
 
+export interface ScenarioContext {
+  task: Task;
+  devices: DeviceLibrary;
+}
+
+const checkScenario = (
+  req: Requirement,
+  ctx: ScenarioContext | undefined,
+): ValidationIssue | null => {
+  if (!ctx) return null;
+  const id = req.args?.['id'] as string | undefined;
+  if (!id) return null;
+  try {
+    const res = runScenario(ctx.task, id, ctx.devices);
+    if (res.ok) return null;
+    const first = res.failures[0] ?? 'scenariusz nie przeszedł';
+    return {
+      requirementId: req.id,
+      text: req.text,
+      detail: `Scenariusz "${id}": ${first}`,
+      severity: 'error',
+    };
+  } catch (e) {
+    return {
+      requirementId: req.id,
+      text: req.text,
+      detail: e instanceof Error ? e.message : 'błąd uruchomienia scenariusza',
+      severity: 'error',
+    };
+  }
+};
+
 export const validateLive = (
   requirements: readonly Requirement[],
   project: ResolvedProject,
   schematic?: Schematic,
+  scenarioCtx?: ScenarioContext,
 ): ValidationResult => {
   const uf = buildStaticNets(project);
   const issues: ValidationIssue[] = [];
@@ -390,6 +426,9 @@ export const validateLive = (
         break;
       case 'schematicMatchesCabinet':
         issue = checkSchematicMatchesCabinet(req, project, schematic);
+        break;
+      case 'scenario':
+        issue = checkScenario(req, scenarioCtx);
         break;
       default:
         issue = null;

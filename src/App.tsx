@@ -11,6 +11,7 @@ import { useTheme } from '@/ui/theme/useTheme';
 import { ShortToast } from '@/ui/components/ShortToast';
 import { Meter } from '@/ui/components/Meter';
 import { LotoModal } from '@/ui/components/LotoModal';
+import { ResultModal } from '@/ui/components/ResultModal';
 import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore } from '@/store/sim';
 import { useSimTicker } from '@/store/useSimTicker';
@@ -87,6 +88,7 @@ export const App: FC = () => {
           <Meter />
           <ShortToast />
           <LotoModal />
+          <ResultModal />
         </>
       }
       right={right}

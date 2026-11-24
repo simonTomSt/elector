@@ -4,7 +4,16 @@ import { resolveState, useProjectStore } from '@/store/project';
 import { useSimStore, SPEEDS, type SimSpeed } from '@/store/sim';
 import { useUiStore, type SceneTab } from '@/store/ui';
 import { useMeterStore } from '@/store/meter';
-import { exportSnapshot, importSnapshot } from '@/store/persist';
+import {
+  exportSnapshot,
+  importSnapshot,
+  loadProgress,
+  saveProgress,
+} from '@/store/persist';
+import { validateLive } from '@/validation/live';
+import { computeScore } from '@/validation/scoring';
+import { useResultStore } from '@/store/result';
+import { useLotoStore } from '@/store/loto';
 import './TopBar.css';
 
 type Props = {
@@ -45,6 +54,8 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const setView = useUiStore((s) => s.setView);
   const meterOpen = useMeterStore((s) => s.open);
   const toggleMeter = useMeterStore((s) => s.togglePanel);
+  const setResult = useResultStore((s) => s.setResult);
+  const lotoIncidents = useLotoStore((s) => s.incidentCount);
 
   const project = useMemo(() => {
     if (!task || !library) return null;
@@ -57,6 +68,33 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
     } else if (project) {
       turnOn(project);
     }
+  };
+
+  const onCheckSolution = (): void => {
+    if (!task || !library || !project) return;
+    const validation = validateLive(task.requirements, project, undefined, {
+      task,
+      devices: library,
+    });
+    const score = computeScore(task, validation, {
+      lotoIncidents,
+      hintsUsed: 0,
+    });
+    setResult(score);
+    const now = Date.now();
+    const prog = loadProgress();
+    const prev = prog[task.id];
+    const entry = {
+      status: score.passed ? ('ukonczone' as const) : ('w-toku' as const),
+      updatedAt: now,
+      score: score.value,
+      ...(score.passed
+        ? { completedAt: now }
+        : prev?.completedAt !== undefined
+          ? { completedAt: prev.completedAt }
+          : {}),
+    };
+    saveProgress({ ...prog, [task.id]: entry });
   };
 
   const seconds = Math.floor(simT / 1000);
@@ -197,7 +235,12 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
         >
           {theme === 'dark' ? '☾' : '☀'}
         </button>
-        <button type="button" className="topbar__cta">
+        <button
+          type="button"
+          className="topbar__cta"
+          onClick={onCheckSolution}
+          disabled={!project}
+        >
           Sprawdź rozwiązanie
         </button>
       </div>
