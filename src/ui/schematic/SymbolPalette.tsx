@@ -2,6 +2,17 @@ import { useMemo, useState, type FC } from 'react';
 import { useSchematicStore } from '@/store/schematic';
 import { SYMBOLS, SYMBOL_GROUPS, symbolsInGroup, type SymbolSpec } from './symbols';
 
+const filterGroups = (
+  q: string,
+): { id: string; name: string; items: SymbolSpec[] }[] =>
+  SYMBOL_GROUPS.map((g) => ({
+    id: g.id,
+    name: g.name,
+    items: symbolsInGroup(g.id).filter(
+      (it) => !q || it.name.toLowerCase().includes(q),
+    ),
+  }));
+
 interface Props {
   onPick?: (spec: SymbolSpec) => void;
 }
@@ -48,6 +59,7 @@ export const SymbolPalette: FC<Props> = ({ onPick }) => {
   const tool = useSchematicStore((s) => s.tool);
 
   const q = query.trim().toLowerCase();
+  const groups = useMemo(() => filterGroups(q), [q]);
 
   const handlePick = (spec: SymbolSpec): void => {
     if (onPick) {
@@ -125,14 +137,8 @@ export const SymbolPalette: FC<Props> = ({ onPick }) => {
         )}
       </div>
       <div style={{ padding: '0 10px 12px', display: 'flex', flexDirection: 'column', gap: 12, overflow: 'auto' }}>
-        {SYMBOL_GROUPS.map((g) => {
-          const items = useMemo(
-            () =>
-              symbolsInGroup(g.id).filter((it) => !q || it.name.toLowerCase().includes(q)),
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            [g.id, q],
-          );
-          if (items.length === 0) return null;
+        {groups.map((g) => {
+          if (g.items.length === 0) return null;
           return (
             <div key={g.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <span style={{ padding: '0 6px', fontSize: 12, fontWeight: 600, color: 'var(--theme-muted)' }}>
@@ -145,7 +151,7 @@ export const SymbolPalette: FC<Props> = ({ onPick }) => {
                   gap: 6,
                 }}
               >
-                {items.map((it) => (
+                {g.items.map((it) => (
                   <button
                     key={it.element}
                     type="button"

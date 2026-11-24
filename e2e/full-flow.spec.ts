@@ -11,9 +11,8 @@ test.describe('Pełny flow: wybór → podpowiedź → sprawdź (bez solution) �
     // Lista zadań
     await expect(page.getByRole('heading', { name: /Wybierz zadanie/i })).toBeVisible();
 
-    // Otwórz dol-4kw i usuń rozwiązanie wzorcowe (default state zawiera solution)
+    // Otwórz dol-4kw – scena startuje z samego presetu (zasilanie, drzwi, listwy)
     await page.getByRole('button', { name: /Otwórz zadanie dol-4kw/i }).click();
-    await page.evaluate(() => window.__elector?.clearToPreset());
 
     // Odsłoń podpowiedź
     const hintBtn = page.getByRole('button', { name: /💡 Podpowiedź/i });

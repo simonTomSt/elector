@@ -5,6 +5,16 @@ import { useUiStore } from '@/store/ui';
 import { useSchematicStore } from '@/store/schematic';
 import { useProjectStore } from '@/store/project';
 
+const loadSolutionIntoStore = (): void => {
+  const task = useProjectStore.getState().task;
+  if (!task?.solution) return;
+  const state = useProjectStore.getState();
+  useProjectStore.setState({
+    devices: [...state.devices, ...task.solution.devices],
+    wires: [...state.wires, ...task.solution.wires],
+  });
+};
+
 const reset = (): void => {
   useUiStore.setState({ view: 'cabinet', sceneTab: 'plate' });
   useSchematicStore.setState({
@@ -85,6 +95,7 @@ describe('M10 – Widok mieszany', () => {
     render(<App />);
     switchToMixed();
     act(() => {
+      loadSolutionIntoStore();
       useSchematicStore.setState({
         symbols: [
           {

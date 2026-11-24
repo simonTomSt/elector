@@ -9,7 +9,7 @@ import type {
   WireCrossSection,
 } from '@/domain/types';
 import type { DeviceLibrary } from '@/tasks/devices';
-import { buildProjectFromTask, resolveProject, type ResolvedProject } from '@/sim/model';
+import { buildInitialProjectForEditor, resolveProject, type ResolvedProject } from '@/sim/model';
 import { buildOrthoRoute, type PointMm } from '@/domain/routing';
 import {
   loadProject as loadPersistedProject,
@@ -218,7 +218,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   init(task, library) {
     const saved = loadPersistedProject(task.id);
-    const base = buildProjectFromTask(task);
+    const base = buildInitialProjectForEditor(task);
     const devices = saved ? cloneDevices(saved.devices) : cloneDevices(base.devices);
     const wires = saved ? [...saved.wires] : [...base.wires];
     useHintsStore.getState().hydrate(saved?.revealedHintIds ?? []);

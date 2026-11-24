@@ -4,6 +4,7 @@ import { buildOrthoRoute } from '@/domain/routing';
 import { loadDeviceLibrary } from '@/tasks/devices';
 import { loadTask } from '@/tasks/loader';
 import { DEFAULT_SPOOL, useProjectStore } from '@/store/project';
+import { initWithSolution } from './_helpers';
 
 const library = loadDeviceLibrary();
 const task = loadTask(dol4kwRaw, { devices: library });
@@ -54,7 +55,7 @@ describe('M6a – buildOrthoRoute', () => {
 
 describe('M6a – store draft / addWire / removeWire', () => {
   beforeEach(() => {
-    useProjectStore.getState().init(task, library);
+    initWithSolution(task, library);
     useProjectStore.setState({ wires: [] });
   });
 

@@ -55,6 +55,16 @@ const mergeProject = (a?: Project, b?: Project): Project => ({
 export const buildProjectFromTask = (task: Task): Project =>
   mergeProject(task.scene.preset, task.solution);
 
+/**
+ * Stan startowy sceny dla kursanta — tylko to, co ma być od początku
+ * (preset: zasilanie, drzwi, listwy, złączki). Solution jest celem,
+ * nie punktem startu.
+ */
+export const buildInitialProjectForEditor = (task: Task): Project => ({
+  devices: [...(task.scene.preset?.devices ?? [])],
+  wires: [...(task.scene.preset?.wires ?? [])],
+});
+
 export const resolveProject = (project: Project, devices: DeviceLibrary): ResolvedProject => {
   const byTag = new Map<string, ResolvedDevice>();
   const resolved: ResolvedDevice[] = [];

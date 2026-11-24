@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, act, within } from '@testing-library/react';
 import { App } from '@/App';
 import { useUiStore } from '@/store/ui';
 import { useProjectStore } from '@/store/project';
@@ -58,6 +58,16 @@ describe('M13 – raport „Sprawdź rozwiązanie"', () => {
 
   it('wzorcowe rozwiązanie daje 100/100 i status "ukonczone"', async () => {
     render(<App />);
+    // scena startuje z preset – doładuj solution żeby spełnić wszystkie wymagania
+    act(() => {
+      const task = useProjectStore.getState().task;
+      if (!task?.solution) return;
+      const s = useProjectStore.getState();
+      useProjectStore.setState({
+        devices: [...s.devices, ...task.solution.devices],
+        wires: [...s.wires, ...task.solution.wires],
+      });
+    });
     const btn = screen.getByRole('button', { name: /Sprawdź rozwiązanie/i });
     await act(async () => {
       fireEvent.click(btn);
@@ -74,7 +84,8 @@ describe('M13 – raport „Sprawdź rozwiązanie"', () => {
     await act(async () => {
       fireEvent.click(btn);
     });
-    const close = screen.getByRole('button', { name: /Zamknij/i });
+    const dialog = screen.getByRole('dialog', { name: /Wynik/i });
+    const close = within(dialog).getByRole('button', { name: 'Zamknij' });
     fireEvent.click(close);
     expect(screen.queryByRole('dialog', { name: /Wynik/i })).toBeNull();
   });
