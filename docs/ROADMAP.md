@@ -85,3 +85,12 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `computeScore` sumuje kary po `level` z odkrytych podpowiedzi; raport „Sprawdź rozwiązanie" pokazuje wiersz `podpowiedzi −N`.
 
 **Akceptacja:** klik przycisku odsłania podpowiedź, scoring uwzględnia karę per poziom; po reloadzie odkryte podpowiedzi są zachowane; „Zacznij od nowa" resetuje też podpowiedzi.
+
+## M15 – Playwright e2e
+- `@playwright/test` + chromium, konfig `playwright.config.ts` z `webServer` startującym `npm run dev`, trace/screenshots/video on-failure, osobny katalog `e2e/`.
+- Dev-mode-only bridge `src/e2eBridge.ts` → `window.__elector` z metodami `openTask`, `loadSolution`, `clearToPreset`, `resetStores`, `setView`. Dzięki temu e2e testuje flow UI (przyciski → modal → progress → persystencja) bez ręcznego drag-and-drop każdego aparatu.
+- Trzy scenariusze: `full-flow` (preset → sprawdź → solution → 100/100 i wersja z podpowiedzią daje 98/100), `persistence` (odkryta podpowiedź/widok zachowane po reloadzie, „Zacznij od nowa" resetuje), `navigation` (wszystkie widoki renderują się bez błędów konsoli).
+- Nowe skrypty: `npm run test:e2e` i `npm run test:e2e:ui`. E2e jest osobny od vitesta (`tests/` w vitest, `e2e/` w Playwright).
+- `TasksScreen` force-refresh po `reset()` (zmiana z `loadProgress()` raz-na-render na `useState` trigger).
+
+**Akceptacja:** 6 testów e2e przechodzi w ≤10 s, trace/video zapisywane tylko przy failure, dev bridge jest wyłączony w produkcyjnym bundle.

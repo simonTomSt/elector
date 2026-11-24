@@ -1,4 +1,4 @@
-import { useMemo, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import dol4kw from '../../../tasks/examples/dol-4kw.json';
 import diagNoStart from '../../../tasks/examples/diag-no-start.json';
 import dolMixed from '../../../tasks/examples/dol-mixed.json';
@@ -51,6 +51,8 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
     () => RAW.map(toMeta).filter((m): m is TaskMeta => m !== null),
     [],
   );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_refresh, setRefresh] = useState(0);
   const progress = loadProgress();
   const savedIds = new Set(listProjectTaskIds());
 
@@ -74,6 +76,7 @@ export const TasksScreen: FC<Props> = ({ slot = 'stage' }) => {
     delete rest[id];
     saveProgress(rest);
     useHintsStore.getState().reset();
+    setRefresh((n) => n + 1);
   };
 
   return (
