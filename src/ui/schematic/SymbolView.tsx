@@ -1,11 +1,13 @@
-import type { FC, MouseEvent } from 'react';
+import type { FC, PointerEvent } from 'react';
 import type { SchematicSymbol, TerminalRef } from '@/domain/types';
 import { SYMBOLS } from './symbols';
 
 interface Props {
   symbol: SchematicSymbol;
   selected?: boolean;
+  dragging?: boolean;
   onSelect?: (id: string) => void;
+  onBodyPointerDown?: (id: string, e: PointerEvent<SVGElement>) => void;
   onPinDown?: (pin: TerminalRef, pos: { x: number; y: number }) => void;
   onPinUp?: (pin: TerminalRef) => void;
   highlightPins?: ReadonlySet<TerminalRef>;
@@ -14,7 +16,9 @@ interface Props {
 export const SymbolView: FC<Props> = ({
   symbol,
   selected,
+  dragging,
   onSelect,
+  onBodyPointerDown,
   onPinDown,
   onPinUp,
   highlightPins,
@@ -24,13 +28,18 @@ export const SymbolView: FC<Props> = ({
   const y = symbol.y ?? 0;
   const strokeWidth = spec.strokeKind === 'power' ? 1.9 : 1.6;
 
-  const onBodyClick = (e: MouseEvent): void => {
+  const onBodyDown = (e: PointerEvent<SVGElement>): void => {
     e.stopPropagation();
     onSelect?.(symbol.id);
+    onBodyPointerDown?.(symbol.id, e);
   };
 
   return (
-    <g transform={`translate(${x}, ${y})`} data-sym={symbol.id}>
+    <g
+      transform={`translate(${x}, ${y})`}
+      data-sym={symbol.id}
+      style={{ opacity: dragging ? 0.7 : 1 }}
+    >
       {selected && (
         <rect
           x={-2}
@@ -50,8 +59,8 @@ export const SymbolView: FC<Props> = ({
         width={spec.width}
         height={spec.height}
         fill="transparent"
-        onMouseDown={onBodyClick}
-        style={{ cursor: 'pointer' }}
+        onPointerDown={onBodyDown}
+        style={{ cursor: dragging ? 'grabbing' : 'grab', touchAction: 'none' }}
       />
       <path
         d={spec.path}
@@ -85,11 +94,11 @@ export const SymbolView: FC<Props> = ({
               fill="var(--schematic-theme-paper)"
               stroke={hot ? 'var(--theme-accent)' : 'var(--schematic-theme-ink)'}
               strokeWidth={hot ? 1.8 : 1.2}
-              onMouseDown={(e) => {
+              onPointerDown={(e) => {
                 e.stopPropagation();
                 onPinDown?.(ref, { x: x + pin.x, y: y + pin.y });
               }}
-              onMouseUp={(e) => {
+              onPointerUp={(e) => {
                 e.stopPropagation();
                 onPinUp?.(ref);
               }}

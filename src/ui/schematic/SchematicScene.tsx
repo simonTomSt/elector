@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FC, type MouseEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FC, type MouseEvent, type PointerEvent } from 'react';
 import { buildOrthoRoute } from '@/domain/routing';
 import { useSchematicStore } from '@/store/schematic';
 import type { TerminalRef } from '@/domain/types';
@@ -19,6 +19,7 @@ export const SchematicScene: FC<Props> = ({ stateLabel }) => {
   const potentials = useSchematicStore((s) => s.potentials);
   const selectedSymbolId = useSchematicStore((s) => s.selectedSymbolId);
   const selectSymbol = useSchematicStore((s) => s.selectSymbol);
+  const moveSymbol = useSchematicStore((s) => s.moveSymbol);
   const tool = useSchematicStore((s) => s.tool);
   const draft = useSchematicStore((s) => s.draft);
   const beginWire = useSchematicStore((s) => s.beginWire);
@@ -41,8 +42,10 @@ export const SchematicScene: FC<Props> = ({ stateLabel }) => {
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
+  const dragRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
 
-  const toSvg = (clientX: number, clientY: number): { x: number; y: number } | null => {
+  const toSvgRaw = (clientX: number, clientY: number): { x: number; y: number } | null => {
     const svg = svgRef.current;
     if (!svg) return null;
     const pt = svg.createSVGPoint();
@@ -51,7 +54,12 @@ export const SchematicScene: FC<Props> = ({ stateLabel }) => {
     const m = svg.getScreenCTM()?.inverse();
     if (!m) return null;
     const p = pt.matrixTransform(m);
-    return { x: snap10(p.x), y: snap10(p.y) };
+    return { x: p.x, y: p.y };
+  };
+
+  const toSvg = (clientX: number, clientY: number): { x: number; y: number } | null => {
+    const p = toSvgRaw(clientX, clientY);
+    return p ? { x: snap10(p.x), y: snap10(p.y) } : null;
   };
 
   useEffect(() => {
@@ -95,7 +103,44 @@ export const SchematicScene: FC<Props> = ({ stateLabel }) => {
       if (p) addDraftBend(p);
       return;
     }
+    // Deselekcja tylko gdy klik był na pustym tle SVG, nie na symbolu
+    if (e.target !== e.currentTarget) return;
     selectSymbol(null);
+  };
+
+  const onSymbolPointerDown = (id: string, e: PointerEvent<SVGElement>): void => {
+    // Drag ma sens tylko w narzędziu „select". W trybie „wire" klik w ciało
+    // symbolu niech tylko zaznacza (anulowania draftu pilnuje SymbolView).
+    if (tool !== 'select') return;
+    const sym = symbols.find((s) => s.id === id);
+    if (!sym) return;
+    const p = toSvgRaw(e.clientX, e.clientY);
+    if (!p) return;
+    dragRef.current = {
+      id,
+      offsetX: p.x - (sym.x ?? 0),
+      offsetY: p.y - (sym.y ?? 0),
+    };
+    setDragId(id);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onSymbolPointerMove = (e: PointerEvent<SVGElement>): void => {
+    const info = dragRef.current;
+    if (!info) return;
+    const p = toSvgRaw(e.clientX, e.clientY);
+    if (!p) return;
+    moveSymbol(info.id, {
+      x: snap10(p.x - info.offsetX),
+      y: snap10(p.y - info.offsetY),
+    });
+  };
+
+  const onSymbolPointerUp = (e: PointerEvent<SVGElement>): void => {
+    if (!dragRef.current) return;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    dragRef.current = null;
+    setDragId(null);
   };
 
   const draftRoute = draft
@@ -128,6 +173,8 @@ export const SchematicScene: FC<Props> = ({ stateLabel }) => {
           style={{ overflow: 'visible' }}
           onMouseMove={onBgMove}
           onClick={onBgClick}
+          onPointerMove={onSymbolPointerMove}
+          onPointerUp={onSymbolPointerUp}
         >
           {/* istniejące połączenia */}
           {connections.map(([a, b], i) => {
@@ -173,7 +220,9 @@ export const SchematicScene: FC<Props> = ({ stateLabel }) => {
               key={sym.id}
               symbol={sym}
               selected={selectedSymbolId === sym.id}
+              dragging={dragId === sym.id}
               onSelect={selectSymbol}
+              onBodyPointerDown={onSymbolPointerDown}
               onPinDown={onPinDown}
               onPinUp={onPinUp}
               highlightPins={highlightPins}

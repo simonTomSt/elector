@@ -59,6 +59,27 @@ describe('useSchematicStore', () => {
     expect(useSchematicStore.getState().draft).toBeNull();
   });
 
+  it('moveSymbol zmienia pozycję i zostawia inne pola', () => {
+    const s = useSchematicStore.getState();
+    const id = s.addSymbol('coil', '-K1', { x: 100, y: 100 }, ['-K1:A1', '-K1:A2']);
+    s.moveSymbol(id, { x: 250, y: 300 });
+    const sym = useSchematicStore.getState().symbols.find((x) => x.id === id);
+    expect(sym?.x).toBe(250);
+    expect(sym?.y).toBe(300);
+    expect(sym?.tag).toBe('-K1');
+    expect(sym?.element).toBe('coil');
+    expect(sym?.pins).toEqual(['-K1:A1', '-K1:A2']);
+  });
+
+  it('moveSymbol nieistniejącego id jest bezpieczny (no-op)', () => {
+    const s = useSchematicStore.getState();
+    s.addSymbol('coil', '-K1', { x: 100, y: 100 }, ['-K1:A1', '-K1:A2']);
+    const before = useSchematicStore.getState().symbols;
+    s.moveSymbol('nieistnieje', { x: 0, y: 0 });
+    const after = useSchematicStore.getState().symbols;
+    expect(after.map((x) => `${x.x},${x.y}`)).toEqual(before.map((x) => `${x.x},${x.y}`));
+  });
+
   it('serializuje schemat przez getSchematic', () => {
     const s = useSchematicStore.getState();
     s.addSymbol('coil', '-K1', { x: 0, y: 0 }, ['-K1:A1', '-K1:A2']);
