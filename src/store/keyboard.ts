@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useUiStore, type MainView } from '@/store/ui';
+import { useProjectStore } from '@/store/project';
 
 const VIEW_BY_KEY: Record<string, MainView> = {
   '1': 'tasks',
@@ -27,10 +28,31 @@ export const useGlobalShortcuts = (): void => {
   const setView = useUiStore((s) => s.setView);
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
       if (isTypingContext(e.target)) return;
       // Nie łap klawiszy gdy otwarty jest modal
       if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+
+      // Undo / Redo: Ctrl+Z / Ctrl+Shift+Z (lub Meta na macOS)
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        const p = useProjectStore.getState();
+        if (e.shiftKey) {
+          if (p.canRedo()) p.redo();
+        } else {
+          if (p.canUndo()) p.undo();
+        }
+        return;
+      }
+      if (mod && (e.key === 'y' || e.key === 'Y')) {
+        e.preventDefault();
+        const p = useProjectStore.getState();
+        if (p.canRedo()) p.redo();
+        return;
+      }
+
+      // Nawigacja cyfrowa — bez modyfikatorów
+      if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
       const target = VIEW_BY_KEY[e.key];
       if (!target) return;
       e.preventDefault();

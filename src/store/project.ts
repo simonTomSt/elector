@@ -67,6 +67,11 @@ export type WireCommitResult =
   | { ok: true; wireId: string }
   | { ok: false; reason: 'no-draft' | 'unknown-terminal' | 'same-terminal' | 'duplicate' };
 
+interface HistoryEntry {
+  devices: DeviceInstance[];
+  wires: Wire[];
+}
+
 interface ProjectState {
   task: Task;
   library: DeviceLibrary;
@@ -77,6 +82,12 @@ interface ProjectState {
   view: ViewState;
   draft: WireDraft | null;
   spool: SpoolState;
+  _past: HistoryEntry[];
+  _future: HistoryEntry[];
+  undo(): void;
+  redo(): void;
+  canUndo(): boolean;
+  canRedo(): boolean;
   init(task: Task, library: DeviceLibrary): void;
   applyAssignedFaults(): void;
   addDeviceOnRail(typeId: string, rail: RailIndex, xMm: number): string | null;
@@ -217,8 +228,47 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   view: { zoom: 1, panXPx: 0, panYPx: 0 },
   draft: null,
   spool: { ...DEFAULT_SPOOL },
+  _past: [],
+  _future: [],
+
+  undo() {
+    const { _past, devices, wires } = get();
+    const prev = _past[_past.length - 1];
+    if (!prev) return;
+    historySuspended = true;
+    set({
+      _past: _past.slice(0, -1),
+      _future: [{ devices, wires }, ...get()._future],
+      devices: prev.devices,
+      wires: prev.wires,
+    });
+    historySuspended = false;
+  },
+
+  redo() {
+    const { _future, devices, wires } = get();
+    const next = _future[0];
+    if (!next) return;
+    historySuspended = true;
+    set({
+      _past: [...get()._past, { devices, wires }],
+      _future: _future.slice(1),
+      devices: next.devices,
+      wires: next.wires,
+    });
+    historySuspended = false;
+  },
+
+  canUndo() {
+    return get()._past.length > 0;
+  },
+
+  canRedo() {
+    return get()._future.length > 0;
+  },
 
   init(task, library) {
+    historySuspended = true;
     const saved = loadPersistedProject(task.id);
     const base = buildInitialProjectForEditor(task);
     // Scena diagnostyczna startuje z gotową szafą (preset + solution),
@@ -260,11 +310,14 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       view: { zoom: 1, panXPx: 0, panYPx: 0 },
       draft: null,
       spool: { ...DEFAULT_SPOOL },
+      _past: [],
+      _future: [],
     });
     // Zaaplikuj wireFault od razu po ustawieniu wires
     if (task.type === 'diagnostic') {
       get().applyAssignedFaults();
     }
+    historySuspended = false;
   },
 
   applyAssignedFaults() {
@@ -423,6 +476,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 }));
 
 let lastAutosaveKey: string | null = null;
+let historySuspended = false;
+const HISTORY_LIMIT = 50;
+
+useProjectStore.subscribe((state, prev) => {
+  if (historySuspended) return;
+  if (!state.task) return;
+  // Zmiana zadania (id) nie generuje wpisu — init czyści historię osobno
+  if (prev.task?.id !== state.task.id) return;
+  if (state.devices === prev.devices && state.wires === prev.wires) return;
+  const entry: HistoryEntry = { devices: prev.devices, wires: prev.wires };
+  const past = [...state._past, entry].slice(-HISTORY_LIMIT);
+  historySuspended = true;
+  useProjectStore.setState({ _past: past, _future: [] });
+  historySuspended = false;
+});
 const flushAutosave = (taskId: string, devices: readonly DeviceInstance[], wires: readonly Wire[]): void => {
   const revealedHintIds = useHintsStore.getState().revealedIds;
   const diag = useDiagnosticStore.getState();

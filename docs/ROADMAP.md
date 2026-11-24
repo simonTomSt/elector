@@ -129,3 +129,12 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - Przyciski widoków w TopBar mają tooltipy z numerem skrótu.
 
 **Akceptacja:** 8 testów jsdom pokrywa wszystkie przypadki brzegowe.
+
+## M21 – Undo/Redo
+- `useProjectStore` dostał stos `_past[]`/`_future[]` (snapshoty `{devices, wires}`) z limitem 50 wpisów.
+- Subskrypcja monitorująca zmiany `devices`/`wires` automatycznie push'uje poprzedni stan do `_past`; flaga `historySuspended` chroni przed cyklami (undo/redo, init, applyAssignedFaults).
+- Akcje `undo()`, `redo()`, `canUndo()`, `canRedo()`; nowa mutacja po undo czyści `_future` (standardowa semantyka).
+- Skróty klawiaturowe `Ctrl/Cmd+Z` (undo), `Ctrl/Cmd+Shift+Z` lub `Ctrl/Cmd+Y` (redo) w `useGlobalShortcuts`; ignorowane w inputach i modalach (dzielony mechanizm z nawigacją 1..5).
+- `init(task, library)` czyści historię.
+
+**Akceptacja:** 10 testów jednostkowych + 2 skrótowe pokrywają dodanie/usunięcie urządzenia, przesunięcie, limit historii, czyszczenie przy init.

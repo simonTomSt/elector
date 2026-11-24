@@ -83,6 +83,26 @@ describe('M20 – skróty klawiaturowe 1..5', () => {
     expect(useUiStore.getState().view).toBe('cabinet');
   });
 
+  it('Ctrl+Z wywołuje undo w cabinet', () => {
+    useUiStore.setState({ view: 'cabinet', currentTaskId: 'dol-4kw' });
+    render(<App />);
+    const before = useProjectStore.getState().devices.length;
+    useProjectStore.getState().addDeviceOnRail('mcb-c16-3p', 1, 45);
+    fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
+    expect(useProjectStore.getState().devices.length).toBe(before);
+  });
+
+  it('Ctrl+Shift+Z wywołuje redo', () => {
+    useUiStore.setState({ view: 'cabinet', currentTaskId: 'dol-4kw' });
+    render(<App />);
+    const before = useProjectStore.getState().devices.length;
+    useProjectStore.getState().addDeviceOnRail('mcb-c16-3p', 1, 45);
+    useProjectStore.getState().undo();
+    expect(useProjectStore.getState().devices.length).toBe(before);
+    fireEvent.keyDown(window, { key: 'z', ctrlKey: true, shiftKey: true });
+    expect(useProjectStore.getState().devices.length).toBe(before + 1);
+  });
+
   it('ignoruje gdy otwarty modal (role=dialog)', async () => {
     render(<App />);
     useUiStore.setState({ view: 'cabinet' });
