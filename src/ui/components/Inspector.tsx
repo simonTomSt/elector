@@ -3,7 +3,8 @@ import type { FC as ReactFC } from 'react';
 import { resolveState, useProjectStore } from '@/store/project';
 import { validateLive, type ValidationIssue } from '@/validation/live';
 import type { ResolvedProject } from '@/sim/model';
-import type { Requirement, Wire } from '@/domain/types';
+import type { Hint, Requirement, Wire } from '@/domain/types';
+import { useHintsStore } from '@/store/hints';
 import './Inspector.css';
 
 const formatWireColor = (c: Wire['color']): string => {
@@ -221,6 +222,41 @@ export const Inspector: FC = () => {
           <RequirementItem key={req.id} req={req} issue={issueMap.get(req.id)} />
         ))}
       </ul>
+      <HintsPanel hints={task.hints ?? []} />
     </div>
+  );
+};
+
+interface HintsPanelProps {
+  hints: readonly Hint[];
+}
+
+const LEVEL_LABEL: Record<NonNullable<Hint['level']>, string> = {
+  subtelna: 'subtelna',
+  bezpośrednia: 'bezpośrednia',
+  rozwiązanie: 'rozwiązanie',
+};
+
+const HintsPanel: ReactFC<HintsPanelProps> = ({ hints }) => {
+  const revealedIds = useHintsStore((s) => s.revealedIds);
+  if (hints.length === 0) return null;
+  const revealed = hints.filter((h) => revealedIds.includes(h.id));
+  if (revealed.length === 0) return null;
+  return (
+    <>
+      <h2 className="inspector__title">Podpowiedzi</h2>
+      <ul className="inspector__list" data-testid="hints-panel" style={{ gap: 8 }}>
+        {revealed.map((h) => (
+          <li key={h.id}>
+            {h.level && (
+              <span className="inspector__sub" style={{ marginRight: 6 }}>
+                [{LEVEL_LABEL[h.level]}]
+              </span>
+            )}
+            <span>{h.text}</span>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };

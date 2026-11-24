@@ -14,6 +14,7 @@ export type TaskProgressStatus = 'nie-zaczete' | 'w-toku' | 'ukonczone';
 export interface PersistedProject {
   devices: DeviceInstance[];
   wires: Wire[];
+  revealedHintIds?: string[];
 }
 
 export interface PersistedUi {
@@ -62,8 +63,10 @@ const writeEnvelope = <T>(key: string, payload: T): void => {
 
 const isProject = (p: unknown): p is PersistedProject => {
   if (!p || typeof p !== 'object') return false;
-  const o = p as { devices?: unknown; wires?: unknown };
-  return Array.isArray(o.devices) && Array.isArray(o.wires);
+  const o = p as { devices?: unknown; wires?: unknown; revealedHintIds?: unknown };
+  if (!Array.isArray(o.devices) || !Array.isArray(o.wires)) return false;
+  if (o.revealedHintIds !== undefined && !Array.isArray(o.revealedHintIds)) return false;
+  return true;
 };
 
 const isUi = (p: unknown): p is PersistedUi => {

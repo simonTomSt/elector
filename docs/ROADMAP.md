@@ -75,3 +75,13 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - Kafelek zadania w widoku `tasks` pokazuje wynik przy ukończonym zadaniu.
 
 **Akceptacja:** wzorcowe rozwiązanie `dol-4kw` daje 100/100 i `ukonczone`; sam preset (bez solution) daje <100 i `w-toku`; kary skalują się z incydentami.
+
+## M14 – Podpowiedzi
+- Nowe pole `Task.hints: Hint[]` ze schemy, każda podpowiedź ma `level` (subtelna / bezpośrednia / rozwiązanie).
+- `Task.scoring.hintLevels` z karami per poziom (np. subtelna −2, bezpośrednia −5, rozwiązanie −15). Fallback do płaskiego `hintPenalty` gdy brak `hintLevels`.
+- `useHintsStore` trzyma `revealedIds[]` i licznik `used`; stan perystowany w `PersistedProject.revealedHintIds` (po F5 kursant dalej ma odkryte podpowiedzi i karę).
+- Przycisk „💡 Podpowiedź (n/N)" w TopBar odsłania kolejną nieodkrytą podpowiedź; `disabled` po odkryciu wszystkich.
+- Panel odkrytych podpowiedzi w Inspector (pod wymaganiami), pokazywany tylko gdy coś odkryte.
+- `computeScore` sumuje kary po `level` z odkrytych podpowiedzi; raport „Sprawdź rozwiązanie" pokazuje wiersz `podpowiedzi −N`.
+
+**Akceptacja:** klik przycisku odsłania podpowiedź, scoring uwzględnia karę per poziom; po reloadzie odkryte podpowiedzi są zachowane; „Zacznij od nowa" resetuje też podpowiedzi.

@@ -1,4 +1,4 @@
-import type { Requirement, Task } from '@/domain/types';
+import type { Hint, HintLevel, Requirement, Task } from '@/domain/types';
 import type { ValidationResult } from '@/validation/live';
 
 export interface ScoreItem {
@@ -24,9 +24,25 @@ export interface Score {
 export interface ScoreInputs {
   lotoIncidents: number;
   hintsUsed: number;
+  revealedHints?: readonly string[];
 }
 
 const MAX = 100;
+
+const sumLevelPenalties = (
+  hints: readonly Hint[],
+  revealed: readonly string[],
+  levels: Partial<Record<HintLevel, number>>,
+): number => {
+  const byId = new Map(hints.map((h) => [h.id, h] as const));
+  let sum = 0;
+  for (const id of revealed) {
+    const h = byId.get(id);
+    if (!h || !h.level) continue;
+    sum += levels[h.level] ?? 0;
+  }
+  return sum;
+};
 
 export const computeScore = (
   task: Task,
@@ -46,9 +62,13 @@ export const computeScore = (
   const base = items.filter((i) => i.ok).length * perItem;
 
   const lotoPenalty = task.scoring?.lotoPenalty ?? 0;
-  const hintPenalty = task.scoring?.hintPenalty ?? 0;
   const lotoCost = lotoPenalty * inputs.lotoIncidents;
-  const hintCost = hintPenalty * inputs.hintsUsed;
+
+  const hintLevels = task.scoring?.hintLevels;
+  const hintPenalty = task.scoring?.hintPenalty ?? 0;
+  const hintCost = hintLevels
+    ? sumLevelPenalties(task.hints ?? [], inputs.revealedHints ?? [], hintLevels)
+    : hintPenalty * inputs.hintsUsed;
 
   const raw = base - lotoCost - hintCost;
   const value = Math.max(0, Math.round(raw));

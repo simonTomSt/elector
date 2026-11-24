@@ -67,6 +67,15 @@
       ]
     }
   },
+  "hints": [
+    { "id": "h1", "text": "Sprawdź czy -F2 (przekaźnik termiczny) ma nastawę w przedziale Iₙ silnika (8,2–8,7 A).", "level": "subtelna" },
+    { "id": "h2", "text": "Samopodtrzymanie wymaga styku -K1:13–14 równolegle do przycisku -S2:13–14.", "level": "bezpośrednia" },
+    { "id": "h3", "text": "Cewka -K1:A1–A2 powinna być szeregowo zasilana z +24 V DC przez -F2:95–96, aby termik ją otwierał przy przeciążeniu.", "level": "rozwiązanie" }
+  ],
+  "scoring": {
+    "lotoPenalty": 10,
+    "hintLevels": { "subtelna": 2, "bezpośrednia": 5, "rozwiązanie": 15 }
+  },
   "requirements": [
     { "id": "r1", "text": "Zabezpieczenie zwarciowe obwodu głównego (-Q1)", "check": "deviceExists", "args": { "tag": "-Q1", "typeKind": "mcb" } },
     { "id": "r2", "text": "Stycznik -K1 z cewką 24 V DC", "check": "deviceExists", "args": { "tag": "-K1", "typeKind": "contactor" } },

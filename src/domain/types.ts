@@ -243,9 +243,18 @@ export interface Scene {
   palette?: string[];
 }
 
+export type HintLevel = 'subtelna' | 'bezpośrednia' | 'rozwiązanie';
+
+export interface Hint {
+  id: string;
+  text: string;
+  level?: HintLevel;
+}
+
 export interface Scoring {
   lotoPenalty?: number;
   hintPenalty?: number;
+  hintLevels?: Partial<Record<HintLevel, number>>;
 }
 
 export interface Task {
@@ -264,6 +273,7 @@ export interface Task {
   faults?: Fault[];
   pickFaults?: number;
   symptom?: string;
+  hints?: Hint[];
   scoring?: Scoring;
   solution?: Project;
   solutionSchematic?: Schematic;

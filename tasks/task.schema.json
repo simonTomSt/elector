@@ -84,7 +84,33 @@
     },
     "pickFaults": { "type": "integer", "description": "Ile usterek losować z listy faults" },
     "symptom": { "type": "string" },
-    "scoring": { "type": "object", "properties": { "lotoPenalty": { "type": "integer" }, "hintPenalty": { "type": "integer" } } },
+    "hints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "level": { "enum": ["subtelna", "bezpośrednia", "rozwiązanie"] }
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "properties": {
+        "lotoPenalty": { "type": "integer" },
+        "hintPenalty": { "type": "integer" },
+        "hintLevels": {
+          "type": "object",
+          "properties": {
+            "subtelna": { "type": "integer" },
+            "bezpośrednia": { "type": "integer" },
+            "rozwiązanie": { "type": "integer" }
+          }
+        }
+      }
+    },
     "solution": { "$ref": "#/$defs/project" },
     "solutionSchematic": { "$ref": "#/$defs/schematic" }
   },

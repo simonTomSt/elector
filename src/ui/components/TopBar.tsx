@@ -14,6 +14,7 @@ import { validateLive } from '@/validation/live';
 import { computeScore } from '@/validation/scoring';
 import { useResultStore } from '@/store/result';
 import { useLotoStore } from '@/store/loto';
+import { useHintsStore } from '@/store/hints';
 import './TopBar.css';
 
 type Props = {
@@ -56,6 +57,10 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const toggleMeter = useMeterStore((s) => s.togglePanel);
   const setResult = useResultStore((s) => s.setResult);
   const lotoIncidents = useLotoStore((s) => s.incidentCount);
+  const revealedHintIds = useHintsStore((s) => s.revealedIds);
+  const revealHint = useHintsStore((s) => s.reveal);
+  const totalHints = task?.hints?.length ?? 0;
+  const nextHint = task?.hints?.find((h) => !revealedHintIds.includes(h.id));
 
   const project = useMemo(() => {
     if (!task || !library) return null;
@@ -78,7 +83,8 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
     });
     const score = computeScore(task, validation, {
       lotoIncidents,
-      hintsUsed: 0,
+      hintsUsed: revealedHintIds.length,
+      revealedHints: revealedHintIds,
     });
     setResult(score);
     const now = Date.now();
@@ -235,6 +241,23 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
         >
           {theme === 'dark' ? '☾' : '☀'}
         </button>
+        {totalHints > 0 && (
+          <button
+            type="button"
+            className="topbar__theme"
+            onClick={() => {
+              if (nextHint) revealHint(nextHint.id);
+            }}
+            disabled={!nextHint}
+            title={
+              nextHint
+                ? 'Odsłoń kolejną podpowiedź (wpływa na wynik)'
+                : 'Wszystkie podpowiedzi zostały odsłonięte'
+            }
+          >
+            💡 Podpowiedź ({revealedHintIds.length}/{totalHints})
+          </button>
+        )}
         <button
           type="button"
           className="topbar__cta"

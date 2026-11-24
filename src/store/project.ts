@@ -17,6 +17,7 @@ import {
   saveProgress,
   saveProject as savePersistedProject,
 } from '@/store/persist';
+import { useHintsStore } from '@/store/hints';
 
 export type RailIndex = 1 | 2;
 
@@ -220,6 +221,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const base = buildProjectFromTask(task);
     const devices = saved ? cloneDevices(saved.devices) : cloneDevices(base.devices);
     const wires = saved ? [...saved.wires] : [...base.wires];
+    useHintsStore.getState().hydrate(saved?.revealedHintIds ?? []);
     set({
       task,
       library,
@@ -370,10 +372,26 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 }));
 
 let lastAutosaveKey: string | null = null;
+const flushAutosave = (taskId: string, devices: readonly DeviceInstance[], wires: readonly Wire[]): void => {
+  const revealedHintIds = useHintsStore.getState().revealedIds;
+  savePersistedProject(taskId, {
+    devices: [...devices],
+    wires: [...wires],
+    ...(revealedHintIds.length > 0 ? { revealedHintIds: [...revealedHintIds] } : {}),
+  });
+};
+
+useHintsStore.subscribe((state, prev) => {
+  if (state.revealedIds === prev.revealedIds) return;
+  const proj = useProjectStore.getState();
+  if (!proj.task) return;
+  flushAutosave(proj.task.id, proj.devices, proj.wires);
+});
+
 useProjectStore.subscribe((state, prev) => {
   if (!state.task) return;
   if (state.devices === prev.devices && state.wires === prev.wires) return;
-  savePersistedProject(state.task.id, { devices: state.devices, wires: state.wires });
+  flushAutosave(state.task.id, state.devices, state.wires);
   const key = `${state.task.id}:${state.devices.length}:${state.wires.length}`;
   if (key !== lastAutosaveKey) {
     lastAutosaveKey = key;

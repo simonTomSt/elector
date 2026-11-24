@@ -55,8 +55,8 @@
   "loto": { "lockDevice": "-Q0", "verifyPairs": [["-X1:L1.top", "-X1:L2.top"], ["-X1:L2.top", "-X1:L3.top"], ["-X1:L1.top", "-X1:L3.top"], ["-X1:L1.top", "-X1:PE.top"]] },
   "scoring": { "lotoPenalty": 30, "hintPenalty": 10 },
   "hints": [
-    "Zmierz napięcie na cewce -K1 (A1–A2) przy wciśniętym START.",
-    "Jeśli na A1 nie ma 24 V, idź wstecz: -X3:4, -S2, -X3:3.",
-    "Pomiar ciągłości wykonuj tylko po LOTO."
+    { "id": "h1", "text": "Zmierz napięcie na cewce -K1 (A1–A2) przy wciśniętym START.", "level": "subtelna" },
+    { "id": "h2", "text": "Jeśli na A1 nie ma 24 V, idź wstecz: -X3:4, -S2, -X3:3.", "level": "bezpośrednia" },
+    { "id": "h3", "text": "Pomiar ciągłości wykonuj tylko po LOTO.", "level": "subtelna" }
   ]
 }
