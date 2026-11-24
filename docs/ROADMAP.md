@@ -166,3 +166,10 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 - `tasks/examples/diag-contact-stuck.json` — diagnostyka z 3 usterkami typu `contactWelded` / `coilOpen` demonstrująca nowe wsparcie z M24.
 - Dodany do listy `RAW` w `TasksScreen` i do `loadTaskRepo` w `EditorScreen`.
 - Zaktualizowany test `tasks.test.ts` — teraz liczy wszystkie pliki w katalogu zamiast hardcoded 4.
+
+## M27 – Eksport raportu wyniku
+- `ResultModal` dostał przycisk „⬇ Raport" pobierający JSON z taskId, title, timestamp, score, karami i listą items. Przydatne dla instruktora bez backendu.
+
+## M28 – Wskaźnik „Zapisano" w TopBar
+- `useProjectStore` dostał pole `savedAt`, ustawiane w `flushAutosave` (zmiany devices/wires + hints + diagnostic). W TopBar `aria-live="polite"` pokazuje „Zapisano" z tooltipem pełnej daty.
+- Nowy pattern w `flushAutosave`: zapisuje poprzednie `historySuspended` do lokalnej zmiennej i przywraca po setState — wcześniej `historySuspended = false` po zakończeniu nadpisywał flagę ustawioną przez `init`, przez co historia widziała `init` jako zmianę do zapisania.

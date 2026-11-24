@@ -61,6 +61,7 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
   const lotoIncidents = useLotoStore((s) => s.incidentCount);
   const [reportOpen, setReportOpen] = useState(false);
   const revealedHintIds = useHintsStore((s) => s.revealedIds);
+  const savedAt = useProjectStore((s) => s.savedAt);
   const revealHint = useHintsStore((s) => s.reveal);
   const totalHints = task?.hints?.length ?? 0;
   const nextHint = task?.hints?.find((h) => !revealedHintIds.includes(h.id));
@@ -189,6 +190,19 @@ export const TopBar: FC<Props> = ({ theme, onToggleTheme }) => {
           </button>
         </div>
         <SnapshotControls />
+        {savedAt && task && (
+          <span
+            aria-live="polite"
+            style={{
+              color: 'var(--theme-muted)',
+              fontSize: 12,
+              padding: '0 6px',
+            }}
+            title={new Date(savedAt).toLocaleString('pl-PL')}
+          >
+            Zapisano
+          </span>
+        )}
         {simOn && (
           <div className="topbar__sim-ctl" role="group" aria-label="Sterowanie symulacją">
             <button

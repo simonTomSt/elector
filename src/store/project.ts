@@ -82,6 +82,7 @@ interface ProjectState {
   view: ViewState;
   draft: WireDraft | null;
   spool: SpoolState;
+  savedAt: number | null;
   _past: HistoryEntry[];
   _future: HistoryEntry[];
   undo(): void;
@@ -228,6 +229,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   view: { zoom: 1, panXPx: 0, panYPx: 0 },
   draft: null,
   spool: { ...DEFAULT_SPOOL },
+  savedAt: null,
   _past: [],
   _future: [],
 
@@ -312,6 +314,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       view: { zoom: 1, panXPx: 0, panYPx: 0 },
       draft: null,
       spool: { ...DEFAULT_SPOOL },
+      savedAt: saved ? Date.now() : null,
       _past: [],
       _future: [],
     });
@@ -508,6 +511,10 @@ const flushAutosave = (taskId: string, devices: readonly DeviceInstance[], wires
       : {}),
     ...(diag.reportedAt !== null ? { reportedAt: diag.reportedAt } : {}),
   });
+  const wasSuspended = historySuspended;
+  historySuspended = true;
+  useProjectStore.setState({ savedAt: Date.now() });
+  historySuspended = wasSuspended;
 };
 
 useDiagnosticStore.subscribe((state, prev) => {
