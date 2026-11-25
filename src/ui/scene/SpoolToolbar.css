@@ -98,3 +98,44 @@
   color: var(--theme-accent);
   border-color: var(--theme-accent);
 }
+
+.spool-toolbar__close {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  border: 1px solid var(--theme-line2);
+  background: transparent;
+  color: var(--theme-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
+.spool-toolbar__close:hover:not(:disabled) {
+  color: var(--theme-text);
+  border-color: var(--theme-line);
+}
+
+.spool-toolbar__close:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.spool-toolbar--collapsed {
+  cursor: pointer;
+  padding: 6px 12px;
+  color: var(--theme-text);
+  font: inherit;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.spool-toolbar--collapsed:hover {
+  border-color: var(--theme-accent);
+}

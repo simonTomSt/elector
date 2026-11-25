@@ -121,13 +121,20 @@
 }
 
 .topbar__theme {
-  width: calc(var(--size-touchMin) * 1px);
+  min-width: calc(var(--size-touchMin) * 1px);
   height: calc(var(--size-touchMin) * 1px);
+  padding: 0 10px;
   border-radius: calc(var(--radius-md) * 1px);
   background: var(--theme-surface);
   color: var(--theme-text);
   border: 1px solid var(--theme-line);
   cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: calc(var(--font-size-sm) * 1px);
 }
 
 .topbar__theme.is-active {

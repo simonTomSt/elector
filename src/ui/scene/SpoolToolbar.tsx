@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import type { WireColor, WireCrossSection } from '@/domain/types';
 import { useProjectStore } from '@/store/project';
 import './SpoolToolbar.css';
@@ -23,6 +23,27 @@ export const SpoolToolbar: FC = () => {
   const spool = useProjectStore((s) => s.spool);
   const setSpool = useProjectStore((s) => s.setSpool);
   const draft = useProjectStore((s) => s.draft);
+  // Lokalny stan rozwinięcia — pozwala kursantowi zwinąć toolbar, żeby odkrył scenę.
+  // Przy aktywnym drafcie (ciągniemy przewód) auto-rozwijamy, żeby szybko zmienić parametry.
+  const [expanded, setExpanded] = useState(true);
+  const isOpen = expanded || draft !== null;
+
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        className="spool-toolbar spool-toolbar--collapsed"
+        aria-label="Rozwiń szpulę przewodu"
+        aria-expanded="false"
+        onClick={() => setExpanded(true)}
+      >
+        <span className="spool-toolbar__swatch" style={{ background: `var(--wire-${spool.color}-color)` }} />
+        <span className="spool-toolbar__title">Szpula</span>
+        <span aria-hidden="true">▸</span>
+      </button>
+    );
+  }
+
   return (
     <div
       className="spool-toolbar"
@@ -75,6 +96,16 @@ export const SpoolToolbar: FC = () => {
         onClick={() => setSpool({ ferrule: !spool.ferrule })}
       >
         Tulejki: {spool.ferrule ? 'wł.' : 'wył.'}
+      </button>
+      <button
+        type="button"
+        className="spool-toolbar__close"
+        aria-label="Zwiń szpulę"
+        title="Zwiń (ciągnięcie przewodu i tak auto-rozwija)"
+        onClick={() => setExpanded(false)}
+        disabled={draft !== null}
+      >
+        ×
       </button>
     </div>
   );
