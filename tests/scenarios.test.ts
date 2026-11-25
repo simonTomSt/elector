@@ -64,4 +64,33 @@ describe('M3 – scenariusze testowe przykładów', () => {
     expect(res.failures).toEqual([]);
     expect(res.ok).toBe(true);
   });
+
+  it('diag-contact-stuck: weld-symptom-k1 (M32)', () => {
+    const task = byId.get('diag-contact-stuck');
+    expect(task).toBeDefined();
+    const res = runScenario(task!, 'weld-symptom-k1', devices);
+    expect(res.failures).toEqual([]);
+    expect(res.ok).toBe(true);
+  });
+
+  it('diag-contact-stuck: weld-symptom-s1 (M32)', () => {
+    const task = byId.get('diag-contact-stuck');
+    const res = runScenario(task!, 'weld-symptom-s1', devices);
+    expect(res.failures).toEqual([]);
+    expect(res.ok).toBe(true);
+  });
+
+  it('diag-contact-stuck: coilopen-symptom (M32)', () => {
+    const task = byId.get('diag-contact-stuck');
+    const res = runScenario(task!, 'coilopen-symptom', devices);
+    expect(res.failures).toEqual([]);
+    expect(res.ok).toBe(true);
+  });
+
+  it('diag-contact-stuck: loto-order (M32)', () => {
+    const task = byId.get('diag-contact-stuck');
+    const res = runScenario(task!, 'loto-order', devices);
+    expect(res.failures).toEqual([]);
+    expect(res.ok).toBe(true);
+  });
 });

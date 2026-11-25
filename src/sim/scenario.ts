@@ -77,6 +77,8 @@ const applyFault = (ctx: RunContext, faultId: string): void => {
     const st = ctx.sim.states[tag] ?? {};
     if (fault.apply.deviceFault === 'tripped') st.tripped = true;
     if (fault.apply.deviceFault === 'coilOpen') st.coilOpen = true;
+    if (fault.apply.deviceFault === 'contactWelded') st.contactsWelded = true;
+    if (fault.apply.deviceFault === 'contactOpen') st.contactsOpen = true;
     ctx.sim.states[tag] = st;
   }
 };

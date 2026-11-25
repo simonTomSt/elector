@@ -52,8 +52,18 @@ const mergeProject = (a?: Project, b?: Project): Project => ({
   wires: [...(a?.wires ?? []), ...(b?.wires ?? [])],
 });
 
-export const buildProjectFromTask = (task: Task): Project =>
-  mergeProject(task.scene.preset, task.solution);
+/**
+ * Buduje świeży projekt dla scenariusza/symulacji. Klonuje wire'y,
+ * bo `applyFault` w scenariuszu ustawia `wire.fault` — bez klonu
+ * kolejne scenariusze dziedziczyłyby mutację po poprzednich runach.
+ */
+export const buildProjectFromTask = (task: Task): Project => {
+  const merged = mergeProject(task.scene.preset, task.solution);
+  return {
+    devices: merged.devices.map((d) => ({ ...d })),
+    wires: merged.wires.map((w) => ({ ...w })),
+  };
+};
 
 /**
  * Stan startowy sceny dla kursanta — tylko to, co ma być od początku

@@ -170,6 +170,19 @@ Każdy etap kończy się zielonym `npm run typecheck && npm test`. Najpierw test
 ## M27 – Eksport raportu wyniku
 - `ResultModal` dostał przycisk „⬇ Raport" pobierający JSON z taskId, title, timestamp, score, karami i listą items. Przydatne dla instruktora bez backendu.
 
+## M32 – Scenariusze dla diag-contact-stuck + hermetyczny buildProjectFromTask
+- `applyFault` w `sim/scenario.ts` mapuje też `contactWelded` → `st.contactsWelded` i `contactOpen` → `st.contactsOpen`. Wcześniej te DeviceFaultKind'y były cicho ignorowane przez scenario runner — mimo że runtime (M24) je obsługuje.
+- `tasks/examples/diag-contact-stuck.json` dostał 4 scenariusze:
+  - `weld-symptom-k1` — f-k1-welded → po STOP silnik dalej pracuje (`-M1.running: true`).
+  - `weld-symptom-s1` — f-s1-welded → STOP nie przerywa (`-M1.running: true`).
+  - `coilopen-symptom` — f-k1-coilopen → start nie ruszy.
+  - `loto-order` — procedura LOTO (3 kroki) jak w diag-no-start.
+  Nowe wymagania `d1` (loto-order) i `d2` (weld-symptom-k1) wskazują na scenariusze.
+- Fix test pollution: `buildProjectFromTask` klonuje teraz `devices` i `wires` zamiast dzielić referencje. `applyFault` w scenariuszu mutuje `wire.fault` — bez klonu kolejne runy dziedziczyły faulty z poprzednich (np. `fault-visible` z diag-no-start wyłączał C4 globalnie, blokując start w diag-contact-stuck).
+- 4 nowe testy w `scenarios.test.ts` (10 → 14 wraz z istniejącymi).
+
+**Akceptacja:** wszystkie 4 scenariusze diag-contact-stuck zielone w izolacji i w pełnej suitcie; 235 testów vitest + 14 e2e pass.
+
 ## M31 – E2e dla diag-contact-stuck + rozszerzony bridge
 - `e2eBridge` dostał `getDiagnostic()`, `repairFault(id)` i `assignFaults(ids)` — deterministyczny setup testów bez klikania w SVG. `resetStores` dodatkowo resetuje `useDiagnosticStore`.
 - Nowy `e2e/diag-contact-stuck.spec.ts` (4 scenariusze): otwarcie pokazuje `Zgłoś usterkę` i losuje usterkę; trafna diagnoza `f-k1-welded` → 100/100 i `ukonczone`; `repairFault` oznacza usterkę jako naprawioną i perystuje `repairedFaultIds` w `elector:project:diag-contact-stuck`; pudło (`f-k1-coilopen`) → 0 pkt, `w-toku`.

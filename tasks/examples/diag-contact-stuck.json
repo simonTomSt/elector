@@ -15,9 +15,73 @@
   ],
   "pickFaults": 1,
   "requirements": [
-    { "id": "d1", "text": "LOTO przed pracą na okablowaniu", "check": "scenario", "args": { "id": "loto-order" } }
+    { "id": "d1", "text": "LOTO przed pracą na okablowaniu", "check": "scenario", "args": { "id": "loto-order" } },
+    { "id": "d2", "text": "Objaw: po STOP silnik dalej pracuje przy zgrzanych stykach -K1", "check": "scenario", "args": { "id": "weld-symptom-k1" } }
   ],
-  "testScenarios": [],
+  "testScenarios": [
+    {
+      "id": "weld-symptom-k1", "name": "Objaw usterki f-k1-welded",
+      "steps": [
+        { "do": "set", "tag": "@fault", "state": { "id": "f-k1-welded" } },
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 200 },
+        { "do": "press", "tag": "-S2", "ms": 200 },
+        { "do": "wait", "ms": 1000 },
+        { "expect": { "-M1.running": true } },
+        { "do": "press", "tag": "-S1", "ms": 200 },
+        { "do": "wait", "ms": 200 },
+        { "expect": { "-M1.running": true, "-H1.lit": true } }
+      ]
+    },
+    {
+      "id": "weld-symptom-s1", "name": "Objaw usterki f-s1-welded",
+      "steps": [
+        { "do": "set", "tag": "@fault", "state": { "id": "f-s1-welded" } },
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 200 },
+        { "do": "press", "tag": "-S2", "ms": 200 },
+        { "do": "wait", "ms": 1000 },
+        { "expect": { "-M1.running": true } },
+        { "do": "press", "tag": "-S1", "ms": 200 },
+        { "do": "wait", "ms": 200 },
+        { "expect": { "-M1.running": true } }
+      ]
+    },
+    {
+      "id": "coilopen-symptom", "name": "Objaw usterki f-k1-coilopen",
+      "steps": [
+        { "do": "set", "tag": "@fault", "state": { "id": "f-k1-coilopen" } },
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 200 },
+        { "do": "press", "tag": "-S2", "ms": 200 },
+        { "do": "wait", "ms": 500 },
+        { "expect": { "-M1.running": false, "-H1.lit": false } }
+      ]
+    },
+    {
+      "id": "loto-order", "name": "Procedura LOTO (3 kroki)",
+      "steps": [
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "do": "set", "tag": "-Q1", "state": { "on": true } },
+        { "do": "set", "tag": "-F1", "state": { "on": true } },
+        { "do": "wait", "ms": 100 },
+        { "expect": { "-T1.out": true } },
+        { "do": "set", "tag": "-Q0", "state": { "on": false } },
+        { "do": "lock", "tag": "-Q0" },
+        { "expect": { "-Q0.locked": true, "-Q0.on": false } },
+        { "do": "measure", "range": "vac", "probes": ["-X1:L1.top", "-X1:L2.top"], "expect": { "value": { "approx": 0, "tol": 0.1 } } },
+        { "do": "measure", "range": "vac", "probes": ["-X1:L1.top", "-X1:PE.top"], "expect": { "value": { "approx": 0, "tol": 0.1 } } },
+        { "do": "set", "tag": "-Q0", "state": { "on": true } },
+        { "expect": { "-Q0.on": false } }
+      ]
+    }
+  ],
   "hints": [
     { "id": "h1", "text": "Włącz układ, uruchom silnik -S2 START, a potem spróbuj zatrzymać -S1 STOP — co działa, co nie?", "level": "subtelna" },
     { "id": "h2", "text": "Jeśli silnik dalej pracuje po STOP, sprawdź czy styk główny -K1 faktycznie się otwiera (mechanicznie).", "level": "bezpośrednia" },
